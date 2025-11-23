@@ -88,12 +88,34 @@ def render_home_page(data: HomePageData) -> str:
 
     html_content = None
 
+    # Debug: List what's actually in /var/task
+    task_dir = Path("/var/task")
+    if task_dir.exists():
+        log_with_context(
+            logger, "debug", "Contents of /var/task", 
+            contents=[str(p.name) for p in task_dir.iterdir() if p.is_dir()]
+        )
+        public_dir = task_dir / "public"
+        if public_dir.exists():
+            log_with_context(
+                logger, "debug", "Contents of /var/task/public", 
+                contents=[str(p.name) for p in public_dir.iterdir()]
+            )
+
     log_with_context(
-        logger, "debug", "Searching for home template", paths_count=len(possible_paths)
+        logger, "debug", "Searching for home template", 
+        paths_count=len(possible_paths),
+        paths=[str(p) for p in possible_paths]
     )
 
     for path in possible_paths:
         try:
+            log_with_context(
+                logger, "debug", "Checking path", 
+                path=str(path), 
+                exists=path.exists(),
+                is_file=path.is_file() if path.exists() else False
+            )
             if path.exists():
                 with open(path, "r", encoding="utf-8") as f:
                     html_content = f.read()

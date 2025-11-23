@@ -1,0 +1,56 @@
+# Development
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+
+# Testing
+htmlcov/
+.coverage
+coverage.xml
+.tox/
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Git
+.git/
+.gitignore
+
+# Documentation (keep only essential)
+docs/
+
+# Data files
+data/*.csv
+data/*_bkp_*.csv
+
+# Temporary
+*.log
+*.tmp
+*.bak
+
+# Scripts (keep only if needed for runtime)
+scripts/create_api_keys_table.py
+scripts/manage_api_keys.py
+scripts/load_initial_data.py
+scripts/convert_docs_to_html.py
+scripts/vercel-ignore-build.sh
+
+# Tests
+tests/
+
+# Other
+*.md
+!README.md
+fix_linting.py
+update_cds_investing.py
