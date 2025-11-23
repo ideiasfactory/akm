@@ -28,15 +28,5 @@
     "API_VERSION": "1.0.0",
     "LOG_LEVEL": "DEBUG"
   },
-  "github": {
-    "enabled": true,
-    "autoAlias": true,
-    "silent": false   
-  },
-  "git": {
-    "deploymentEnabled": {
-      "main": true
-    }
-  },
   "ignoreCommand": "bash scripts/vercel-ignore-build.sh"
 }
