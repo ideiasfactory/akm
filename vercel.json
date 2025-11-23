@@ -16,7 +16,10 @@
   "routes": [
     {
       "src": "/favicon.ico",
-      "dest": "/public/favicon.ico"
+      "dest": "/favicon.ico"
+    },
+    {
+      "handle": "filesystem"
     },
     {
       "src": "/(.*)",
@@ -26,18 +29,11 @@
   "env": {
     "ENVIRONMENT": "production",
     "API_VERSION": "1.0.0",
-    "LOG_LEVEL": "INFO"
-  },
-  "github": {
-    "enabled": false,
-    "autoAlias": false,
-    "silent": true,
-    "autoJobCancelation": true
+    "LOG_LEVEL": "DEBUG"
   },
   "git": {
     "deploymentEnabled": {
       "main": true
     }
-  },
-  "ignoreCommand": "bash scripts/vercel-ignore-build.sh"
+  }
 }
