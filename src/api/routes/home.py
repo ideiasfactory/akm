@@ -78,16 +78,12 @@ def render_home_page(data: HomePageData) -> str:
     """
     # Try multiple paths to locate the template (prioritize public folder)
     possible_paths = [
-        # Public folder (local development) - PRIORITY
+        # Vercel serverless public path (PRIORITY for production)
+        Path("/var/task/public/home.html"),
+        # Public folder (local development)
         Path(__file__).parent.parent.parent.parent / "public" / "home.html",
         # Relative to current working directory
         Path.cwd() / "public" / "home.html",
-        # Vercel serverless public path
-        Path("/var/task/public/home.html"),
-        # Templates folder (fallback for legacy)
-        Path(__file__).parent.parent / "templates" / "home.html",
-        # Vercel serverless function path
-        Path("/var/task/src/api/templates/home.html"),
     ]
 
     html_content = None
@@ -286,14 +282,10 @@ async def favicon():
     """
     # Try multiple paths to locate the favicon
     possible_paths = [
-        # Relative to this file - templates folder (BEST for Vercel)
-        Path(__file__).parent.parent / "templates" / "favicon.ico",
-        # Vercel serverless function path
-        Path("/var/task/src/api/templates/favicon.ico"),
+        # Vercel public folder (PRIORITY for production)
+        Path("/var/task/public/favicon.ico"),
         # Public folder (local development)
         Path(__file__).parent.parent.parent.parent / "public" / "favicon.ico",
-        # Alternative paths
-        Path("/var/task/public/favicon.ico"),
         Path.cwd() / "public" / "favicon.ico",
     ]
 
@@ -327,10 +319,10 @@ async def quickstart_guide():
     """
     # Try multiple paths to locate the quickstart HTML
     possible_paths = [
+        # Vercel serverless function path (PRIORITY)
+        Path("/var/task/public/quickstart.html"),
         # Public folder (local development)
         Path(__file__).parent.parent.parent.parent / "public" / "quickstart.html",
-        # Vercel serverless function path
-        Path("/var/task/public/quickstart.html"),
         Path.cwd() / "public" / "quickstart.html",
     ]
 
@@ -365,10 +357,10 @@ async def administration_guide():
     """
     # Try multiple paths to locate the administration HTML
     possible_paths = [
+        # Vercel serverless function path (PRIORITY)
+        Path("/var/task/public/administration.html"),
         # Public folder (local development)
         Path(__file__).parent.parent.parent.parent / "public" / "administration.html",
-        # Vercel serverless function path
-        Path("/var/task/public/administration.html"),
         Path.cwd() / "public" / "administration.html",
     ]
 
@@ -397,8 +389,8 @@ async def administration_guide():
 async def api_versioning_guide():
     """Serve the API Versioning Guide HTML page."""
     possible_paths = [
-        Path(__file__).parent.parent.parent.parent / "public" / "api-versioning.html",
         Path("/var/task/public/api-versioning.html"),
+        Path(__file__).parent.parent.parent.parent / "public" / "api-versioning.html",
         Path.cwd() / "public" / "api-versioning.html",
     ]
     
@@ -415,8 +407,8 @@ async def api_versioning_guide():
 async def authentication_guide():
     """Serve the Authentication Guide HTML page."""
     possible_paths = [
-        Path(__file__).parent.parent.parent.parent / "public" / "authentication.html",
         Path("/var/task/public/authentication.html"),
+        Path(__file__).parent.parent.parent.parent / "public" / "authentication.html",
         Path.cwd() / "public" / "authentication.html",
     ]
     
@@ -433,8 +425,8 @@ async def authentication_guide():
 async def api_key_management_guide():
     """Serve the API Key Management Guide HTML page."""
     possible_paths = [
-        Path(__file__).parent.parent.parent.parent / "public" / "api-key-management.html",
         Path("/var/task/public/api-key-management.html"),
+        Path(__file__).parent.parent.parent.parent / "public" / "api-key-management.html",
         Path.cwd() / "public" / "api-key-management.html",
     ]
     
@@ -451,8 +443,8 @@ async def api_key_management_guide():
 async def deployment_guide():
     """Serve the Deployment Guide HTML page."""
     possible_paths = [
-        Path(__file__).parent.parent.parent.parent / "public" / "deployment.html",
         Path("/var/task/public/deployment.html"),
+        Path(__file__).parent.parent.parent.parent / "public" / "deployment.html",
         Path.cwd() / "public" / "deployment.html",
     ]
     
@@ -469,8 +461,8 @@ async def deployment_guide():
 async def testing_guide():
     """Serve the Testing Guide HTML page."""
     possible_paths = [
-        Path(__file__).parent.parent.parent.parent / "public" / "testing.html",
         Path("/var/task/public/testing.html"),
+        Path(__file__).parent.parent.parent.parent / "public" / "testing.html",
         Path.cwd() / "public" / "testing.html",
     ]
     
