@@ -9,7 +9,8 @@ from datetime import datetime, time as datetime_time
 
 from src.database.connection import get_session
 from src.database.repositories.api_key_repository import api_key_repository
-from src.database.models import AKMAPIKey
+from src.database.repositories.project_configuration_repository import project_configuration_repository
+from src.database.models import AKMAPIKey, AKMAPIKeyConfig
 from src.logging_config import get_logger
 
 logger = get_logger(__name__)
@@ -65,8 +66,48 @@ async def get_current_api_key(
     request.state.api_key_id = api_key_record.id
     request.state.api_key_name = api_key_record.name
     
-    if api_key_record.config:
-        request.state.api_key_config = api_key_record.config
+    # Load effective configuration (key config OR project defaults)
+    effective_config = api_key_record.config
+    
+    # If no key-specific config, try to load project defaults
+    if not effective_config:
+        project_config = await project_configuration_repository.get_by_project_id(
+            session, api_key_record.project_id
+        )
+        
+        if project_config:
+            # Create a virtual AKMAPIKeyConfig from project defaults
+            effective_config = AKMAPIKeyConfig(
+                id=0,  # Virtual config
+                api_key_id=api_key_record.id,
+                rate_limit_enabled=project_config.default_rate_limit_per_minute is not None,
+                rate_limit_requests=project_config.default_rate_limit_per_minute or 60,
+                rate_limit_window_seconds=60,  # 1 minute window
+                daily_request_limit=project_config.default_rate_limit_per_day,
+                monthly_request_limit=project_config.default_rate_limit_per_month,
+                ip_whitelist=project_config.ip_allowlist,
+                # Other fields use defaults
+                allowed_http_methods=None,
+                max_requests_per_day_reached=False,
+                max_requests_per_month_reached=False,
+                active_hours_start=None,
+                active_hours_end=None,
+                active_days_of_week=None,
+                bypass_rate_limiting=False,
+                custom_headers={},
+                allowed_endpoints=[],
+                blocked_endpoints=[],
+                request_timeout_seconds=30,
+                max_response_size_bytes=None,
+                cost_per_request=0.0,
+                monthly_cost_limit=None,
+                require_https=True,
+                auto_rotate_days=None,
+                last_rotation_at=None
+            )
+    
+    if effective_config:
+        request.state.api_key_config = effective_config
 
     logger.info(
         f"API key authenticated: {api_key_record.name}",

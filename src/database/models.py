@@ -597,3 +597,48 @@ class AKMSensitiveField(Base):
         scope = "global" if self.project_id is None else f"project_{self.project_id}"
         return f"<AKMSensitiveField({scope}, field='{self.field_name}', strategy='{self.strategy}')>"
 
+
+class AKMProjectConfiguration(Base):
+    """
+    Model for dynamic project configurations.
+    
+    Stores CORS origins, rate limits, IP allowlists, and other 
+    runtime configurations that can be updated without code deployment.
+    """
+    __tablename__ = "akm_project_configurations"
+    
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    project_id = Column(Integer, ForeignKey("akm_projects.id", ondelete="CASCADE"), nullable=False, unique=True, index=True)
+    
+    # CORS Configuration (JSON array of allowed origins)
+    cors_origins = Column(JSON, nullable=True, comment="Array of allowed CORS origins")
+    
+    # Rate Limiting Overrides
+    default_rate_limit_per_minute = Column(Integer, nullable=True, comment="Default per-minute rate limit for project keys")
+    default_rate_limit_per_hour = Column(Integer, nullable=True, comment="Default per-hour rate limit for project keys")
+    default_rate_limit_per_day = Column(Integer, nullable=True, comment="Default per-day rate limit for project keys")
+    default_rate_limit_per_month = Column(Integer, nullable=True, comment="Default per-month rate limit for project keys")
+    
+    # IP Allowlist (JSON array of CIDR ranges)
+    ip_allowlist = Column(JSON, nullable=True, comment="Array of allowed IP addresses/CIDR ranges")
+    
+    # Webhook Configuration
+    webhook_timeout_seconds = Column(Integer, default=30, nullable=False, comment="Webhook request timeout")
+    webhook_max_retries = Column(Integer, default=3, nullable=False, comment="Maximum webhook retry attempts")
+    
+    # Custom Sensitive Fields (JSON array)
+    custom_sensitive_fields = Column(JSON, nullable=True, comment="Project-specific sensitive field names")
+    
+    # Metadata
+    config_metadata = Column(JSON, nullable=True, comment="Additional configuration metadata")
+    
+    # Timestamps
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now(), nullable=True)
+    
+    # Relationships
+    project = relationship("AKMProject", backref="configuration", uselist=False)
+    
+    def __repr__(self) -> str:
+        return f"<AKMProjectConfiguration(project_id={self.project_id})>"
+

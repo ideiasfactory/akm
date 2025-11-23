@@ -28,7 +28,7 @@ class Settings(BaseSettings):
 
     # Security
     secret_key: str = "insecure-default-key-change-this"
-    cors_origins: str = "http://localhost:3000,http://localhost:8000"
+    cors_origins: str = "http://localhost:3000,http://localhost:8000,http://localhost:8002,https://akm.ideiasfactory.tech,https://akm-green.vercel.app"
 
     # Logging
     log_level: str = "INFO"

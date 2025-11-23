@@ -3,7 +3,6 @@ from datetime import datetime
 import uuid
 import traceback
 from fastapi import FastAPI, Request, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
@@ -24,9 +23,12 @@ from src.api import (
 )
 # Import v1 API router
 from src.api.v1 import v1_router
+# Import project configurations router
+from src.api.routes.project_configurations import router as project_configurations_router
 from src.api.versioning import LATEST_VERSION, get_deprecation_warning
 from src.middleware import RateLimitMiddleware, VersioningMiddleware
 from src.middleware.audit import AuditMiddleware
+from src.middleware.cors import DynamicCORSMiddleware
 from src.config import settings
 from src.logging_config import get_logger, log_with_context
 
@@ -94,6 +96,10 @@ app = FastAPI(
         {
             "name": "Sensitive Fields",
             "description": "Manage sensitive field sanitization rules",
+        },
+        {
+            "name": "Project Configurations",
+            "description": "Dynamic project configuration (CORS, rate limits, IP allowlist, webhooks)",
         },
     ],
 )
@@ -337,14 +343,8 @@ async def correlation_id_middleware(request: Request, call_next):
     return response
 
 
-# Configure CORS using settings
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=settings.cors_origins_list,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# Configure Dynamic CORS (project-specific origins)
+app.add_middleware(DynamicCORSMiddleware)
 
 # Add audit middleware (before rate limiting)
 app.add_middleware(AuditMiddleware)
@@ -380,6 +380,7 @@ app.include_router(alerts_router, prefix=akm_prefix, include_in_schema=False)
 app.include_router(openapi_scopes_router, prefix=akm_prefix, include_in_schema=False)
 app.include_router(audit_router, prefix=akm_prefix, include_in_schema=False)
 app.include_router(sensitive_fields_router, prefix=akm_prefix, include_in_schema=False)
+app.include_router(project_configurations_router, prefix=akm_prefix, include_in_schema=False)
 
 # Log application ready
 log_with_context(

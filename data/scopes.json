@@ -1,5 +1,5 @@
 {
-  "version": "2.0.0",
+  "version": "2.1.0",
   "scopes": [
     {
       "scope_name": "akm:projects:read",
@@ -11,6 +11,42 @@
       "scope_name": "akm:projects:write",
       "description": "Create and update projects",
       "category": "projects",
+      "is_active": true
+    },
+    {
+      "scope_name": "akm:projects:delete",
+      "description": "Delete projects",
+      "category": "projects",
+      "is_active": true
+    },
+    {
+      "scope_name": "akm:projects:*",
+      "description": "Full project management access",
+      "category": "projects",
+      "is_active": true
+    },
+    {
+      "scope_name": "akm:projects:config:read",
+      "description": "View project dynamic configurations (CORS, rate limits, IP allowlist)",
+      "category": "project_configurations",
+      "is_active": true
+    },
+    {
+      "scope_name": "akm:projects:config:write",
+      "description": "Create and update project dynamic configurations",
+      "category": "project_configurations",
+      "is_active": true
+    },
+    {
+      "scope_name": "akm:projects:config:delete",
+      "description": "Delete project configurations (reset to defaults)",
+      "category": "project_configurations",
+      "is_active": true
+    },
+    {
+      "scope_name": "akm:projects:config:*",
+      "description": "Full project configuration management",
+      "category": "project_configurations",
       "is_active": true
     },
     {
@@ -41,18 +77,6 @@
       "scope_name": "akm:sensitive-fields:*",
       "description": "Full CRUD access to sensitive field configurations",
       "category": "sensitive_fields",
-      "is_active": true
-    },
-    {
-      "scope_name": "akm:projects:delete",
-      "description": "Delete projects",
-      "category": "projects",
-      "is_active": true
-    },
-    {
-      "scope_name": "akm:projects:*",
-      "description": "Full project management access",
-      "category": "projects",
       "is_active": true
     },
     {

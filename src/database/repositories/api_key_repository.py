@@ -12,7 +12,7 @@ import secrets
 
 from sqlalchemy import select, and_
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import selectinload
+from sqlalchemy.orm import selectinload, Session
 
 from src.database.models import (
     AKMAPIKey,
@@ -100,6 +100,46 @@ class APIKeyRepository:
         await session.refresh(api_key_record)
 
         return api_key_record
+    
+    def get_key_by_value_sync(
+        self,
+        session: Session,
+        key: str
+    ) -> Optional[AKMAPIKey]:
+        """
+        Get API key by value (sync version for middleware).
+        
+        Args:
+            session: Database session
+            key: Plain text API key
+            
+        Returns:
+            APIKey record if found and active, None otherwise
+        """
+        try:
+            key_hash = self.hash_key(key)
+            
+            stmt = select(AKMAPIKey).where(
+                and_(
+                    AKMAPIKey.key_hash == key_hash,
+                    AKMAPIKey.is_active.is_(True)
+                )
+            )
+            
+            result = session.execute(stmt)
+            api_key_record = result.scalar_one_or_none()
+            
+            if not api_key_record:
+                return None
+            
+            # Check expiration
+            if api_key_record.is_expired():
+                return None
+            
+            return api_key_record
+            
+        except Exception:
+            return None
 
     async def create_key(
         self,
