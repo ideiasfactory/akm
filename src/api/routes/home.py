@@ -78,7 +78,11 @@ def render_home_page(data: HomePageData) -> str:
     """
     # Try multiple paths to locate the template (prioritize public folder)
     possible_paths = [
-        # Vercel serverless public path (PRIORITY for production)
+        # Static folder inside src/api (BEST for Vercel - always included)
+        Path(__file__).parent.parent / "static" / "home.html",
+        # Vercel serverless static path
+        Path("/var/task/src/api/static/home.html"),
+        # Vercel serverless public path
         Path("/var/task/public/home.html"),
         # Public folder (local development)
         Path(__file__).parent.parent.parent.parent / "public" / "home.html",
@@ -91,16 +95,25 @@ def render_home_page(data: HomePageData) -> str:
     # Debug: List what's actually in /var/task
     task_dir = Path("/var/task")
     if task_dir.exists():
-        log_with_context(
-            logger, "debug", "Contents of /var/task", 
-            contents=[str(p.name) for p in task_dir.iterdir() if p.is_dir()]
-        )
-        public_dir = task_dir / "public"
-        if public_dir.exists():
+        try:
+            contents = [str(p.name) for p in task_dir.iterdir()]
             log_with_context(
-                logger, "debug", "Contents of /var/task/public", 
-                contents=[str(p.name) for p in public_dir.iterdir()]
+                logger, "debug", "Contents of /var/task", 
+                contents=contents,
+                count=len(contents)
             )
+            public_dir = task_dir / "public"
+            if public_dir.exists():
+                public_contents = [str(p.name) for p in public_dir.iterdir()]
+                log_with_context(
+                    logger, "debug", "Contents of /var/task/public", 
+                    contents=public_contents,
+                    count=len(public_contents)
+                )
+            else:
+                log_with_context(logger, "warning", "/var/task/public does not exist")
+        except Exception as e:
+            log_with_context(logger, "error", "Error listing /var/task", error=str(e))
 
     log_with_context(
         logger, "debug", "Searching for home template", 
@@ -304,9 +317,11 @@ async def favicon():
     """
     # Try multiple paths to locate the favicon
     possible_paths = [
-        # Vercel public folder (PRIORITY for production)
+        # Static folder inside src/api (BEST for Vercel)
+        Path(__file__).parent.parent / "static" / "favicon.ico",
+        Path("/var/task/src/api/static/favicon.ico"),
+        # Public folder
         Path("/var/task/public/favicon.ico"),
-        # Public folder (local development)
         Path(__file__).parent.parent.parent.parent / "public" / "favicon.ico",
         Path.cwd() / "public" / "favicon.ico",
     ]
@@ -341,9 +356,9 @@ async def quickstart_guide():
     """
     # Try multiple paths to locate the quickstart HTML
     possible_paths = [
-        # Vercel serverless function path (PRIORITY)
+        Path(__file__).parent.parent / "static" / "quickstart.html",
+        Path("/var/task/src/api/static/quickstart.html"),
         Path("/var/task/public/quickstart.html"),
-        # Public folder (local development)
         Path(__file__).parent.parent.parent.parent / "public" / "quickstart.html",
         Path.cwd() / "public" / "quickstart.html",
     ]
@@ -379,10 +394,10 @@ async def administration_guide():
     """
     # Try multiple paths to locate the administration HTML
     possible_paths = [
-        # Vercel serverless function path (PRIORITY)
+        Path(__file__).parent.parent / "static" / "administration.html",
+        Path("/var/task/src/api/static/administration.html"),
         Path("/var/task/public/administration.html"),
-        # Public folder (local development)
-        Path(__file__).parent.parent.parent.parent / "public" / "administration.html",
+        Path(__file__).parent.parent.parent.parent / "public" / "administration.html"),
         Path.cwd() / "public" / "administration.html",
     ]
 
@@ -411,6 +426,8 @@ async def administration_guide():
 async def api_versioning_guide():
     """Serve the API Versioning Guide HTML page."""
     possible_paths = [
+        Path(__file__).parent.parent / "static" / "api-versioning.html",
+        Path("/var/task/src/api/static/api-versioning.html"),
         Path("/var/task/public/api-versioning.html"),
         Path(__file__).parent.parent.parent.parent / "public" / "api-versioning.html",
         Path.cwd() / "public" / "api-versioning.html",
@@ -429,6 +446,8 @@ async def api_versioning_guide():
 async def authentication_guide():
     """Serve the Authentication Guide HTML page."""
     possible_paths = [
+        Path(__file__).parent.parent / "static" / "authentication.html",
+        Path("/var/task/src/api/static/authentication.html"),
         Path("/var/task/public/authentication.html"),
         Path(__file__).parent.parent.parent.parent / "public" / "authentication.html",
         Path.cwd() / "public" / "authentication.html",
@@ -447,6 +466,8 @@ async def authentication_guide():
 async def api_key_management_guide():
     """Serve the API Key Management Guide HTML page."""
     possible_paths = [
+        Path(__file__).parent.parent / "static" / "api-key-management.html",
+        Path("/var/task/src/api/static/api-key-management.html"),
         Path("/var/task/public/api-key-management.html"),
         Path(__file__).parent.parent.parent.parent / "public" / "api-key-management.html",
         Path.cwd() / "public" / "api-key-management.html",
@@ -465,6 +486,8 @@ async def api_key_management_guide():
 async def deployment_guide():
     """Serve the Deployment Guide HTML page."""
     possible_paths = [
+        Path(__file__).parent.parent / "static" / "deployment.html",
+        Path("/var/task/src/api/static/deployment.html"),
         Path("/var/task/public/deployment.html"),
         Path(__file__).parent.parent.parent.parent / "public" / "deployment.html",
         Path.cwd() / "public" / "deployment.html",
@@ -483,6 +506,8 @@ async def deployment_guide():
 async def testing_guide():
     """Serve the Testing Guide HTML page."""
     possible_paths = [
+        Path(__file__).parent.parent / "static" / "testing.html",
+        Path("/var/task/src/api/static/testing.html"),
         Path("/var/task/public/testing.html"),
         Path(__file__).parent.parent.parent.parent / "public" / "testing.html",
         Path.cwd() / "public" / "testing.html",

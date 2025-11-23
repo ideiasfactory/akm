@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quick Start Guide - API Key Management Service</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --accent: #f093fb;
+            --dark: #1a1a2e;
+            --light: #f8f9fa;
+            --code-bg: #282c34;
+            --border: #e0e0e0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .nav {
+            background: var(--dark);
+            padding: 15px 40px;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .nav a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .nav a:hover {
+            background: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--dark);
+            margin: 30px 0 15px 0;
+            line-height: 1.3;
+        }
+
+        h1 { font-size: 2.5em; border-bottom: 3px solid var(--primary); padding-bottom: 10px; }
+        h2 { font-size: 2em; border-bottom: 2px solid var(--border); padding-bottom: 8px; margin-top: 40px; }
+        h3 { font-size: 1.5em; color: var(--primary); }
+        h4 { font-size: 1.3em; }
+
+        p {
+            margin: 15px 0;
+            line-height: 1.8;
+        }
+
+        a {
+            color: var(--primary);
+            text-decoration: none;
+            border-bottom: 1px dotted var(--primary);
+        }
+
+        a:hover {
+            color: var(--secondary);
+            border-bottom: 1px solid var(--secondary);
+        }
+
+        code {
+            background: #f4f4f4;
+            padding: 3px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #e83e8c;
+        }
+
+        pre {
+            background: var(--code-bg);
+            color: #abb2bf;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+            border-left: 4px solid var(--primary);
+        }
+
+        pre code {
+            background: none;
+            color: inherit;
+            padding: 0;
+            font-size: 0.95em;
+        }
+
+        blockquote {
+            border-left: 4px solid var(--primary);
+            padding: 15px 20px;
+            margin: 20px 0;
+            background: #f8f9fa;
+            font-style: italic;
+        }
+
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+
+        li {
+            margin: 8px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .success {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .info {
+            background: #d1ecf1;
+            border-left: 4px solid #17a2b8;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .footer {
+            background: var(--dark);
+            color: white;
+            padding: 30px 40px;
+            text-align: center;
+        }
+
+        .footer a {
+            color: var(--accent);
+            border-bottom: 1px dotted var(--accent);
+        }
+
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--primary);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            font-size: 24px;
+        }
+
+        .back-to-top:hover {
+            background: var(--secondary);
+            transform: translateY(-5px);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                border-radius: 0;
+            }
+
+            .header {
+                padding: 30px 20px;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .nav {
+                padding: 15px 20px;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            pre {
+                padding: 15px;
+                font-size: 0.85em;
+            }
+        }
+
+        /* Syntax highlighting for code blocks */
+        .codehilite .k { color: #c678dd; } /* keyword */
+        .codehilite .s { color: #98c379; } /* string */
+        .codehilite .n { color: #e06c75; } /* name */
+        .codehilite .c { color: #5c6370; font-style: italic; } /* comment */
+        .codehilite .m { color: #d19a66; } /* number */
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔐 Quick Start Guide</h1>
+            <p>API Key Management Service</p>
+        </div>
+
+        <div class="nav">
+            <a href="/">🏠 Home</a>
+            <a href="/quickstart">🚀 Quick Start</a>
+            <a href="/administration">🔐 Administration</a>
+            <a href="/docs">📚 API Docs</a>
+            <a href="/redoc">📖 ReDoc</a>
+        </div>
+
+        <div class="content">
+<h1 id="quick-start-guide-client-integration">🚀 Quick Start Guide - Client Integration</h1>
+<p>Welcome! This guide will help you integrate your application with the API Key Management Service. You'll learn how to create credentials, define scopes, authenticate requests, and secure your routes.</p>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ul>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#step-1-receive-your-credentials">Step 1: Receive Your Credentials</a></li>
+<li><a href="#step-2-create-your-scopes">Step 2: Create Your Scopes</a></li>
+<li><a href="#step-3-generate-additional-api-keys">Step 3: Generate Additional API Keys</a></li>
+<li><a href="#step-4-import-openapiswagger-spec">Step 4: Import OpenAPI/Swagger Spec</a></li>
+<li><a href="#step-5-authenticate-your-requests">Step 5: Authenticate Your Requests</a></li>
+<li><a href="#step-6-instrument-your-routes">Step 6: Instrument Your Routes</a></li>
+<li><a href="#advanced-topics">Advanced Topics</a></li>
+<li><a href="#code-examples">Code Examples</a></li>
+<li><a href="#troubleshooting">Troubleshooting</a></li>
+</ul>
+<hr />
+<h2 id="overview">Overview</h2>
+<p>The API Key Management Service provides a centralized way to manage API keys, scopes, and permissions for your applications.</p>
+<h3 id="before-you-start">🔐 Before You Start</h3>
+<p>⚠️ <strong>Note</strong>: The service administrator creates your project and generates your initial project admin API key. You'll receive these credentials via email. With this admin key, you can manage your own scopes, import your API specification, and generate additional keys.</p>
+<p>Behind the scenes, the administrator:
+1. Creates your project in the system
+2. Generates your project admin API key
+3. Sends you the credentials securely</p>
+<p>Once you receive your credentials, you can:
+- Create and manage your own scopes
+- Import your OpenAPI/Swagger spec to auto-generate scopes
+- Generate additional API keys for different environments
+- Authenticate your API requests
+- Instrument your application routes</p>
+<p>👉 <strong>Administrators</strong>: See the <a href="/administration">Administration Guide</a> for the complete onboarding process.</p>
+<h3 id="what-youll-accomplish">What You'll Accomplish</h3>
+<p>Once you receive your credentials from the administrator, you'll:</p>
+<ol>
+<li>✅ <strong>Receive your project admin API key</strong> from the administrator</li>
+<li><strong>Create and manage scopes</strong> for your application</li>
+<li><strong>Import your API spec</strong> to auto-configure routes and scopes (optional)</li>
+<li><strong>Generate additional keys</strong> with specific permissions</li>
+<li><strong>Authenticate requests</strong> using your API keys</li>
+<li><strong>Secure your routes</strong> with middleware and decorators</li>
+<li><strong>Monitor usage</strong> and manage your keys</li>
+</ol>
+<p><strong>Base URL</strong>: <code>https://your-service.com/akm</code> (or <code>http://localhost:8002/akm</code> for local development)</p>
+<p><strong>Your Admin Contact</strong>: Contact your service administrator for initial setup and credentials.</p>
+<hr />
+<h2 id="step-1-receive-your-credentials">Step 1: Receive Your Credentials</h2>
+<p>⚠️ <strong>This step is performed by the service administrator, not by you.</strong></p>
+<p>The administrator will create your project and provide you with your project admin API key.</p>
+<h3 id="what-youll-receive">What You'll Receive</h3>
+<p>You should receive an email or secure message containing:</p>
+<div class="codehilite"><pre><span></span><code><span class="nt">Project ID</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">proj_abc123xyz</span>
+<span class="nt">Project Admin API Key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">akm_live_s3cr3tk3yh3r3d0nts4v3m3</span>
+<span class="nt">Rate Limit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10,000 requests/hour</span>
+<span class="nt">Expires</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2026-11-23 (or never)</span>
+</code></pre></div>
+
+<h3 id="what-the-admin-does">What the Admin Does</h3>
+<p>Behind the scenes, the administrator runs:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Admin creates your project</span>
+curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="s2">&quot;https://your-service.com/akm/v1/projects&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: akm_admin_...&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{</span>
+<span class="s1">    &quot;name&quot;: &quot;my-app-production&quot;,</span>
+<span class="s1">    &quot;description&quot;: &quot;Production environment for My App&quot;</span>
+<span class="s1">  }&#39;</span>
+
+<span class="c1"># Admin generates your project admin API key</span>
+curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="s2">&quot;https://your-service.com/akm/v1/keys&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: akm_admin_...&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{</span>
+<span class="s1">    &quot;project_id&quot;: &quot;proj_abc123xyz&quot;,</span>
+<span class="s1">    &quot;name&quot;: &quot;project-admin-key&quot;,</span>
+<span class="s1">    &quot;rate_limit&quot;: 10000</span>
+<span class="s1">  }&#39;</span>
+</code></pre></div>
+
+<p>With this project admin API key, you can now manage your own scopes and generate additional keys.</p>
+<h3 id="verify-your-access">Verify Your Access</h3>
+<p>Once you receive credentials, verify they work:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Test authentication</span>
+curl<span class="w"> </span>-X<span class="w"> </span>GET<span class="w"> </span><span class="s2">&quot;https://your-service.com/akm/v1/keys&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: akm_live_s3cr3tk3yh3r3d0nts4v3m3&quot;</span>
+</code></pre></div>
+
+<p><strong>Success!</strong> If you get a <code>200 OK</code> response with your key details, you're ready to proceed.</p>
+<p><strong>Need credentials?</strong> Contact your service administrator or email: <code>admin@your-service.com</code></p>
+<hr />
+<h2 id="step-2-create-your-scopes">Step 2: Create Your Scopes</h2>
+<p>With your project admin API key, you can now create scopes that define what actions your API keys can perform.</p>
+<h3 id="option-a-create-scopes-manually">Option A: Create Scopes Manually</h3>
+<div class="codehilite"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="s2">&quot;https://your-service.com/akm/v1/scopes&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json\&quot; \</span>
+<span class="s2">  -H &quot;</span>X-API-Key:<span class="w"> </span>akm_live_s3cr3tk3yh3r3d0nts4v3m3<span class="s2">&quot; \</span>
+<span class="s2">  -d &#39;{</span>
+<span class="s2">    &quot;</span>name<span class="s2">&quot;: &quot;</span>users:read<span class="s2">&quot;,</span>
+<span class="s2">    &quot;</span>description<span class="s2">&quot;: &quot;</span>View<span class="w"> </span>user<span class="w"> </span>information<span class="s2">&quot;,</span>
+<span class="s2">    &quot;</span>project_id<span class="s2">&quot;: &quot;</span>proj_abc123xyz<span class="s2">&quot;</span>
+<span class="s2">  }&#39;</span>
+</code></pre></div>
+
+<h3 id="option-b-import-from-openapiswagger-spec">Option B: Import from OpenAPI/Swagger Spec</h3>
+<p>Automatically generate scopes from your API specification:</p>
+<div class="codehilite"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="s2">&quot;https://your-service.com/akm/v1/import/openapi&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: akm_live_s3cr3tk3yh3r3d0nts4v3m3&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{</span>
+<span class="s1">    &quot;project_id&quot;: &quot;proj_abc123xyz&quot;,</span>
+<span class="s1">    &quot;spec_url&quot;: &quot;https://your-api.com/openapi.json&quot;,</span>
+<span class="s1">    &quot;auto_create_scopes&quot;: true,</span>
+<span class="s1">    &quot;scope_prefix&quot;: &quot;api&quot;</span>
+<span class="s1">  }&#39;</span>
+</code></pre></div>
+
+<p>This will:
+- Parse your OpenAPI spec
+- Generate scopes for each endpoint (e.g., <code>GET /users</code> → <code>api:users:read</code>)
+- Create them in your project
+- Return a summary of created scopes</p>
+<h3 id="list-your-created-scopes">List Your Created Scopes</h3>
+<div class="codehilite"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>GET<span class="w"> </span><span class="s2">&quot;https://your-service.com/akm/v1/scopes?project_id=proj_abc123xyz&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: akm_live_s3cr3tk3yh3r3d0nts4v3m3&quot;</span>
+</code></pre></div>
+
+<p><strong>Response Example:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;scopes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;scope_001&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;users:read&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;View user information&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;scope_002&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;users:write&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Create and update users&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<hr />
+<h2 id="step-3-generate-additional-api-keys">Step 3: Generate Additional API Keys</h2>
+<p>Now that you have scopes defined, you can create additional API keys with specific scopes for different environments or use cases.</p>
+<h3 id="development-key-read-only">Development Key (Read-Only)</h3>
+<div class="codehilite"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="s2">&quot;https://your-service.com/akm/v1/keys&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: akm_live_s3cr3tk3yh3r3d0nts4v3m3&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{</span>
+<span class="s1">    &quot;project_id&quot;: &quot;proj_abc123xyz&quot;,</span>
+<span class="s1">    &quot;name&quot;: &quot;dev-readonly-key&quot;,</span>
+<span class="s1">    &quot;scopes&quot;: [&quot;users:read&quot;, &quot;orders:read&quot;],</span>
+<span class="s1">    &quot;rate_limit&quot;: 100,</span>
+<span class="s1">    &quot;expires_at&quot;: &quot;2026-12-31T23:59:59Z&quot;</span>
+<span class="s1">  }&#39;</span>
+</code></pre></div>
+
+<h3 id="staging-key-read-write">Staging Key (Read + Write)</h3>
+<div class="codehilite"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="s2">&quot;https://your-service.com/akm/v1/keys&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: akm_live_s3cr3tk3yh3r3d0nts4v3m3&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{</span>
+<span class="s1">    &quot;project_id&quot;: &quot;proj_abc123xyz&quot;,</span>
+<span class="s1">    &quot;name&quot;: &quot;staging-api-key&quot;,</span>
+<span class="s1">    &quot;scopes&quot;: [&quot;users:read&quot;, &quot;users:write&quot;, &quot;orders:read&quot;, &quot;orders:write&quot;],</span>
+<span class="s1">    &quot;rate_limit&quot;: 5000,</span>
+<span class="s1">    &quot;expires_at&quot;: &quot;2026-06-30T23:59:59Z&quot;</span>
+<span class="s1">  }&#39;</span>
+</code></pre></div>
+
+<h3 id="response">Response</h3>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;key_xyz789abc&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;key&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;akm_live_x9y8z7w6v5u4t3s2r1q0p9o8n7m6l5k4&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;staging-api-key&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;scopes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;users:read&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;users:write&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;orders:read&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;orders:write&quot;</span><span class="p">],</span>
+<span class="w">  </span><span class="nt">&quot;rate_limit&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">5000</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;created_at&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-11-23T10:15:00Z&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;expires_at&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2026-06-30T23:59:59Z&quot;</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>⚠️ <strong>Important</strong>: Save the <code>key</code> value immediately. It won't be shown again!</p>
+<h3 id="list-your-keys">List Your Keys</h3>
+<div class="codehilite"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>GET<span class="w"> </span><span class="s2">&quot;https://your-service.com/akm/v1/keys?project_id=proj_abc123xyz&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: akm_live_s3cr3tk3yh3r3d0nts4v3m3&quot;</span>
+</code></pre></div>
+
+<h3 id="revoke-a-key">Revoke a Key</h3>
+<div class="codehilite"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>DELETE<span class="w"> </span><span class="s2">&quot;https://your-service.com/akm/v1/keys/key_xyz789abc&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: akm_live_s3cr3tk3yh3r3d0nts4v3m3&quot;</span>
+</code></pre></div>
+
+<hr />
+<h2 id="step-4-import-openapiswagger-spec">Step 4: Import OpenAPI/Swagger Spec</h2>
+<p>Automatically configure routes and scopes by importing your OpenAPI/Swagger specification.</p>
+<h3 id="export-your-swagger-spec">Export Your Swagger Spec</h3>
+<p>If using FastAPI:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Your application</span>
+<span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">FastAPI</span>
+<span class="kn">import</span> <span class="nn">json</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;My Application API&quot;</span><span class="p">)</span>
+
+<span class="c1"># ... your routes ...</span>
+
+<span class="c1"># Generate OpenAPI spec</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;openapi.json&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">openapi</span><span class="p">(),</span> <span class="n">f</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+</code></pre></div>
+
+<p>Or visit: <code>http://your-app.com/openapi.json</code></p>
+<h3 id="import-to-api-key-management">Import to API Key Management</h3>
+<div class="codehilite"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="s2">&quot;https://your-service.com/akm/v1/import/openapi&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: akm_live_s3cr3tk3yh3r3d0nts4v3m3&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{</span>
+<span class="s1">    &quot;project_id&quot;: &quot;proj_abc123xyz&quot;,</span>
+<span class="s1">    &quot;spec_url&quot;: &quot;https://your-app.com/openapi.json&quot;</span>
+<span class="s1">  }&#39;</span>
+</code></pre></div>
+
+<p>Or upload file directly:</p>
+<div class="codehilite"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="s2">&quot;https://your-service.com/akm/v1/import/openapi&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: akm_live_s3cr3tk3yh3r3d0nts4v3m3&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: multipart/form-data&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-F<span class="w"> </span><span class="s2">&quot;project_id=proj_abc123xyz&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-F<span class="w"> </span><span class="s2">&quot;file=@openapi.json&quot;</span>
+</code></pre></div>
+
+<h3 id="what-gets-imported">What Gets Imported</h3>
+<p>The system automatically extracts:</p>
+<ul>
+<li><strong>Routes</strong>: <code>/users</code>, <code>/users/{id}</code>, <code>/orders</code>, etc.</li>
+<li><strong>HTTP Methods</strong>: <code>GET</code>, <code>POST</code>, <code>PUT</code>, <code>DELETE</code></li>
+<li><strong>Scopes</strong>: Generated from operation IDs or tags</li>
+<li><strong>Rate Limits</strong>: From <code>x-rate-limit</code> extensions (if present)</li>
+</ul>
+<h3 id="response_1">Response</h3>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;imported&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;routes&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">25</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;scopes&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;operations&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">45</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;scopes_created&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="s2">&quot;users:read&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;users:write&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;orders:read&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;orders:write&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;products:read&quot;</span>
+<span class="w">  </span><span class="p">],</span>
+<span class="w">  </span><span class="nt">&quot;routes_mapped&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span><span class="nt">&quot;path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/users&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;methods&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;POST&quot;</span><span class="p">],</span><span class="w"> </span><span class="nt">&quot;scopes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;users:read&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;users:write&quot;</span><span class="p">]},</span>
+<span class="w">    </span><span class="p">{</span><span class="nt">&quot;path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/users/{id}&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;methods&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;PUT&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;DELETE&quot;</span><span class="p">],</span><span class="w"> </span><span class="nt">&quot;scopes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;users:read&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;users:write&quot;</span><span class="p">]},</span>
+<span class="w">    </span><span class="p">{</span><span class="nt">&quot;path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/orders&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;methods&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;POST&quot;</span><span class="p">],</span><span class="w"> </span><span class="nt">&quot;scopes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;orders:read&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;orders:write&quot;</span><span class="p">]}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<hr />
+<h2 id="step-5-authenticate-your-requests">Step 5: Authenticate Your Requests</h2>
+<p>Use your API key in the <code>X-API-Key</code> header to authenticate requests.</p>
+<h3 id="basic-authentication">Basic Authentication</h3>
+<div class="codehilite"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>GET<span class="w"> </span><span class="s2">&quot;https://your-app.com/api/users&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: akm_live_s3cr3tk3yh3r3d0nts4v3m3&quot;</span>
+</code></pre></div>
+
+<h3 id="python-example">Python Example</h3>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">httpx</span>
+
+<span class="n">API_KEY</span> <span class="o">=</span> <span class="s2">&quot;akm_live_s3cr3tk3yh3r3d0nts4v3m3&quot;</span>
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">get_users</span><span class="p">():</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">httpx</span><span class="o">.</span><span class="n">AsyncClient</span><span class="p">()</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="s2">&quot;https://your-app.com/api/users&quot;</span><span class="p">,</span>
+            <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;X-API-Key&quot;</span><span class="p">:</span> <span class="n">API_KEY</span><span class="p">}</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+<span class="n">users</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_users</span><span class="p">()</span>
+</code></pre></div>
+
+<h3 id="javascripttypescript-example">JavaScript/TypeScript Example</h3>
+<div class="codehilite"><pre><span></span><code><span class="kd">const</span><span class="w"> </span><span class="nx">API_KEY</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;akm_live_s3cr3tk3yh3r3d0nts4v3m3&quot;</span><span class="p">;</span>
+
+<span class="k">async</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">getUsers</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">fetch</span><span class="p">(</span><span class="s2">&quot;https://your-app.com/api/users&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">headers</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="s2">&quot;X-API-Key&quot;</span><span class="o">:</span><span class="w"> </span><span class="nx">API_KEY</span><span class="p">,</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">  </span><span class="p">});</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">response</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">users</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">getUsers</span><span class="p">();</span>
+</code></pre></div>
+
+<h3 id="handling-authentication-errors">Handling Authentication Errors</h3>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">httpx</span>
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">authenticated_request</span><span class="p">(</span><span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">api_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">httpx</span><span class="o">.</span><span class="n">AsyncClient</span><span class="p">()</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="n">url</span><span class="p">,</span>
+            <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;X-API-Key&quot;</span><span class="p">:</span> <span class="n">api_key</span><span class="p">}</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">401</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Invalid API key&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">403</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Insufficient permissions (scope)&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">429</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Rate limit exceeded&quot;</span><span class="p">)</span>
+
+        <span class="n">response</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+</code></pre></div>
+
+<hr />
+<h2 id="step-6-instrument-your-routes">Step 6: Instrument Your Routes</h2>
+<p>Add authentication and authorization to your application routes.</p>
+<h3 id="fastapi-integration">FastAPI Integration</h3>
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">FastAPI</span><span class="p">,</span> <span class="n">HTTPException</span><span class="p">,</span> <span class="n">Security</span><span class="p">,</span> <span class="n">Depends</span>
+<span class="kn">from</span> <span class="nn">fastapi.security</span> <span class="kn">import</span> <span class="n">APIKeyHeader</span>
+<span class="kn">import</span> <span class="nn">httpx</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">()</span>
+
+<span class="c1"># API Key header</span>
+<span class="n">api_key_header</span> <span class="o">=</span> <span class="n">APIKeyHeader</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;X-API-Key&quot;</span><span class="p">)</span>
+
+<span class="c1"># Validation endpoint URL</span>
+<span class="n">VALIDATION_URL</span> <span class="o">=</span> <span class="s2">&quot;https://your-service.com/akm/v1/keys/validate&quot;</span>
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">validate_api_key</span><span class="p">(</span>
+    <span class="n">api_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Security</span><span class="p">(</span><span class="n">api_key_header</span><span class="p">),</span>
+    <span class="n">required_scopes</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Validate API key and check scopes&quot;&quot;&quot;</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">httpx</span><span class="o">.</span><span class="n">AsyncClient</span><span class="p">()</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+            <span class="n">VALIDATION_URL</span><span class="p">,</span>
+            <span class="n">json</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;api_key&quot;</span><span class="p">:</span> <span class="n">api_key</span><span class="p">,</span>
+                <span class="s2">&quot;required_scopes&quot;</span><span class="p">:</span> <span class="n">required_scopes</span> <span class="ow">or</span> <span class="p">[]</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="mi">200</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span>
+                <span class="n">status_code</span><span class="o">=</span><span class="mi">401</span><span class="p">,</span>
+                <span class="n">detail</span><span class="o">=</span><span class="s2">&quot;Invalid or expired API key&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">data</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;valid&quot;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span>
+                <span class="n">status_code</span><span class="o">=</span><span class="mi">401</span><span class="p">,</span>
+                <span class="n">detail</span><span class="o">=</span><span class="s2">&quot;Invalid API key&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;has_required_scopes&quot;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span>
+                <span class="n">status_code</span><span class="o">=</span><span class="mi">403</span><span class="p">,</span>
+                <span class="n">detail</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Missing required scopes: </span><span class="si">{</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;missing_scopes&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">data</span>
+
+<span class="c1"># Protected route - any authenticated user</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/api/users&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">get_users</span><span class="p">(</span><span class="n">auth</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">(</span><span class="n">validate_api_key</span><span class="p">)):</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;users&quot;</span><span class="p">:</span> <span class="p">[</span><span class="o">...</span><span class="p">],</span> <span class="s2">&quot;authenticated_as&quot;</span><span class="p">:</span> <span class="n">auth</span><span class="p">[</span><span class="s2">&quot;project_id&quot;</span><span class="p">]}</span>
+
+<span class="c1"># Protected route - requires specific scope</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/api/users&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">create_user</span><span class="p">(</span>
+    <span class="n">user_data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+    <span class="n">auth</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">validate_api_key</span><span class="p">(</span><span class="n">required_scopes</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;users:write&quot;</span><span class="p">]))</span>
+<span class="p">):</span>
+    <span class="c1"># Only keys with &quot;users:write&quot; scope can access</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;User created&quot;</span><span class="p">,</span> <span class="s2">&quot;user&quot;</span><span class="p">:</span> <span class="n">user_data</span><span class="p">}</span>
+
+<span class="c1"># Admin-only route</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="s2">&quot;/api/users/</span><span class="si">{user_id}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">delete_user</span><span class="p">(</span>
+    <span class="n">user_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">auth</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">validate_api_key</span><span class="p">(</span><span class="n">required_scopes</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;admin&quot;</span><span class="p">]))</span>
+<span class="p">):</span>
+    <span class="c1"># Only keys with &quot;admin&quot; scope can access</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;User </span><span class="si">{</span><span class="n">user_id</span><span class="si">}</span><span class="s2"> deleted&quot;</span><span class="p">}</span>
+</code></pre></div>
+
+<h3 id="flask-integration">Flask Integration</h3>
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">jsonify</span>
+<span class="kn">import</span> <span class="nn">httpx</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="n">VALIDATION_URL</span> <span class="o">=</span> <span class="s2">&quot;https://your-service.com/akm/v1/keys/validate&quot;</span>
+
+<span class="k">def</span> <span class="nf">validate_api_key</span><span class="p">(</span><span class="n">required_scopes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Decorator for API key validation&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">wrapped</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="n">api_key</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;X-API-Key&quot;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">api_key</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">jsonify</span><span class="p">({</span><span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="s2">&quot;Missing API key&quot;</span><span class="p">}),</span> <span class="mi">401</span>
+
+            <span class="c1"># Validate with sync client</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">httpx</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+                <span class="n">VALIDATION_URL</span><span class="p">,</span>
+                <span class="n">json</span><span class="o">=</span><span class="p">{</span>
+                    <span class="s2">&quot;api_key&quot;</span><span class="p">:</span> <span class="n">api_key</span><span class="p">,</span>
+                    <span class="s2">&quot;required_scopes&quot;</span><span class="p">:</span> <span class="n">required_scopes</span> <span class="ow">or</span> <span class="p">[]</span>
+                <span class="p">}</span>
+            <span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="mi">200</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">jsonify</span><span class="p">({</span><span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="s2">&quot;Invalid API key&quot;</span><span class="p">}),</span> <span class="mi">401</span>
+
+            <span class="n">data</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;valid&quot;</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">jsonify</span><span class="p">({</span><span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="s2">&quot;Invalid API key&quot;</span><span class="p">}),</span> <span class="mi">401</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;has_required_scopes&quot;</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">jsonify</span><span class="p">({</span>
+                    <span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="s2">&quot;Insufficient permissions&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;missing_scopes&quot;</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;missing_scopes&quot;</span><span class="p">)</span>
+                <span class="p">}),</span> <span class="mi">403</span>
+
+            <span class="c1"># Pass auth data to route</span>
+            <span class="n">request</span><span class="o">.</span><span class="n">auth_data</span> <span class="o">=</span> <span class="n">data</span>
+            <span class="k">return</span> <span class="n">f</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="n">wrapped</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="vm">__name__</span>
+        <span class="k">return</span> <span class="n">wrapped</span>
+    <span class="k">return</span> <span class="n">decorator</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/api/users&quot;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;GET&quot;</span><span class="p">])</span>
+<span class="nd">@validate_api_key</span><span class="p">()</span>
+<span class="k">def</span> <span class="nf">get_users</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">jsonify</span><span class="p">({</span><span class="s2">&quot;users&quot;</span><span class="p">:</span> <span class="p">[</span><span class="o">...</span><span class="p">],</span> <span class="s2">&quot;project&quot;</span><span class="p">:</span> <span class="n">request</span><span class="o">.</span><span class="n">auth_data</span><span class="p">[</span><span class="s2">&quot;project_id&quot;</span><span class="p">]})</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/api/users&quot;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;POST&quot;</span><span class="p">])</span>
+<span class="nd">@validate_api_key</span><span class="p">(</span><span class="n">required_scopes</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;users:write&quot;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">create_user</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">jsonify</span><span class="p">({</span><span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;User created&quot;</span><span class="p">})</span>
+</code></pre></div>
+
+<h3 id="expressjs-integration">Express.js Integration</h3>
+<div class="codehilite"><pre><span></span><code><span class="kd">const</span><span class="w"> </span><span class="nx">express</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">require</span><span class="p">(</span><span class="s2">&quot;express&quot;</span><span class="p">);</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">axios</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">require</span><span class="p">(</span><span class="s2">&quot;axios&quot;</span><span class="p">);</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">app</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">express</span><span class="p">();</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">VALIDATION_URL</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;https://your-service.com/akm/v1/keys/validate&quot;</span><span class="p">;</span>
+
+<span class="c1">// Middleware for API key validation</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">validateApiKey</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="nx">requiredScopes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[])</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="k">async</span><span class="w"> </span><span class="p">(</span><span class="nx">req</span><span class="p">,</span><span class="w"> </span><span class="nx">res</span><span class="p">,</span><span class="w"> </span><span class="nx">next</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">apiKey</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">req</span><span class="p">.</span><span class="nx">headers</span><span class="p">[</span><span class="s2">&quot;x-api-key&quot;</span><span class="p">];</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nx">apiKey</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="nx">res</span><span class="p">.</span><span class="nx">status</span><span class="p">(</span><span class="mf">401</span><span class="p">).</span><span class="nx">json</span><span class="p">({</span><span class="w"> </span><span class="nx">error</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;Missing API key&quot;</span><span class="w"> </span><span class="p">});</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="kd">const</span><span class="w"> </span><span class="nx">response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">axios</span><span class="p">.</span><span class="nx">post</span><span class="p">(</span><span class="nx">VALIDATION_URL</span><span class="p">,</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">api_key</span><span class="o">:</span><span class="w"> </span><span class="nx">apiKey</span><span class="p">,</span>
+<span class="w">        </span><span class="nx">required_scopes</span><span class="o">:</span><span class="w"> </span><span class="nx">requiredScopes</span><span class="p">,</span>
+<span class="w">      </span><span class="p">});</span>
+
+<span class="w">      </span><span class="kd">const</span><span class="w"> </span><span class="nx">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">response</span><span class="p">.</span><span class="nx">data</span><span class="p">;</span>
+
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nx">data</span><span class="p">.</span><span class="nx">valid</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="nx">res</span><span class="p">.</span><span class="nx">status</span><span class="p">(</span><span class="mf">401</span><span class="p">).</span><span class="nx">json</span><span class="p">({</span><span class="w"> </span><span class="nx">error</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;Invalid API key&quot;</span><span class="w"> </span><span class="p">});</span>
+<span class="w">      </span><span class="p">}</span>
+
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nx">data</span><span class="p">.</span><span class="nx">has_required_scopes</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="nx">res</span><span class="p">.</span><span class="nx">status</span><span class="p">(</span><span class="mf">403</span><span class="p">).</span><span class="nx">json</span><span class="p">({</span>
+<span class="w">          </span><span class="nx">error</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;Insufficient permissions&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nx">missing_scopes</span><span class="o">:</span><span class="w"> </span><span class="nx">data</span><span class="p">.</span><span class="nx">missing_scopes</span><span class="p">,</span>
+<span class="w">        </span><span class="p">});</span>
+<span class="w">      </span><span class="p">}</span>
+
+<span class="w">      </span><span class="c1">// Attach auth data to request</span>
+<span class="w">      </span><span class="nx">req</span><span class="p">.</span><span class="nx">authData</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">data</span><span class="p">;</span>
+<span class="w">      </span><span class="nx">next</span><span class="p">();</span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="nx">error</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="nx">res</span><span class="p">.</span><span class="nx">status</span><span class="p">(</span><span class="mf">401</span><span class="p">).</span><span class="nx">json</span><span class="p">({</span><span class="w"> </span><span class="nx">error</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;Authentication failed&quot;</span><span class="w"> </span><span class="p">});</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">};</span>
+<span class="p">};</span>
+
+<span class="c1">// Protected routes</span>
+<span class="nx">app</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;/api/users&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">validateApiKey</span><span class="p">(),</span><span class="w"> </span><span class="p">(</span><span class="nx">req</span><span class="p">,</span><span class="w"> </span><span class="nx">res</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">({</span><span class="w"> </span><span class="nx">users</span><span class="o">:</span><span class="w"> </span><span class="p">[...],</span><span class="w"> </span><span class="nx">project</span><span class="o">:</span><span class="w"> </span><span class="nx">req</span><span class="p">.</span><span class="nx">authData</span><span class="p">.</span><span class="nx">project_id</span><span class="w"> </span><span class="p">});</span>
+<span class="p">});</span>
+
+<span class="nx">app</span><span class="p">.</span><span class="nx">post</span><span class="p">(</span><span class="s2">&quot;/api/users&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">validateApiKey</span><span class="p">([</span><span class="s2">&quot;users:write&quot;</span><span class="p">]),</span><span class="w"> </span><span class="p">(</span><span class="nx">req</span><span class="p">,</span><span class="w"> </span><span class="nx">res</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">({</span><span class="w"> </span><span class="nx">message</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;User created&quot;</span><span class="w"> </span><span class="p">});</span>
+<span class="p">});</span>
+
+<span class="nx">app</span><span class="p">.</span><span class="ow">delete</span><span class="p">(</span><span class="s2">&quot;/api/users/:id&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">validateApiKey</span><span class="p">([</span><span class="s2">&quot;admin&quot;</span><span class="p">]),</span><span class="w"> </span><span class="p">(</span><span class="nx">req</span><span class="p">,</span><span class="w"> </span><span class="nx">res</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">({</span><span class="w"> </span><span class="nx">message</span><span class="o">:</span><span class="w"> </span><span class="sb">`User </span><span class="si">${</span><span class="nx">req</span><span class="p">.</span><span class="nx">params</span><span class="p">.</span><span class="nx">id</span><span class="si">}</span><span class="sb"> deleted`</span><span class="w"> </span><span class="p">});</span>
+<span class="p">});</span>
+
+<span class="nx">app</span><span class="p">.</span><span class="nx">listen</span><span class="p">(</span><span class="mf">3000</span><span class="p">);</span>
+</code></pre></div>
+
+<hr />
+<h2 id="advanced-topics">Advanced Topics</h2>
+<h3 id="rate-limiting">Rate Limiting</h3>
+<p>Check remaining rate limit in responses:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">make_request_with_rate_limit_check</span><span class="p">(</span><span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">api_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">httpx</span><span class="o">.</span><span class="n">AsyncClient</span><span class="p">()</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;X-API-Key&quot;</span><span class="p">:</span> <span class="n">api_key</span><span class="p">})</span>
+
+        <span class="c1"># Check rate limit headers</span>
+        <span class="n">remaining</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;X-RateLimit-Remaining&quot;</span><span class="p">)</span>
+        <span class="n">limit</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;X-RateLimit-Limit&quot;</span><span class="p">)</span>
+        <span class="n">reset</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;X-RateLimit-Reset&quot;</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Rate limit: </span><span class="si">{</span><span class="n">remaining</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">limit</span><span class="si">}</span><span class="s2">, resets at </span><span class="si">{</span><span class="n">reset</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">429</span><span class="p">:</span>
+            <span class="n">retry_after</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Retry-After&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Rate limited. Retry after </span><span class="si">{</span><span class="n">retry_after</span><span class="si">}</span><span class="s2"> seconds&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+</code></pre></div>
+
+<h3 id="key-rotation">Key Rotation</h3>
+<p>Rotate keys without downtime:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">rotate_api_key</span><span class="p">(</span><span class="n">old_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate new key and revoke old one&quot;&quot;&quot;</span>
+
+    <span class="c1"># 1. Generate new key with same scopes</span>
+    <span class="n">new_key</span> <span class="o">=</span> <span class="k">await</span> <span class="n">generate_key</span><span class="p">(</span>
+        <span class="n">project_id</span><span class="o">=</span><span class="n">project_id</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;rotated-key&quot;</span><span class="p">,</span>
+        <span class="n">scopes</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;users:read&quot;</span><span class="p">,</span> <span class="s2">&quot;users:write&quot;</span><span class="p">]</span>
+    <span class="p">)</span>
+
+    <span class="c1"># 2. Update your application with new key</span>
+    <span class="n">update_application_config</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="n">new_key</span><span class="p">[</span><span class="s2">&quot;key&quot;</span><span class="p">])</span>
+
+    <span class="c1"># 3. Test new key</span>
+    <span class="k">await</span> <span class="n">test_api_key</span><span class="p">(</span><span class="n">new_key</span><span class="p">[</span><span class="s2">&quot;key&quot;</span><span class="p">])</span>
+
+    <span class="c1"># 4. Revoke old key</span>
+    <span class="k">await</span> <span class="n">revoke_key</span><span class="p">(</span><span class="n">old_key</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">new_key</span>
+</code></pre></div>
+
+<h3 id="webhooks-for-key-events">Webhooks for Key Events</h3>
+<p>Subscribe to key events:</p>
+<div class="codehilite"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="s2">&quot;https://your-service.com/akm/v1/webhooks&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{</span>
+<span class="s1">    &quot;project_id&quot;: &quot;proj_abc123xyz&quot;,</span>
+<span class="s1">    &quot;url&quot;: &quot;https://your-app.com/webhooks/key-events&quot;,</span>
+<span class="s1">    &quot;events&quot;: [&quot;key.created&quot;, &quot;key.revoked&quot;, &quot;key.expired&quot;],</span>
+<span class="s1">    &quot;secret&quot;: &quot;webhook_secret_for_validation&quot;</span>
+<span class="s1">  }&#39;</span>
+</code></pre></div>
+
+<p>Handle webhook events:</p>
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">FastAPI</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">HTTPException</span>
+<span class="kn">import</span> <span class="nn">hmac</span>
+<span class="kn">import</span> <span class="nn">hashlib</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/webhooks/key-events&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">handle_key_event</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">):</span>
+    <span class="c1"># Verify webhook signature</span>
+    <span class="n">signature</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;X-Webhook-Signature&quot;</span><span class="p">)</span>
+    <span class="n">body</span> <span class="o">=</span> <span class="k">await</span> <span class="n">request</span><span class="o">.</span><span class="n">body</span><span class="p">()</span>
+
+    <span class="n">expected</span> <span class="o">=</span> <span class="n">hmac</span><span class="o">.</span><span class="n">new</span><span class="p">(</span>
+        <span class="n">WEBHOOK_SECRET</span><span class="o">.</span><span class="n">encode</span><span class="p">(),</span>
+        <span class="n">body</span><span class="p">,</span>
+        <span class="n">hashlib</span><span class="o">.</span><span class="n">sha256</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">signature</span> <span class="o">!=</span> <span class="n">expected</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span><span class="n">status_code</span><span class="o">=</span><span class="mi">401</span><span class="p">,</span> <span class="n">detail</span><span class="o">=</span><span class="s2">&quot;Invalid signature&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Process event</span>
+    <span class="n">event</span> <span class="o">=</span> <span class="k">await</span> <span class="n">request</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">event</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;key.expired&quot;</span><span class="p">:</span>
+        <span class="c1"># Notify admin</span>
+        <span class="k">await</span> <span class="n">notify_admin</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Key </span><span class="si">{</span><span class="n">event</span><span class="p">[</span><span class="s1">&#39;key_id&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> expired&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;received&quot;</span><span class="p">}</span>
+</code></pre></div>
+
+<h3 id="audit-logs">Audit Logs</h3>
+<p>Query audit trail for compliance:</p>
+<div class="codehilite"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>GET<span class="w"> </span><span class="s2">&quot;https://your-service.com/akm/v1/audit-logs?project_id=proj_abc123xyz&amp;limit=100&quot;</span>
+</code></pre></div>
+
+<hr />
+<h2 id="code-examples">Code Examples</h2>
+<h3 id="complete-python-client">Complete Python Client</h3>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">httpx</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
+
+<span class="k">class</span> <span class="nc">APIKeyManagementClient</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base_url</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">base_url</span> <span class="o">=</span> <span class="n">base_url</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span> <span class="o">=</span> <span class="n">httpx</span><span class="o">.</span><span class="n">AsyncClient</span><span class="p">()</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">create_project</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">):</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">base_url</span><span class="si">}</span><span class="s2">/v1/projects&quot;</span><span class="p">,</span>
+            <span class="n">json</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span> <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="n">description</span><span class="p">}</span>
+        <span class="p">)</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">create_scope</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">project_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">):</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">base_url</span><span class="si">}</span><span class="s2">/v1/scopes&quot;</span><span class="p">,</span>
+            <span class="n">json</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span> <span class="s2">&quot;project_id&quot;</span><span class="p">:</span> <span class="n">project_id</span><span class="p">,</span> <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="n">description</span><span class="p">}</span>
+        <span class="p">)</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">generate_key</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">project_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">scopes</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">rate_limit</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">expires_at</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">):</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">base_url</span><span class="si">}</span><span class="s2">/v1/keys&quot;</span><span class="p">,</span>
+            <span class="n">json</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;project_id&quot;</span><span class="p">:</span> <span class="n">project_id</span><span class="p">,</span>
+                <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
+                <span class="s2">&quot;scopes&quot;</span><span class="p">:</span> <span class="n">scopes</span><span class="p">,</span>
+                <span class="s2">&quot;rate_limit&quot;</span><span class="p">:</span> <span class="n">rate_limit</span><span class="p">,</span>
+                <span class="s2">&quot;expires_at&quot;</span><span class="p">:</span> <span class="n">expires_at</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">validate_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">api_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">required_scopes</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">base_url</span><span class="si">}</span><span class="s2">/v1/keys/validate&quot;</span><span class="p">,</span>
+            <span class="n">json</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;api_key&quot;</span><span class="p">:</span> <span class="n">api_key</span><span class="p">,</span> <span class="s2">&quot;required_scopes&quot;</span><span class="p">:</span> <span class="n">required_scopes</span> <span class="ow">or</span> <span class="p">[]}</span>
+        <span class="p">)</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+<span class="c1"># Usage</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">APIKeyManagementClient</span><span class="p">(</span><span class="s2">&quot;https://your-service.com/akm&quot;</span><span class="p">)</span>
+
+<span class="c1"># Setup</span>
+<span class="n">project</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">create_project</span><span class="p">(</span><span class="s2">&quot;my-app&quot;</span><span class="p">,</span> <span class="s2">&quot;My Application&quot;</span><span class="p">)</span>
+<span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">create_scope</span><span class="p">(</span><span class="s2">&quot;users:read&quot;</span><span class="p">,</span> <span class="n">project</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">])</span>
+<span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">create_scope</span><span class="p">(</span><span class="s2">&quot;users:write&quot;</span><span class="p">,</span> <span class="n">project</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">])</span>
+
+<span class="c1"># Generate key</span>
+<span class="n">key</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">generate_key</span><span class="p">(</span>
+    <span class="n">project_id</span><span class="o">=</span><span class="n">project</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">],</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;prod-key&quot;</span><span class="p">,</span>
+    <span class="n">scopes</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;users:read&quot;</span><span class="p">,</span> <span class="s2">&quot;users:write&quot;</span><span class="p">],</span>
+    <span class="n">rate_limit</span><span class="o">=</span><span class="mi">10000</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Your API Key: </span><span class="si">{</span><span class="n">key</span><span class="p">[</span><span class="s1">&#39;key&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+
+<hr />
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="401-unauthorized">401 Unauthorized</h3>
+<p><strong>Issue</strong>: <code>{"error": "Invalid or expired API key"}</code></p>
+<p><strong>Solutions</strong>:
+- Verify key is correct (no extra spaces)
+- Check key hasn't expired
+- Ensure key hasn't been revoked
+- Verify header name is <code>X-API-Key</code> (case-sensitive)</p>
+<h3 id="403-forbidden">403 Forbidden</h3>
+<p><strong>Issue</strong>: <code>{"error": "Insufficient permissions", "missing_scopes": ["users:write"]}</code></p>
+<p><strong>Solutions</strong>:
+- Check key has required scopes
+- Generate new key with additional scopes
+- Update existing key permissions</p>
+<h3 id="429-rate-limited">429 Rate Limited</h3>
+<p><strong>Issue</strong>: <code>{"error": "Rate limit exceeded"}</code></p>
+<p><strong>Solutions</strong>:
+- Wait for rate limit reset (check <code>Retry-After</code> header)
+- Upgrade to higher rate limit tier
+- Implement exponential backoff
+- Cache responses when possible</p>
+<h3 id="import-errors">Import Errors</h3>
+<p><strong>Issue</strong>: OpenAPI import fails</p>
+<p><strong>Solutions</strong>:
+- Verify OpenAPI spec is valid JSON/YAML
+- Check spec version (3.0.x or 3.1.x supported)
+- Ensure URL is accessible
+- Validate spec at https://editor.swagger.io/</p>
+<hr />
+<h2 id="next-steps">Next Steps</h2>
+<p>✅ <strong>You're ready to integrate!</strong> Here's what to do next:</p>
+<ol>
+<li><strong>Create your first project and API key</strong></li>
+<li><strong>Import your OpenAPI spec</strong> for auto-configuration</li>
+<li><strong>Add authentication middleware</strong> to your routes</li>
+<li><strong>Test with different scopes</strong> to verify permissions</li>
+<li><strong>Set up rate limiting</strong> for production</li>
+<li><strong>Configure webhooks</strong> for key lifecycle events</li>
+<li><strong>Review audit logs</strong> for compliance</li>
+</ol>
+<h3 id="additional-resources">Additional Resources</h3>
+<ul>
+<li><a href="/administration">Administration Guide</a> - <strong>For administrators</strong>: Setup, user onboarding, monitoring</li>
+<li><a href="/api-versioning">API Versioning Guide</a> - Using <code>/v1</code>, <code>/v2</code> endpoints</li>
+<li><a href="/authentication">Authentication Patterns</a> - Advanced auth strategies</li>
+<li><a href="/api-key-management">Rate Limiting</a> - Configure rate limits</li>
+<li><a href="/api-key-management#webhooks">Webhooks</a> - Event notifications</li>
+<li><a href="/docs">Full API Reference</a> - Interactive documentation</li>
+</ul>
+<hr />
+<p><strong>Questions?</strong> Open an issue on <a href="https://github.com/ideiasfactory/apikey_management/issues">GitHub</a> or check the <a href="https://github.com/ideiasfactory/apikey_management/discussions">discussions</a>.</p>
+<p>Happy integrating! 🚀</p>
+        </div>
+
+        <div class="footer">
+            <p>Built with ❤️ using FastAPI, PostgreSQL, and SQLAlchemy</p>
+            <p style="margin-top: 10px;">© 2025 API Key Management Service by <a href="https://github.com/ideiasfactory" target="_blank">Ideias Factory</a></p>
+        </div>
+    </div>
+
+    <a href="#" class="back-to-top">↑</a>
+
+    <script>
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        // Back to top button
+        const backToTop = document.querySelector('.back-to-top');
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTop.style.display = 'flex';
+            } else {
+                backToTop.style.display = 'none';
+            }
+        });
+
+        backToTop.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    </script>
+</body>
+</html>

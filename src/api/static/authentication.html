@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authentication Guide - API Key Management Service</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --accent: #f093fb;
+            --dark: #1a1a2e;
+            --light: #f8f9fa;
+            --code-bg: #282c34;
+            --border: #e0e0e0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .nav {
+            background: var(--dark);
+            padding: 15px 40px;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .nav a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .nav a:hover {
+            background: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--dark);
+            margin: 30px 0 15px 0;
+            line-height: 1.3;
+        }
+
+        h1 { font-size: 2.5em; border-bottom: 3px solid var(--primary); padding-bottom: 10px; }
+        h2 { font-size: 2em; border-bottom: 2px solid var(--border); padding-bottom: 8px; margin-top: 40px; }
+        h3 { font-size: 1.5em; color: var(--primary); }
+        h4 { font-size: 1.3em; }
+
+        p {
+            margin: 15px 0;
+            line-height: 1.8;
+        }
+
+        a {
+            color: var(--primary);
+            text-decoration: none;
+            border-bottom: 1px dotted var(--primary);
+        }
+
+        a:hover {
+            color: var(--secondary);
+            border-bottom: 1px solid var(--secondary);
+        }
+
+        code {
+            background: #f4f4f4;
+            padding: 3px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #e83e8c;
+        }
+
+        pre {
+            background: var(--code-bg);
+            color: #abb2bf;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+            border-left: 4px solid var(--primary);
+        }
+
+        pre code {
+            background: none;
+            color: inherit;
+            padding: 0;
+            font-size: 0.95em;
+        }
+
+        blockquote {
+            border-left: 4px solid var(--primary);
+            padding: 15px 20px;
+            margin: 20px 0;
+            background: #f8f9fa;
+            font-style: italic;
+        }
+
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+
+        li {
+            margin: 8px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .success {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .info {
+            background: #d1ecf1;
+            border-left: 4px solid #17a2b8;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .footer {
+            background: var(--dark);
+            color: white;
+            padding: 30px 40px;
+            text-align: center;
+        }
+
+        .footer a {
+            color: var(--accent);
+            border-bottom: 1px dotted var(--accent);
+        }
+
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--primary);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            font-size: 24px;
+        }
+
+        .back-to-top:hover {
+            background: var(--secondary);
+            transform: translateY(-5px);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                border-radius: 0;
+            }
+
+            .header {
+                padding: 30px 20px;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .nav {
+                padding: 15px 20px;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            pre {
+                padding: 15px;
+                font-size: 0.85em;
+            }
+        }
+
+        /* Syntax highlighting for code blocks */
+        .codehilite .k { color: #c678dd; } /* keyword */
+        .codehilite .s { color: #98c379; } /* string */
+        .codehilite .n { color: #e06c75; } /* name */
+        .codehilite .c { color: #5c6370; font-style: italic; } /* comment */
+        .codehilite .m { color: #d19a66; } /* number */
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔐 Authentication Guide</h1>
+            <p>API Key Management Service</p>
+        </div>
+
+        <div class="nav">
+            <a href="/">🏠 Home</a>
+            <a href="/quickstart">🚀 Quick Start</a>
+            <a href="/administration">🔐 Administration</a>
+            <a href="/docs">📚 API Docs</a>
+            <a href="/redoc">📖 ReDoc</a>
+        </div>
+
+        <div class="content">
+<h1 id="authentication-guide-api-key-management-service">Authentication Guide - API Key Management Service</h1>
+<h2 id="overview">Overview</h2>
+<p>The API Key Management (AKM) Service provides a comprehensive authentication and authorization system based on API keys with scope-based permissions. This guide covers authentication patterns, security features, and best practices for integrating with the AKM service.</p>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ul>
+<li><a href="#authentication-methods">Authentication Methods</a></li>
+<li><a href="#api-key-structure">API Key Structure</a></li>
+<li><a href="#scope-based-authorization">Scope-Based Authorization</a></li>
+<li><a href="#authentication-patterns">Authentication Patterns</a></li>
+<li><a href="#security-features">Security Features</a></li>
+<li><a href="#rate-limiting">Rate Limiting</a></li>
+<li><a href="#error-handling">Error Handling</a></li>
+<li><a href="#best-practices">Best Practices</a></li>
+<li><a href="#code-examples">Code Examples</a></li>
+</ul>
+<hr />
+<h2 id="authentication-methods">Authentication Methods</h2>
+<p>AKM supports <strong>API Key Authentication</strong> via the <code>X-API-Key</code> header. This method is simple, secure, and suitable for both server-to-server and client-to-server communication.</p>
+<h3 id="api-key-format">API Key Format</h3>
+<div class="codehilite"><pre><span></span><code>akm_live_&lt;32-character-base64-string&gt;
+akm_test_&lt;32-character-base64-string&gt;
+</code></pre></div>
+
+<p><strong>Examples:</strong>
+- Production: <code>akm_live_a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6</code>
+- Test: <code>akm_test_x9y8z7w6v5u4t3s2r1q0p9o8n7m6l5k4</code></p>
+<h3 id="making-authenticated-requests">Making Authenticated Requests</h3>
+<p>Include your API key in the <code>X-API-Key</code> header:</p>
+<div class="codehilite"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>GET<span class="w"> </span><span class="s2">&quot;https://api-service.com/akm/v1/projects&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: akm_live_a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6&quot;</span>
+</code></pre></div>
+
+<hr />
+<h2 id="api-key-structure">API Key Structure</h2>
+<p>Each API key in AKM has:</p>
+<ol>
+<li><strong>Project Association</strong>: Keys belong to a specific project</li>
+<li><strong>Scopes</strong>: Define what actions the key can perform</li>
+<li><strong>Rate Limit</strong>: Maximum requests per hour</li>
+<li><strong>Expiration</strong>: Optional expiration date</li>
+<li><strong>Metadata</strong>: Name, description, environment tags</li>
+</ol>
+<hr />
+<h2 id="scope-based-authorization">Scope-Based Authorization</h2>
+<p>Scopes control what actions an API key can perform. AKM enforces scope-based authorization on all endpoints.</p>
+<h3 id="scope-naming-convention">Scope Naming Convention</h3>
+<div class="codehilite"><pre><span></span><code>&lt;resource&gt;:&lt;action&gt;
+</code></pre></div>
+
+<p><strong>Examples:</strong>
+- <code>users:read</code> - Read user data
+- <code>users:write</code> - Create/update users
+- <code>orders:read</code> - Read order data
+- <code>orders:write</code> - Create/update orders
+- <code>admin:full</code> - Full administrative access</p>
+<hr />
+<h2 id="authentication-patterns">Authentication Patterns</h2>
+<h3 id="pattern-1-direct-api-key-usage">Pattern 1: Direct API Key Usage</h3>
+<p>Best for: Server-to-server communication, background jobs</p>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">requests</span>
+
+<span class="n">API_KEY</span> <span class="o">=</span> <span class="s2">&quot;akm_live_a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6&quot;</span>
+<span class="n">BASE_URL</span> <span class="o">=</span> <span class="s2">&quot;https://api-service.com/akm/v1&quot;</span>
+
+<span class="n">headers</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;X-API-Key&quot;</span><span class="p">:</span> <span class="n">API_KEY</span><span class="p">}</span>
+
+<span class="c1"># List projects</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BASE_URL</span><span class="si">}</span><span class="s2">/projects&quot;</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
+<span class="n">projects</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+</code></pre></div>
+
+<h3 id="pattern-2-fastapi-middleware">Pattern 2: FastAPI Middleware</h3>
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">FastAPI</span><span class="p">,</span> <span class="n">Header</span><span class="p">,</span> <span class="n">HTTPException</span><span class="p">,</span> <span class="n">Depends</span>
+<span class="kn">import</span> <span class="nn">requests</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">()</span>
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">verify_api_key</span><span class="p">(</span><span class="n">x_api_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Header</span><span class="p">(</span><span class="o">...</span><span class="p">)):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verify API key with AKM service&quot;&quot;&quot;</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;https://api-service.com/akm/v1/keys/verify&quot;</span><span class="p">,</span>
+        <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;X-API-Key&quot;</span><span class="p">:</span> <span class="n">x_api_key</span><span class="p">}</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="mi">200</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span><span class="n">status_code</span><span class="o">=</span><span class="mi">401</span><span class="p">,</span> <span class="n">detail</span><span class="o">=</span><span class="s2">&quot;Invalid API key&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/users&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">get_users</span><span class="p">(</span><span class="n">key_info</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">(</span><span class="n">verify_api_key</span><span class="p">)):</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;users&quot;</span><span class="p">:</span> <span class="p">[</span><span class="o">...</span><span class="p">]}</span>
+</code></pre></div>
+
+<hr />
+<h2 id="security-features">Security Features</h2>
+<h3 id="1-sha-256-key-hashing">1. SHA-256 Key Hashing</h3>
+<p>API keys are hashed using SHA-256 before storage. Only the hash is stored in the database.</p>
+<h3 id="2-automatic-expiration">2. Automatic Expiration</h3>
+<p>Keys can have expiration dates. Expired keys are automatically rejected.</p>
+<h3 id="3-usage-tracking">3. Usage Tracking</h3>
+<p>Every request increments the <code>request_count</code> and updates <code>last_used_at</code>.</p>
+<h3 id="4-audit-logging">4. Audit Logging</h3>
+<p>All authentication attempts are logged with timestamp, API key ID, success/failure status, IP address, and user agent.</p>
+<hr />
+<h2 id="rate-limiting">Rate Limiting</h2>
+<p>Each API key has a rate limit (requests per hour). When exceeded, requests return <code>429 Too Many Requests</code>.</p>
+<h3 id="rate-limit-headers">Rate Limit Headers</h3>
+<p>Every response includes:</p>
+<div class="codehilite"><pre><span></span><code><span class="err">X-RateLimit-Limit: 10000</span>
+<span class="err">X-RateLimit-Remaining: 9523</span>
+<span class="err">X-RateLimit-Reset: 1700000000</span>
+</code></pre></div>
+
+<hr />
+<h2 id="error-handling">Error Handling</h2>
+<h3 id="common-authentication-errors">Common Authentication Errors</h3>
+<h4 id="401-unauthorized-missing-api-key">401 Unauthorized - Missing API Key</h4>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;client_error&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;error_message&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Missing API key&quot;</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p><strong>Solution</strong>: Include <code>X-API-Key</code> header.</p>
+<h4 id="401-unauthorized-invalid-api-key">401 Unauthorized - Invalid API Key</h4>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;client_error&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;error_message&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Invalid or expired API key&quot;</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p><strong>Possible causes:</strong>
+- Key is incorrect
+- Key has been revoked
+- Key has expired</p>
+<h4 id="403-forbidden-insufficient-permissions">403 Forbidden - Insufficient Permissions</h4>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;client_error&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;error_message&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Insufficient permissions&quot;</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p><strong>Solution</strong>: Use an API key with the required scopes.</p>
+<h4 id="429-too-many-requests">429 Too Many Requests</h4>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;client_error&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;error_message&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Rate limit exceeded&quot;</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p><strong>Solution</strong>: Wait for rate limit reset or request higher limit.</p>
+<hr />
+<h2 id="best-practices">Best Practices</h2>
+<h3 id="1-store-keys-securely">1. Store Keys Securely</h3>
+<p>✅ <strong>DO:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">os</span>
+<span class="n">API_KEY</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;AKM_API_KEY&quot;</span><span class="p">)</span>
+</code></pre></div>
+
+<p>❌ <strong>DON''T:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="n">API_KEY</span> <span class="o">=</span> <span class="s2">&quot;akm_live_a1b2c3d4...&quot;</span>  <span class="c1"># Hardcoded!</span>
+</code></pre></div>
+
+<h3 id="2-use-environment-variables">2. Use Environment Variables</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># .env file (never commit this!)</span>
+<span class="nv">AKM_API_KEY</span><span class="o">=</span>akm_live_a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6
+</code></pre></div>
+
+<h3 id="3-rotate-keys-regularly">3. Rotate Keys Regularly</h3>
+<p>Create new keys every 90 days and revoke old ones.</p>
+<h3 id="4-use-minimal-scopes">4. Use Minimal Scopes</h3>
+<p>Request only the scopes you need.</p>
+<h3 id="5-monitor-usage">5. Monitor Usage</h3>
+<p>Check key usage statistics regularly.</p>
+<h3 id="6-handle-errors-gracefully">6. Handle Errors Gracefully</h3>
+<p>Implement retry logic and proper error handling.</p>
+<hr />
+<h2 id="code-examples">Code Examples</h2>
+<h3 id="python-client">Python Client</h3>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">requests</span>
+
+<span class="k">class</span> <span class="nc">AKMClient</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">api_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">api_key</span> <span class="o">=</span> <span class="n">api_key</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">base_url</span> <span class="o">=</span> <span class="s2">&quot;https://api-service.com/akm/v1&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">headers</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;X-API-Key&quot;</span><span class="p">:</span> <span class="n">api_key</span><span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">list_projects</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">base_url</span><span class="si">}</span><span class="s2">/projects&quot;</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">)</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+<span class="c1"># Usage</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">AKMClient</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;AKM_API_KEY&quot;</span><span class="p">))</span>
+<span class="n">projects</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">list_projects</span><span class="p">()</span>
+</code></pre></div>
+
+<h3 id="typescript-client">TypeScript Client</h3>
+<div class="codehilite"><pre><span></span><code><span class="k">import</span><span class="w"> </span><span class="nx">axios</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="nx">axios</span><span class="s1">&#39;&#39;</span><span class="p">;</span>
+
+<span class="kd">class</span><span class="w"> </span><span class="nx">AKMClient</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">private</span><span class="w"> </span><span class="nx">apiKey</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">  </span><span class="k">private</span><span class="w"> </span><span class="nx">baseURL</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+
+<span class="w">  </span><span class="kr">constructor</span><span class="p">(</span><span class="nx">apiKey</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">this</span><span class="p">.</span><span class="nx">apiKey</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">apiKey</span><span class="p">;</span>
+<span class="w">    </span><span class="k">this</span><span class="p">.</span><span class="nx">baseURL</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="nx">https</span><span class="o">:</span><span class="c1">//api-service.com/akm/v1&#39;&#39;;</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="k">async</span><span class="w"> </span><span class="nx">listProjects</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">axios</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="sb">`</span><span class="si">${</span><span class="k">this</span><span class="p">.</span><span class="nx">baseURL</span><span class="si">}</span><span class="sb">/projects`</span><span class="p">,</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">headers</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="nx">X</span><span class="o">-</span><span class="nx">API</span><span class="o">-</span><span class="nx">Key</span><span class="s1">&#39;&#39;</span><span class="o">:</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="nx">apiKey</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="p">});</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">response</span><span class="p">.</span><span class="nx">data</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<hr />
+<h2 id="additional-resources">Additional Resources</h2>
+<ul>
+<li><a href="/quickstart">Quick Start Guide</a> - Getting started with AKM</li>
+<li><a href="/administration">Administration Guide</a> - Managing the AKM service</li>
+<li><a href="/api-versioning">API Versioning</a> - API version management</li>
+<li><a href="/docs">API Reference</a> - Complete API documentation</li>
+</ul>
+<hr />
+<p><strong>Need Help?</strong> Check the <a href="https://github.com/ideiasfactory/apikey_management/issues">GitHub Issues</a>.</p>
+        </div>
+
+        <div class="footer">
+            <p>Built with ❤️ using FastAPI, PostgreSQL, and SQLAlchemy</p>
+            <p style="margin-top: 10px;">© 2025 API Key Management Service by <a href="https://github.com/ideiasfactory" target="_blank">Ideias Factory</a></p>
+        </div>
+    </div>
+
+    <a href="#" class="back-to-top">↑</a>
+
+    <script>
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        // Back to top button
+        const backToTop = document.querySelector('.back-to-top');
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTop.style.display = 'flex';
+            } else {
+                backToTop.style.display = 'none';
+            }
+        });
+
+        backToTop.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    </script>
+</body>
+</html>

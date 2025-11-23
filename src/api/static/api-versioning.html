@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Versioning Guide - API Key Management Service</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --accent: #f093fb;
+            --dark: #1a1a2e;
+            --light: #f8f9fa;
+            --code-bg: #282c34;
+            --border: #e0e0e0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .nav {
+            background: var(--dark);
+            padding: 15px 40px;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .nav a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .nav a:hover {
+            background: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--dark);
+            margin: 30px 0 15px 0;
+            line-height: 1.3;
+        }
+
+        h1 { font-size: 2.5em; border-bottom: 3px solid var(--primary); padding-bottom: 10px; }
+        h2 { font-size: 2em; border-bottom: 2px solid var(--border); padding-bottom: 8px; margin-top: 40px; }
+        h3 { font-size: 1.5em; color: var(--primary); }
+        h4 { font-size: 1.3em; }
+
+        p {
+            margin: 15px 0;
+            line-height: 1.8;
+        }
+
+        a {
+            color: var(--primary);
+            text-decoration: none;
+            border-bottom: 1px dotted var(--primary);
+        }
+
+        a:hover {
+            color: var(--secondary);
+            border-bottom: 1px solid var(--secondary);
+        }
+
+        code {
+            background: #f4f4f4;
+            padding: 3px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #e83e8c;
+        }
+
+        pre {
+            background: var(--code-bg);
+            color: #abb2bf;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+            border-left: 4px solid var(--primary);
+        }
+
+        pre code {
+            background: none;
+            color: inherit;
+            padding: 0;
+            font-size: 0.95em;
+        }
+
+        blockquote {
+            border-left: 4px solid var(--primary);
+            padding: 15px 20px;
+            margin: 20px 0;
+            background: #f8f9fa;
+            font-style: italic;
+        }
+
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+
+        li {
+            margin: 8px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .success {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .info {
+            background: #d1ecf1;
+            border-left: 4px solid #17a2b8;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .footer {
+            background: var(--dark);
+            color: white;
+            padding: 30px 40px;
+            text-align: center;
+        }
+
+        .footer a {
+            color: var(--accent);
+            border-bottom: 1px dotted var(--accent);
+        }
+
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--primary);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            font-size: 24px;
+        }
+
+        .back-to-top:hover {
+            background: var(--secondary);
+            transform: translateY(-5px);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                border-radius: 0;
+            }
+
+            .header {
+                padding: 30px 20px;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .nav {
+                padding: 15px 20px;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            pre {
+                padding: 15px;
+                font-size: 0.85em;
+            }
+        }
+
+        /* Syntax highlighting for code blocks */
+        .codehilite .k { color: #c678dd; } /* keyword */
+        .codehilite .s { color: #98c379; } /* string */
+        .codehilite .n { color: #e06c75; } /* name */
+        .codehilite .c { color: #5c6370; font-style: italic; } /* comment */
+        .codehilite .m { color: #d19a66; } /* number */
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔐 API Versioning Guide</h1>
+            <p>API Key Management Service</p>
+        </div>
+
+        <div class="nav">
+            <a href="/">🏠 Home</a>
+            <a href="/quickstart">🚀 Quick Start</a>
+            <a href="/administration">🔐 Administration</a>
+            <a href="/docs">📚 API Docs</a>
+            <a href="/redoc">📖 ReDoc</a>
+        </div>
+
+        <div class="content">
+<h1 id="api-versioning-guide">API Versioning Guide</h1>
+<h2 id="overview">📋 Overview</h2>
+<p>Este projeto implementa versionamento de API usando <strong>prefixo de URL</strong> (<code>/v1</code>, <code>/v2</code>, etc.), seguindo as melhores práticas da indústria.</p>
+<h2 id="estrutura-de-urls">🎯 Estrutura de URLs</h2>
+<h3 id="versionadas-recomendado"><strong>Versionadas (Recomendado)</strong></h3>
+<div class="codehilite"><pre><span></span><code>GET  /akm/v1/keys
+POST /akm/v1/keys
+GET  /akm/v1/projects
+</code></pre></div>
+
+<h3 id="legacy-deprecated"><strong>Legacy (Deprecated)</strong></h3>
+<div class="codehilite"><pre><span></span><code>GET  /akm/keys       → Funciona mas deprecated
+POST /akm/keys       → Funciona mas deprecated
+GET  /akm/projects   → Funciona mas deprecated
+</code></pre></div>
+
+<p><strong>⚠️ As rotas legacy (sem versão) serão removidas em versões futuras!</strong></p>
+<h2 id="estrutura-de-diretorios">🏗️ Estrutura de Diretórios</h2>
+<div class="codehilite"><pre><span></span><code><span class="n">src</span><span class="o">/</span><span class="n">api</span><span class="o">/</span>
+<span class="w">  </span><span class="err">├──</span><span class="w"> </span><span class="n">versioning</span><span class="o">.</span><span class="n">py</span><span class="w">          </span><span class="c1"># Utilitários de versionamento</span>
+<span class="w">  </span><span class="err">├──</span><span class="w"> </span><span class="n">routes</span><span class="o">/</span><span class="w">                </span><span class="c1"># Rotas originais (compartilhadas)</span>
+<span class="w">  </span><span class="err">│</span><span class="w">   </span><span class="err">├──</span><span class="w"> </span><span class="n">keys</span><span class="o">.</span><span class="n">py</span>
+<span class="w">  </span><span class="err">│</span><span class="w">   </span><span class="err">├──</span><span class="w"> </span><span class="n">projects</span><span class="o">.</span><span class="n">py</span>
+<span class="w">  </span><span class="err">│</span><span class="w">   </span><span class="err">└──</span><span class="w"> </span><span class="o">...</span>
+<span class="w">  </span><span class="err">├──</span><span class="w"> </span><span class="n">v1</span><span class="o">/</span>
+<span class="w">  </span><span class="err">│</span><span class="w">   </span><span class="err">├──</span><span class="w"> </span><span class="n">__init__</span><span class="o">.</span><span class="n">py</span><span class="w">        </span><span class="c1"># v1_router</span>
+<span class="w">  </span><span class="err">│</span><span class="w">   </span><span class="err">└──</span><span class="w"> </span><span class="n">routes</span><span class="o">/</span>
+<span class="w">  </span><span class="err">│</span><span class="w">       </span><span class="err">└──</span><span class="w"> </span><span class="n">__init__</span><span class="o">.</span><span class="n">py</span><span class="w">    </span><span class="c1"># Re-exports from src.api.routes</span>
+<span class="w">  </span><span class="err">└──</span><span class="w"> </span><span class="n">v2</span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="n">futuro</span><span class="p">)</span>
+<span class="w">      </span><span class="err">├──</span><span class="w"> </span><span class="n">__init__</span><span class="o">.</span><span class="n">py</span><span class="w">        </span><span class="c1"># v2_router</span>
+<span class="w">      </span><span class="err">└──</span><span class="w"> </span><span class="n">routes</span><span class="o">/</span>
+<span class="w">          </span><span class="err">├──</span><span class="w"> </span><span class="n">keys</span><span class="o">.</span><span class="n">py</span><span class="w">        </span><span class="c1"># Overrides específicos da v2</span>
+<span class="w">          </span><span class="err">└──</span><span class="w"> </span><span class="o">...</span>
+</code></pre></div>
+
+<h2 id="como-criar-uma-nova-versao-v2">🔄 Como Criar uma Nova Versão (v2)</h2>
+<h3 id="1-criar-estrutura-v2"><strong>1. Criar estrutura v2</strong></h3>
+<div class="codehilite"><pre><span></span><code>mkdir<span class="w"> </span>-p<span class="w"> </span>src/api/v2/routes
+touch<span class="w"> </span>src/api/v2/__init__.py
+touch<span class="w"> </span>src/api/v2/routes/__init__.py
+</code></pre></div>
+
+<h3 id="2-criar-srcapiv2__init__py"><strong>2. Criar <code>src/api/v2/__init__.py</code></strong></h3>
+<div class="codehilite"><pre><span></span><code><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">API v2 Package</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">APIRouter</span>
+<span class="kn">from</span> <span class="nn">.routes</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">health_router</span><span class="p">,</span>
+    <span class="n">home_router</span><span class="p">,</span>
+    <span class="n">projects_router</span><span class="p">,</span>
+    <span class="n">keys_router</span><span class="p">,</span>  <span class="c1"># v2 version</span>
+    <span class="n">scopes_router</span><span class="p">,</span>
+    <span class="c1"># ... outros routers</span>
+<span class="p">)</span>
+
+<span class="c1"># Create v2 API router</span>
+<span class="n">v2_router</span> <span class="o">=</span> <span class="n">APIRouter</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;/v2&quot;</span><span class="p">)</span>
+
+<span class="c1"># Include all v2 routes</span>
+<span class="n">v2_router</span><span class="o">.</span><span class="n">include_router</span><span class="p">(</span><span class="n">health_router</span><span class="p">)</span>
+<span class="n">v2_router</span><span class="o">.</span><span class="n">include_router</span><span class="p">(</span><span class="n">home_router</span><span class="p">)</span>
+<span class="n">v2_router</span><span class="o">.</span><span class="n">include_router</span><span class="p">(</span><span class="n">projects_router</span><span class="p">)</span>
+<span class="n">v2_router</span><span class="o">.</span><span class="n">include_router</span><span class="p">(</span><span class="n">keys_router</span><span class="p">)</span>
+<span class="n">v2_router</span><span class="o">.</span><span class="n">include_router</span><span class="p">(</span><span class="n">scopes_router</span><span class="p">)</span>
+<span class="c1"># ... incluir outros routers</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;v2_router&quot;</span><span class="p">]</span>
+</code></pre></div>
+
+<h3 id="3-criar-srcapiv2routes__init__py"><strong>3. Criar <code>src/api/v2/routes/__init__.py</code></strong></h3>
+<div class="codehilite"><pre><span></span><code><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">API v2 Routes</span>
+<span class="sd">Import specific v2 implementations or fallback to v1.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># Rotas que mudaram na v2</span>
+<span class="kn">from</span> <span class="nn">.keys</span> <span class="kn">import</span> <span class="n">router</span> <span class="k">as</span> <span class="n">keys_router</span>  <span class="c1"># Nova implementação v2</span>
+
+<span class="c1"># Rotas que não mudaram (usar v1)</span>
+<span class="kn">from</span> <span class="nn">src.api.v1.routes</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">health_router</span><span class="p">,</span>
+    <span class="n">home_router</span><span class="p">,</span>
+    <span class="n">projects_router</span><span class="p">,</span>
+    <span class="n">scopes_router</span><span class="p">,</span>
+    <span class="c1"># ... outras rotas sem mudanças</span>
+<span class="p">)</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;health_router&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;home_router&quot;</span><span class="p">,</span> 
+    <span class="s2">&quot;projects_router&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;keys_router&quot;</span><span class="p">,</span>  <span class="c1"># v2 version</span>
+    <span class="s2">&quot;scopes_router&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+</code></pre></div>
+
+<h3 id="4-criar-endpoint-v2-modificado"><strong>4. Criar endpoint v2 modificado</strong></h3>
+<p><strong>Exemplo: <code>src/api/v2/routes/keys.py</code></strong></p>
+<div class="codehilite"><pre><span></span><code><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">API v2 routes for API Key management.</span>
+<span class="sd">Breaking changes from v1:</span>
+<span class="sd">- Response format changed</span>
+<span class="sd">- New required fields</span>
+<span class="sd">- Removed deprecated fields</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
+<span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">APIRouter</span><span class="p">,</span> <span class="n">Depends</span><span class="p">,</span> <span class="n">HTTPException</span><span class="p">,</span> <span class="n">status</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy.ext.asyncio</span> <span class="kn">import</span> <span class="n">AsyncSession</span>
+
+<span class="kn">from</span> <span class="nn">src.database.connection</span> <span class="kn">import</span> <span class="n">get_session</span>
+<span class="kn">from</span> <span class="nn">src.database.repositories.api_key_repository</span> <span class="kn">import</span> <span class="n">api_key_repository</span>
+<span class="kn">from</span> <span class="nn">src.database.models</span> <span class="kn">import</span> <span class="n">AKMAPIKey</span>
+<span class="kn">from</span> <span class="nn">src.api.auth_middleware</span> <span class="kn">import</span> <span class="n">PermissionChecker</span>
+<span class="c1"># Import v2-specific models</span>
+<span class="kn">from</span> <span class="nn">.models</span> <span class="kn">import</span> <span class="n">APIKeyCreateV2</span><span class="p">,</span> <span class="n">APIKeyResponseV2</span>
+
+<span class="n">router</span> <span class="o">=</span> <span class="n">APIRouter</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;/keys&quot;</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;API Keys&quot;</span><span class="p">])</span>
+
+
+<span class="nd">@router</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">response_model</span><span class="o">=</span><span class="n">APIKeyResponseV2</span><span class="p">,</span> <span class="n">status_code</span><span class="o">=</span><span class="n">status</span><span class="o">.</span><span class="n">HTTP_201_CREATED</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">create_api_key</span><span class="p">(</span>
+    <span class="n">key_data</span><span class="p">:</span> <span class="n">APIKeyCreateV2</span><span class="p">,</span>  <span class="c1"># v2 model</span>
+    <span class="n">api_key</span><span class="p">:</span> <span class="n">AKMAPIKey</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">(</span><span class="n">PermissionChecker</span><span class="p">([</span><span class="s2">&quot;akm:keys:write&quot;</span><span class="p">])),</span>
+    <span class="n">session</span><span class="p">:</span> <span class="n">AsyncSession</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">(</span><span class="n">get_session</span><span class="p">)</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create a new API key (v2).</span>
+
+<span class="sd">    **Breaking changes from v1:**</span>
+<span class="sd">    - Response now includes `created_by` field</span>
+<span class="sd">    - `project_id` is now required</span>
+<span class="sd">    - Removed `owner` field (replaced by `created_by`)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># v2 logic here</span>
+    <span class="k">pass</span>
+</code></pre></div>
+
+<h3 id="5-atualizar-srcapiversioningpy"><strong>5. Atualizar <code>src/api/versioning.py</code></strong></h3>
+<div class="codehilite"><pre><span></span><code><span class="k">class</span> <span class="nc">APIVersion</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Supported API versions.&quot;&quot;&quot;</span>
+    <span class="n">V1</span> <span class="o">=</span> <span class="s2">&quot;v1&quot;</span>
+    <span class="n">V2</span> <span class="o">=</span> <span class="s2">&quot;v2&quot;</span>  <span class="c1"># ✅ Adicionar</span>
+
+<span class="c1"># Update latest version</span>
+<span class="n">LATEST_VERSION</span> <span class="o">=</span> <span class="n">APIVersion</span><span class="o">.</span><span class="n">V2</span>
+
+<span class="c1"># Mark v1 as deprecated (opcional)</span>
+<span class="n">DEPRECATED_VERSIONS</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="n">APIVersion</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">APIVersion</span><span class="o">.</span><span class="n">V1</span><span class="p">}</span>
+</code></pre></div>
+
+<h3 id="6-registrar-v2-no-mainpy"><strong>6. Registrar v2 no <code>main.py</code></strong></h3>
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">src.api.v1</span> <span class="kn">import</span> <span class="n">v1_router</span>
+<span class="kn">from</span> <span class="nn">src.api.v2</span> <span class="kn">import</span> <span class="n">v2_router</span>  <span class="c1"># ✅ Importar</span>
+
+<span class="c1"># Include versioned API routes</span>
+<span class="n">app</span><span class="o">.</span><span class="n">include_router</span><span class="p">(</span><span class="n">v1_router</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;/akm&quot;</span><span class="p">)</span>
+<span class="n">app</span><span class="o">.</span><span class="n">include_router</span><span class="p">(</span><span class="n">v2_router</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;/akm&quot;</span><span class="p">)</span>  <span class="c1"># ✅ Adicionar</span>
+</code></pre></div>
+
+<h2 id="headers-de-versionamento">🎛️ Headers de Versionamento</h2>
+<p>Clientes podem especificar a versão via header:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Usando URL (recomendado)</span>
+curl<span class="w"> </span>https://api.example.com/akm/v1/keys
+
+<span class="c1"># Usando header (alternativa)</span>
+curl<span class="w"> </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Version: v1&quot;</span><span class="w"> </span>https://api.example.com/akm/keys
+</code></pre></div>
+
+<h2 id="modelos-por-versao">📦 Modelos por Versão</h2>
+<h3 id="opcao-1-modelos-compartilhados"><strong>Opção 1: Modelos compartilhados</strong></h3>
+<div class="codehilite"><pre><span></span><code>src/api/models/
+  ├── __init__.py
+  ├── api_keys.py      # Usado por todas as versões
+  └── projects.py
+</code></pre></div>
+
+<h3 id="opcao-2-modelos-versionados"><strong>Opção 2: Modelos versionados</strong></h3>
+<div class="codehilite"><pre><span></span><code>src/api/
+  ├── v1/
+  │   └── models/
+  │       ├── __init__.py
+  │       └── api_keys.py  # Modelos v1
+  └── v2/
+      └── models/
+          ├── __init__.py
+          └── api_keys.py  # Modelos v2 (com mudanças)
+</code></pre></div>
+
+<p><strong>Recomendação</strong>: Use modelos compartilhados quando possível e crie versões específicas apenas quando houver breaking changes.</p>
+<h2 id="ciclo-de-vida-de-versoes">🚦 Ciclo de Vida de Versões</h2>
+<h3 id="1-active-ativa"><strong>1. Active (Ativa)</strong></h3>
+<ul>
+<li>Versão totalmente suportada</li>
+<li>Recebe novas features</li>
+<li>Recebe bugfixes</li>
+</ul>
+<h3 id="2-deprecated-depreciada"><strong>2. Deprecated (Depreciada)</strong></h3>
+<div class="codehilite"><pre><span></span><code><span class="n">DEPRECATED_VERSIONS</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="n">APIVersion</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">APIVersion</span><span class="o">.</span><span class="n">V1</span><span class="p">}</span>
+</code></pre></div>
+
+<ul>
+<li>Ainda funciona mas mostra warnings</li>
+<li>Recebe apenas bugfixes críticos</li>
+<li>Clientes devem migrar</li>
+</ul>
+<p><strong>Response headers:</strong></p>
+<div class="codehilite"><pre><span></span><code>X-API-Deprecated: true
+X-API-Deprecated-Message: API version v1 is deprecated. Please migrate to v2.
+</code></pre></div>
+
+<h3 id="3-sunset-desativada"><strong>3. Sunset (Desativada)</strong></h3>
+<div class="codehilite"><pre><span></span><code><span class="n">SUNSET_VERSIONS</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="n">APIVersion</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">APIVersion</span><span class="o">.</span><span class="n">V1</span><span class="p">}</span>
+</code></pre></div>
+
+<ul>
+<li>Não funciona mais</li>
+<li>Retorna HTTP 410 Gone</li>
+<li>Força migração</li>
+</ul>
+<p><strong>Response:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;error&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;error_message&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;API version v1 has been sunset and is no longer available.&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;current_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;v2&quot;</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h2 id="testando-versoes">🧪 Testando Versões</h2>
+<h3 id="testes-unitarios"><strong>Testes Unitários</strong></h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># tests/unit/v1/test_keys.py</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">test_create_key_v1</span><span class="p">():</span>
+    <span class="c1"># Testa comportamento v1</span>
+    <span class="k">pass</span>
+
+<span class="c1"># tests/unit/v2/test_keys.py</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">test_create_key_v2</span><span class="p">():</span>
+    <span class="c1"># Testa comportamento v2</span>
+    <span class="k">pass</span>
+</code></pre></div>
+
+<h3 id="testes-de-integracao"><strong>Testes de Integração</strong></h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># tests/integration/test_versioning.py</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">test_v1_endpoint</span><span class="p">():</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/akm/v1/keys&quot;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span>
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">test_v2_endpoint</span><span class="p">():</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/akm/v2/keys&quot;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span>
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">test_deprecated_warning</span><span class="p">():</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/akm/keys&quot;</span><span class="p">)</span>  <span class="c1"># legacy</span>
+    <span class="k">assert</span> <span class="s2">&quot;X-API-Deprecated&quot;</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">headers</span>
+</code></pre></div>
+
+<h2 id="documentacao">📝 Documentação</h2>
+<p>Cada versão tem sua própria documentação Swagger:</p>
+<ul>
+<li><strong>v1</strong>: <code>https://api.example.com/docs?version=v1</code></li>
+<li><strong>v2</strong>: <code>https://api.example.com/docs?version=v2</code></li>
+</ul>
+<h3 id="configurar-no-openapi"><strong>Configurar no OpenAPI</strong></h3>
+<div class="codehilite"><pre><span></span><code><span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">(</span>
+    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;API Key Management Service&quot;</span><span class="p">,</span>
+    <span class="n">version</span><span class="o">=</span><span class="s2">&quot;2.0.0&quot;</span><span class="p">,</span>  <span class="c1"># Versão do app</span>
+    <span class="n">openapi_tags</span><span class="o">=</span><span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;API Keys (v1)&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;v1 endpoints (deprecated)&quot;</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;API Keys (v2)&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;v2 endpoints (current)&quot;</span>
+        <span class="p">}</span>
+    <span class="p">]</span>
+<span class="p">)</span>
+</code></pre></div>
+
+<h2 id="boas-praticas">🎯 Boas Práticas</h2>
+<h3 id="do">✅ <strong>DO</strong></h3>
+<ol>
+<li><strong>Versione breaking changes</strong>: Mudanças que quebram contratos existentes</li>
+<li><strong>Documente diferenças</strong>: Deixe claro o que mudou entre versões</li>
+<li><strong>Mantenha compatibilidade</strong>: v1 deve continuar funcionando após v2</li>
+<li><strong>Deprecie gradualmente</strong>: Avise com antecedência (3-6 meses)</li>
+<li><strong>Use semantic versioning</strong>: v1, v2, v3 (não v1.1, v1.2)</li>
+</ol>
+<h3 id="dont">❌ <strong>DON'T</strong></h3>
+<ol>
+<li><strong>Não quebre v1 ao lançar v2</strong>: Versões devem coexistir</li>
+<li><strong>Não remova versões sem aviso</strong>: Período de depreciação é obrigatório</li>
+<li><strong>Não misture lógica</strong>: Cada versão deve ter código separado</li>
+<li><strong>Não versione bugfixes</strong>: Correções vão para todas as versões ativas</li>
+</ol>
+<h2 id="migration-guide-para-clientes">🔄 Migration Guide para Clientes</h2>
+<h3 id="de-legacy-sem-versao-v1"><strong>De Legacy (sem versão) → v1</strong></h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Antes</span>
+curl<span class="w"> </span>https://api.example.com/akm/keys
+
+<span class="c1"># Depois</span>
+curl<span class="w"> </span>https://api.example.com/akm/v1/keys
+</code></pre></div>
+
+<h3 id="de-v1-v2"><strong>De v1 → v2</strong></h3>
+<p>Ver documento específico: <code>docs/MIGRATION_V1_TO_V2.md</code></p>
+<h2 id="monitoramento">📊 Monitoramento</h2>
+<h3 id="metricas-importantes"><strong>Métricas importantes</strong></h3>
+<ul>
+<li>Uso por versão (% requests v1 vs v2)</li>
+<li>Taxa de erro por versão</li>
+<li>Latência por versão</li>
+<li>Clientes ainda usando versões deprecated</li>
+</ul>
+<h3 id="logs"><strong>Logs</strong></h3>
+<div class="codehilite"><pre><span></span><code><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+    <span class="s2">&quot;API request&quot;</span><span class="p">,</span>
+    <span class="n">version</span><span class="o">=</span><span class="s2">&quot;v1&quot;</span><span class="p">,</span>
+    <span class="n">endpoint</span><span class="o">=</span><span class="s2">&quot;/keys&quot;</span><span class="p">,</span>
+    <span class="n">deprecated</span><span class="o">=</span><span class="kc">True</span>
+<span class="p">)</span>
+</code></pre></div>
+
+<h2 id="roadmap">🚀 Roadmap</h2>
+<table>
+<thead>
+<tr>
+<th>Versão</th>
+<th>Status</th>
+<th>Lançamento</th>
+<th>Sunset</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>v1</td>
+<td>Active</td>
+<td>2024-01</td>
+<td>TBD</td>
+</tr>
+<tr>
+<td>v2</td>
+<td>Planned</td>
+<td>2025-Q2</td>
+<td>-</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="recursos">📚 Recursos</h2>
+<ul>
+<li><a href="https://www.baeldung.com/rest-versioning">API Versioning Best Practices</a></li>
+<li><a href="https://fastapi.tiangolo.com/tutorial/bigger-applications/">FastAPI Router Documentation</a></li>
+<li><a href="https://stripe.com/docs/api/versioning">Stripe API Versioning</a> (referência de mercado)</li>
+</ul>
+        </div>
+
+        <div class="footer">
+            <p>Built with ❤️ using FastAPI, PostgreSQL, and SQLAlchemy</p>
+            <p style="margin-top: 10px;">© 2025 API Key Management Service by <a href="https://github.com/ideiasfactory" target="_blank">Ideias Factory</a></p>
+        </div>
+    </div>
+
+    <a href="#" class="back-to-top">↑</a>
+
+    <script>
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        // Back to top button
+        const backToTop = document.querySelector('.back-to-top');
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTop.style.display = 'flex';
+            } else {
+                backToTop.style.display = 'none';
+            }
+        });
+
+        backToTop.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    </script>
+</body>
+</html>
