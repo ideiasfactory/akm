@@ -397,7 +397,7 @@ async def administration_guide():
         Path(__file__).parent.parent / "static" / "administration.html",
         Path("/var/task/src/api/static/administration.html"),
         Path("/var/task/public/administration.html"),
-        Path(__file__).parent.parent.parent.parent / "public" / "administration.html"),
+        Path(__file__).parent.parent.parent.parent / "public" / "administration.html",
         Path.cwd() / "public" / "administration.html",
     ]
 
