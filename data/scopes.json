@@ -1,0 +1,227 @@
+{
+  "version": "2.0.0",
+  "scopes": [
+    {
+      "scope_name": "akm:projects:read",
+      "description": "View projects and their statistics",
+      "category": "projects",
+      "is_active": true
+    },
+    {
+      "scope_name": "akm:projects:write",
+      "description": "Create and update projects",
+      "category": "projects",
+      "is_active": true
+    },
+    {
+      "scope_name": "akm:sensitive-fields:read",
+      "description": "List and view sensitive field configurations",
+      "category": "sensitive_fields",
+      "is_active": true
+    },
+    {
+      "scope_name": "akm:sensitive-fields:create",
+      "description": "Create new sensitive field configuration",
+      "category": "sensitive_fields",
+      "is_active": true
+    },
+    {
+      "scope_name": "akm:sensitive-fields:update",
+      "description": "Update existing sensitive field configuration",
+      "category": "sensitive_fields",
+      "is_active": true
+    },
+    {
+      "scope_name": "akm:sensitive-fields:delete",
+      "description": "Delete sensitive field configuration",
+      "category": "sensitive_fields",
+      "is_active": true
+    },
+    {
+      "scope_name": "akm:sensitive-fields:*",
+      "description": "Full CRUD access to sensitive field configurations",
+      "category": "sensitive_fields",
+      "is_active": true
+    },
+    {
+      "scope_name": "akm:projects:delete",
+      "description": "Delete projects",
+      "category": "projects",
+      "is_active": true
+    },
+    {
+      "scope_name": "akm:projects:*",
+      "description": "Full project management access",
+      "category": "projects",
+      "is_active": true
+    },
+    {
+      "scope_name": "akm:keys:read",
+      "description": "View API keys and their configurations",
+      "category": "keys",
+      "is_active": true
+    },
+    {
+      "scope_name": "akm:keys:write",
+      "description": "Create, update, and revoke API keys",
+      "category": "keys",
+      "is_active": true
+    },
+    {
+      "scope_name": "akm:keys:delete",
+      "description": "Permanently delete API keys",
+      "category": "keys",
+      "is_active": true
+    },
+    {
+      "scope_name": "akm:keys:*",
+      "description": "Full API key management access",
+      "category": "keys",
+      "is_active": true
+    },
+    {
+      "scope_name": "akm:scopes:read",
+      "description": "View scope definitions and export scope configurations",
+      "category": "scopes",
+      "is_active": true
+    },
+    {
+      "scope_name": "akm:scopes:write",
+      "description": "Create, update, and bulk import scopes",
+      "category": "scopes",
+      "is_active": true
+    },
+    {
+      "scope_name": "akm:scopes:delete",
+      "description": "Delete scope definitions",
+      "category": "scopes",
+      "is_active": true
+    },
+    {
+      "scope_name": "akm:scopes:*",
+      "description": "Full scope management access",
+      "category": "scopes",
+      "is_active": true
+    },
+    {
+      "scope_name": "akm:openapi:read",
+      "description": "Analyze OpenAPI/Swagger specifications and preview generated scopes",
+      "category": "openapi",
+      "is_active": true
+    },
+    {
+      "scope_name": "akm:openapi:generate",
+      "description": "Generate scope definitions from OpenAPI/Swagger specs",
+      "category": "openapi",
+      "is_active": true
+    },
+    {
+      "scope_name": "akm:openapi:*",
+      "description": "Full OpenAPI scope generation access",
+      "category": "openapi",
+      "is_active": true
+    },
+    {
+      "scope_name": "akm:configs:read",
+      "description": "View API key configurations (rate limits, IP restrictions, usage stats)",
+      "category": "configs",
+      "is_active": true
+    },
+    {
+      "scope_name": "akm:configs:write",
+      "description": "Update API key configurations and restrictions",
+      "category": "configs",
+      "is_active": true
+    },
+    {
+      "scope_name": "akm:configs:*",
+      "description": "Full API key configuration management",
+      "category": "configs",
+      "is_active": true
+    },
+    {
+      "scope_name": "akm:webhooks:read",
+      "description": "View webhooks, events, and delivery history",
+      "category": "webhooks",
+      "is_active": true
+    },
+    {
+      "scope_name": "akm:webhooks:write",
+      "description": "Create, update, and manage webhook subscriptions",
+      "category": "webhooks",
+      "is_active": true
+    },
+    {
+      "scope_name": "akm:webhooks:delete",
+      "description": "Delete webhooks and subscriptions",
+      "category": "webhooks",
+      "is_active": true
+    },
+    {
+      "scope_name": "akm:webhooks:retry",
+      "description": "Retry failed webhook deliveries",
+      "category": "webhooks",
+      "is_active": true
+    },
+    {
+      "scope_name": "akm:webhooks:*",
+      "description": "Full webhook management access",
+      "category": "webhooks",
+      "is_active": true
+    },
+    {
+      "scope_name": "akm:alerts:read",
+      "description": "View alert rules, history, and statistics",
+      "category": "alerts",
+      "is_active": true
+    },
+    {
+      "scope_name": "akm:alerts:write",
+      "description": "Create and update alert rules",
+      "category": "alerts",
+      "is_active": true
+    },
+    {
+      "scope_name": "akm:alerts:delete",
+      "description": "Delete alert rules",
+      "category": "alerts",
+      "is_active": true
+    },
+    {
+      "scope_name": "akm:alerts:*",
+      "description": "Full alert management access",
+      "category": "alerts",
+      "is_active": true
+    },
+    {
+      "scope_name": "akm:audit:read",
+      "description": "Read audit logs with advanced filtering and query capabilities",
+      "category": "audit",
+      "is_active": true
+    },
+    {
+      "scope_name": "akm:audit:verify",
+      "description": "Verify audit log integrity and detect tampering",
+      "category": "audit",
+      "is_active": true
+    },
+    {
+      "scope_name": "akm:audit:statistics",
+      "description": "View audit statistics, failed operations, and resource activity",
+      "category": "audit",
+      "is_active": true
+    },
+    {
+      "scope_name": "akm:audit:*",
+      "description": "Full audit access (read-only operations)",
+      "category": "audit",
+      "is_active": true
+    },
+    {
+      "scope_name": "akm:*",
+      "description": "Full system access - grants all permissions",
+      "category": "system",
+      "is_active": true
+    }
+  ]
+}

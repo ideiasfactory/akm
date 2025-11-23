@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deployment Guide - API Key Management Service</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --accent: #f093fb;
+            --dark: #1a1a2e;
+            --light: #f8f9fa;
+            --code-bg: #282c34;
+            --border: #e0e0e0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .nav {
+            background: var(--dark);
+            padding: 15px 40px;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .nav a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .nav a:hover {
+            background: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--dark);
+            margin: 30px 0 15px 0;
+            line-height: 1.3;
+        }
+
+        h1 { font-size: 2.5em; border-bottom: 3px solid var(--primary); padding-bottom: 10px; }
+        h2 { font-size: 2em; border-bottom: 2px solid var(--border); padding-bottom: 8px; margin-top: 40px; }
+        h3 { font-size: 1.5em; color: var(--primary); }
+        h4 { font-size: 1.3em; }
+
+        p {
+            margin: 15px 0;
+            line-height: 1.8;
+        }
+
+        a {
+            color: var(--primary);
+            text-decoration: none;
+            border-bottom: 1px dotted var(--primary);
+        }
+
+        a:hover {
+            color: var(--secondary);
+            border-bottom: 1px solid var(--secondary);
+        }
+
+        code {
+            background: #f4f4f4;
+            padding: 3px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #e83e8c;
+        }
+
+        pre {
+            background: var(--code-bg);
+            color: #abb2bf;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+            border-left: 4px solid var(--primary);
+        }
+
+        pre code {
+            background: none;
+            color: inherit;
+            padding: 0;
+            font-size: 0.95em;
+        }
+
+        blockquote {
+            border-left: 4px solid var(--primary);
+            padding: 15px 20px;
+            margin: 20px 0;
+            background: #f8f9fa;
+            font-style: italic;
+        }
+
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+
+        li {
+            margin: 8px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .success {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .info {
+            background: #d1ecf1;
+            border-left: 4px solid #17a2b8;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .footer {
+            background: var(--dark);
+            color: white;
+            padding: 30px 40px;
+            text-align: center;
+        }
+
+        .footer a {
+            color: var(--accent);
+            border-bottom: 1px dotted var(--accent);
+        }
+
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--primary);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            font-size: 24px;
+        }
+
+        .back-to-top:hover {
+            background: var(--secondary);
+            transform: translateY(-5px);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                border-radius: 0;
+            }
+
+            .header {
+                padding: 30px 20px;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .nav {
+                padding: 15px 20px;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            pre {
+                padding: 15px;
+                font-size: 0.85em;
+            }
+        }
+
+        /* Syntax highlighting for code blocks */
+        .codehilite .k { color: #c678dd; } /* keyword */
+        .codehilite .s { color: #98c379; } /* string */
+        .codehilite .n { color: #e06c75; } /* name */
+        .codehilite .c { color: #5c6370; font-style: italic; } /* comment */
+        .codehilite .m { color: #d19a66; } /* number */
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔐 Deployment Guide</h1>
+            <p>API Key Management Service</p>
+        </div>
+
+        <div class="nav">
+            <a href="/">🏠 Home</a>
+            <a href="/quickstart">🚀 Quick Start</a>
+            <a href="/administration">🔐 Administration</a>
+            <a href="/docs">📚 API Docs</a>
+            <a href="/redoc">📖 ReDoc</a>
+        </div>
+
+        <div class="content">
+<h1 id="vercel-deployment-guide">Vercel Deployment Guide</h1>
+<h2 id="live-deployment">🌐 Live Deployment</h2>
+<p><strong>Production URL</strong>: <a href="https://brazillian-cds-datafeeder-v2.vercel.app/">https://brazillian-cds-datafeeder-v2.vercel.app/</a></p>
+<h2 id="prerequisites">📋 Prerequisites</h2>
+<ul>
+<li>Python 3.9+</li>
+<li>Vercel account</li>
+<li>Git repository</li>
+</ul>
+<h2 id="quick-deploy">🚀 Quick Deploy</h2>
+<h3 id="method-1-vercel-cli">Method 1: Vercel CLI</h3>
+<ol>
+<li>
+<p><strong>Install Vercel CLI</strong>
+   <code>bash
+   npm i -g vercel</code></p>
+</li>
+<li>
+<p><strong>Login to Vercel</strong>
+   <code>bash
+   vercel login</code></p>
+</li>
+<li>
+<p><strong>Deploy</strong>
+   <code>bash
+   vercel</code></p>
+</li>
+<li>
+<p><strong>Deploy to Production</strong>
+   <code>bash
+   vercel --prod</code></p>
+</li>
+</ol>
+<h3 id="method-2-git-integration-recommended">Method 2: Git Integration (Recommended)</h3>
+<ol>
+<li>
+<p><strong>Push to GitHub</strong>
+   <code>bash
+   git add .
+   git commit -m "Deploy FastAPI to Vercel"
+   git push origin master</code></p>
+</li>
+<li>
+<p><strong>Import in Vercel</strong></p>
+</li>
+<li>Go to <a href="https://vercel.com">vercel.com</a></li>
+<li>Click "Add New" → "Project"</li>
+<li>Import your GitHub repository</li>
+<li>
+<p>Vercel will auto-detect the configuration</p>
+</li>
+<li>
+<p><strong>Deploy</strong></p>
+</li>
+<li>Click "Deploy"</li>
+<li>Vercel will build and deploy automatically</li>
+</ol>
+<h2 id="configuration-files">⚙️ Configuration Files</h2>
+<h3 id="verceljson">vercel.json</h3>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;version&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;builds&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;src&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;src/api/index.py&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;use&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;@vercel/python&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">],</span>
+<span class="w">  </span><span class="nt">&quot;routes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;src&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/(.*)&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;dest&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;src/api/index.py&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">],</span>
+<span class="w">  </span><span class="nt">&quot;env&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;ENVIRONMENT&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;production&quot;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3 id="srcapiindexpy">src/api/index.py</h3>
+<p>This file is the entry point for Vercel. It imports the FastAPI app from <code>main.py</code>.</p>
+<h2 id="environment-variables">🔧 Environment Variables</h2>
+<p>Set in Vercel Dashboard under Project Settings → Environment Variables:</p>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Value</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ENVIRONMENT</code></td>
+<td><code>production</code></td>
+<td>Deployment environment</td>
+</tr>
+<tr>
+<td><code>API_VERSION</code></td>
+<td><code>2.0.0</code></td>
+<td>API version string</td>
+</tr>
+</tbody>
+</table>
+<h2 id="file-structure-for-vercel">📁 File Structure for Vercel</h2>
+<div class="codehilite"><pre><span></span><code>.
+├── src/
+│   └── api/
+│       └── index.py      # Vercel entry point (required)
+├── main.py               # FastAPI app
+├── src/                  # Application code
+├── public/               # Static files
+├── requirements.txt      # Dependencies (required)
+└── vercel.json          # Vercel config (required)
+</code></pre></div>
+
+<h2 id="deployment-checklist">✅ Deployment Checklist</h2>
+<ul>
+<li>[ ] <code>src/api/index.py</code> exists and imports the app</li>
+<li>[ ] <code>requirements.txt</code> has all dependencies</li>
+<li>[ ] <code>vercel.json</code> is configured correctly</li>
+<li>[ ] Environment variables are set</li>
+<li>[ ] Code is pushed to Git repository</li>
+<li>[ ] Repository is connected to Vercel</li>
+</ul>
+<h2 id="testing-deployment">🧪 Testing Deployment</h2>
+<p>After deployment, test these endpoints:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Replace YOUR-DEPLOYMENT-URL with your actual URL</span>
+
+<span class="c1"># Home page</span>
+curl<span class="w"> </span>https://YOUR-DEPLOYMENT-URL.vercel.app/
+
+<span class="c1"># Health check</span>
+curl<span class="w"> </span>https://YOUR-DEPLOYMENT-URL.vercel.app/health
+
+<span class="c1"># API docs</span>
+curl<span class="w"> </span>https://YOUR-DEPLOYMENT-URL.vercel.app/docs
+</code></pre></div>
+
+<h2 id="troubleshooting">🐛 Troubleshooting</h2>
+<h3 id="build-fails">Build Fails</h3>
+<p><strong>Problem</strong>: Build fails with module import errors</p>
+<p><strong>Solution</strong>: Make sure all dependencies are in <code>requirements.txt</code></p>
+<div class="codehilite"><pre><span></span><code>pip<span class="w"> </span>freeze<span class="w"> </span>&gt;<span class="w"> </span>requirements.txt
+</code></pre></div>
+
+<h3 id="404-errors">404 Errors</h3>
+<p><strong>Problem</strong>: All routes return 404</p>
+<p><strong>Solution</strong>: Check that <code>src/api/index.py</code> properly imports the app:</p>
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">main</span> <span class="kn">import</span> <span class="n">app</span>
+</code></pre></div>
+
+<h3 id="function-timeout">Function Timeout</h3>
+<p><strong>Problem</strong>: Requests timeout after 10 seconds</p>
+<p><strong>Solution</strong>: Vercel free tier has 10s timeout. Upgrade or optimize code.</p>
+<h3 id="static-files-not-loading">Static Files Not Loading</h3>
+<p><strong>Problem</strong>: HTML template not found or "Template file not found" error</p>
+<p><strong>Solution</strong>: </p>
+<ol>
+<li>Ensure <code>public/</code> directory is included in the deployment:</li>
+<li>The <code>vercel.json</code> should include static build configuration</li>
+<li>
+<p>Check that <code>public/home.html</code> exists in the repository</p>
+</li>
+<li>
+<p>The application now supports multiple path resolution strategies:</p>
+</li>
+<li><code>/var/task/public/home.html</code> (Vercel serverless)</li>
+<li>Relative paths for local development</li>
+<li>
+<p>Fallback to embedded HTML if template not found</p>
+</li>
+<li>
+<p>Verify environment variables are set:
+   <code>bash
+   ENVIRONMENT=production
+   API_VERSION=2.0.0</code></p>
+</li>
+<li>
+<p>If the issue persists, check Vercel build logs for file inclusion.</p>
+</li>
+</ol>
+<h2 id="monitoring">📊 Monitoring</h2>
+<h3 id="view-logs">View Logs</h3>
+<ol>
+<li>Go to Vercel Dashboard</li>
+<li>Select your project</li>
+<li>Go to "Deployments"</li>
+<li>Click on a deployment</li>
+<li>View "Function Logs"</li>
+</ol>
+<h3 id="performance">Performance</h3>
+<ul>
+<li>Check response times in Vercel Analytics</li>
+<li>Monitor function invocations</li>
+<li>Track error rates</li>
+</ul>
+<h2 id="cicd">🔄 CI/CD</h2>
+<p>Vercel automatically deploys:</p>
+<ul>
+<li><strong>Production</strong>: Pushes to <code>main</code> or <code>master</code> branch</li>
+<li><strong>Preview</strong>: Pushes to any other branch or pull requests</li>
+</ul>
+<h3 id="disable-auto-deploy">Disable Auto-Deploy</h3>
+<p>In Vercel Dashboard:
+1. Project Settings → Git
+2. Disable "Production Branch Auto Deploy"
+3. Manually trigger deployments</p>
+<h2 id="scaling">📈 Scaling</h2>
+<h3 id="vercel-limits-free-tier">Vercel Limits (Free Tier)</h3>
+<ul>
+<li>10 second function timeout</li>
+<li>12 deployments per day</li>
+<li>100 GB bandwidth per month</li>
+</ul>
+<h3 id="upgrade-options">Upgrade Options</h3>
+<ul>
+<li><strong>Pro</strong>: $20/month - 60s timeout, more deployments</li>
+<li><strong>Enterprise</strong>: Custom limits and support</li>
+</ul>
+<h2 id="security">🔐 Security</h2>
+<h3 id="environment-variables_1">Environment Variables</h3>
+<p>Never commit sensitive data. Use Vercel environment variables for:
+- API keys
+- Database credentials
+- Secret tokens</p>
+<h3 id="cors-configuration">CORS Configuration</h3>
+<p>Update CORS settings in <code>main.py</code>:</p>
+<div class="codehilite"><pre><span></span><code><span class="n">app</span><span class="o">.</span><span class="n">add_middleware</span><span class="p">(</span>
+    <span class="n">CORSMiddleware</span><span class="p">,</span>
+    <span class="n">allow_origins</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;https://yourdomain.com&quot;</span><span class="p">],</span>
+    <span class="n">allow_credentials</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">allow_methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="s2">&quot;POST&quot;</span><span class="p">],</span>
+    <span class="n">allow_headers</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;*&quot;</span><span class="p">],</span>
+<span class="p">)</span>
+</code></pre></div>
+
+<h2 id="additional-resources">📚 Additional Resources</h2>
+<ul>
+<li><a href="https://vercel.com/docs/functions/serverless-functions/runtimes/python">Vercel Python Documentation</a></li>
+<li><a href="https://fastapi.tiangolo.com/">FastAPI Documentation</a></li>
+<li><a href="https://vercel.com/docs/cli">Vercel CLI Reference</a></li>
+</ul>
+<hr />
+<p>Need help? Open an issue on GitHub!</p>
+        </div>
+
+        <div class="footer">
+            <p>Built with ❤️ using FastAPI, PostgreSQL, and SQLAlchemy</p>
+            <p style="margin-top: 10px;">© 2025 API Key Management Service by <a href="https://github.com/ideiasfactory" target="_blank">Ideias Factory</a></p>
+        </div>
+    </div>
+
+    <a href="#" class="back-to-top">↑</a>
+
+    <script>
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        // Back to top button
+        const backToTop = document.querySelector('.back-to-top');
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTop.style.display = 'flex';
+            } else {
+                backToTop.style.display = 'none';
+            }
+        });
+
+        backToTop.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    </script>
+</body>
+</html>

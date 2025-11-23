@@ -1,0 +1,22 @@
+{
+  "fields": [
+    "password",
+    "token",
+    "secret",
+    "api_key",
+    "key_hash",
+    "authorization",
+    "x-api-key",
+    "bearer",
+    "credential",
+    "private_key",
+    "client_secret"
+  ],
+  "strategy": "redact",
+  "replacement": "[REDACTED]",
+  "mask": {
+    "show_start": 3,
+    "show_end": 2,
+    "char": "*"
+  }
+}

@@ -1,0 +1,116 @@
+# Vercel
+.vercel
+
+# Python
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+*.whl
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Virtual environments
+.venv/
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+pythonenv*/
+
+# Environment files (keep .env.example for reference)
+.env
+.env.local
+.env.dev
+.env.prod
+.env.staging
+.env.*.local
+
+# Testing
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+*.cover
+.hypothesis/
+.tox/
+.nox/
+
+# Logs
+*.log
+logs/
+*.log.*
+
+# IDEs and editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+*.sublime-project
+*.sublime-workspace
+.DS_Store
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Data files (keep example/schema files)
+data/*_bkp_*.csv
+data/backup_*.json
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+*.ipynb
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# pytype static type analyzer
+.pytype/
+
+# profiling data
+.prof
+
+# Ruff
+.ruff_cache/
+
+# Python version files
+.python-version
+.pyenv-setup.md
+
+# Temporary and backup files
+*.bak
+*.tmp
+*.temp
+*~
+
+# API Keys and secrets
+ADMIN_API_KEY.txt
+*.key
+*.pem
+*.crt
+secrets/
+
+# Local development
+.vercel
+local/
+temp/
+tmp/

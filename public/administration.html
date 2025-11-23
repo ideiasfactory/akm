@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administration Guide - API Key Management Service</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --accent: #f093fb;
+            --dark: #1a1a2e;
+            --light: #f8f9fa;
+            --code-bg: #282c34;
+            --border: #e0e0e0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .nav {
+            background: var(--dark);
+            padding: 15px 40px;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .nav a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .nav a:hover {
+            background: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--dark);
+            margin: 30px 0 15px 0;
+            line-height: 1.3;
+        }
+
+        h1 { font-size: 2.5em; border-bottom: 3px solid var(--primary); padding-bottom: 10px; }
+        h2 { font-size: 2em; border-bottom: 2px solid var(--border); padding-bottom: 8px; margin-top: 40px; }
+        h3 { font-size: 1.5em; color: var(--primary); }
+        h4 { font-size: 1.3em; }
+
+        p {
+            margin: 15px 0;
+            line-height: 1.8;
+        }
+
+        a {
+            color: var(--primary);
+            text-decoration: none;
+            border-bottom: 1px dotted var(--primary);
+        }
+
+        a:hover {
+            color: var(--secondary);
+            border-bottom: 1px solid var(--secondary);
+        }
+
+        code {
+            background: #f4f4f4;
+            padding: 3px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #e83e8c;
+        }
+
+        pre {
+            background: var(--code-bg);
+            color: #abb2bf;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+            border-left: 4px solid var(--primary);
+        }
+
+        pre code {
+            background: none;
+            color: inherit;
+            padding: 0;
+            font-size: 0.95em;
+        }
+
+        blockquote {
+            border-left: 4px solid var(--primary);
+            padding: 15px 20px;
+            margin: 20px 0;
+            background: #f8f9fa;
+            font-style: italic;
+        }
+
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+
+        li {
+            margin: 8px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .success {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .info {
+            background: #d1ecf1;
+            border-left: 4px solid #17a2b8;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .footer {
+            background: var(--dark);
+            color: white;
+            padding: 30px 40px;
+            text-align: center;
+        }
+
+        .footer a {
+            color: var(--accent);
+            border-bottom: 1px dotted var(--accent);
+        }
+
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--primary);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            font-size: 24px;
+        }
+
+        .back-to-top:hover {
+            background: var(--secondary);
+            transform: translateY(-5px);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                border-radius: 0;
+            }
+
+            .header {
+                padding: 30px 20px;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .nav {
+                padding: 15px 20px;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            pre {
+                padding: 15px;
+                font-size: 0.85em;
+            }
+        }
+
+        /* Syntax highlighting for code blocks */
+        .codehilite .k { color: #c678dd; } /* keyword */
+        .codehilite .s { color: #98c379; } /* string */
+        .codehilite .n { color: #e06c75; } /* name */
+        .codehilite .c { color: #5c6370; font-style: italic; } /* comment */
+        .codehilite .m { color: #d19a66; } /* number */
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔐 Administration Guide</h1>
+            <p>API Key Management Service</p>
+        </div>
+
+        <div class="nav">
+            <a href="/">🏠 Home</a>
+            <a href="/quickstart">🚀 Quick Start</a>
+            <a href="/administration">🔐 Administration</a>
+            <a href="/docs">📚 API Docs</a>
+            <a href="/redoc">📖 ReDoc</a>
+        </div>
+
+        <div class="content">
+<h1 id="administration-guide">🔐 Administration Guide</h1>
+<p>Complete guide for administrators to deploy, configure, and manage the API Key Management Service.</p>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ul>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#initial-setup">Initial Setup</a></li>
+<li><a href="#bootstrap-process">Bootstrap Process</a></li>
+<li><a href="#user-onboarding">User Onboarding</a></li>
+<li><a href="#project-management">Project Management</a></li>
+<li><a href="#security-configuration">Security Configuration</a></li>
+<li><a href="#monitoring--audit">Monitoring &amp; Audit</a></li>
+<li><a href="#backup--recovery">Backup &amp; Recovery</a></li>
+<li><a href="#maintenance-tasks">Maintenance Tasks</a></li>
+<li><a href="#troubleshooting">Troubleshooting</a></li>
+</ul>
+<hr />
+<h2 id="overview">Overview</h2>
+<p>As an administrator, you're responsible for:</p>
+<ul>
+<li><strong>Initial deployment</strong> and configuration</li>
+<li><strong>Creating master credentials</strong> for the bootstrap process</li>
+<li><strong>Onboarding new clients</strong> by creating their projects and initial API keys</li>
+<li><strong>Monitoring system health</strong> and usage patterns</li>
+<li><strong>Managing security policies</strong> and access controls</li>
+<li><strong>Maintaining audit logs</strong> for compliance</li>
+<li><strong>Performing backups</strong> and disaster recovery</li>
+</ul>
+<hr />
+<h2 id="initial-setup">Initial Setup</h2>
+<h3 id="prerequisites">Prerequisites</h3>
+<ul>
+<li><strong>Python 3.10+</strong> installed</li>
+<li><strong>PostgreSQL 14+</strong> running</li>
+<li><strong>Git</strong> for cloning the repository</li>
+<li><strong>Admin access</strong> to the server/cloud environment</li>
+<li><strong>SSL certificates</strong> for production (recommended)</li>
+</ul>
+<h3 id="1-clone-and-install">1. Clone and Install</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Clone the repository</span>
+git<span class="w"> </span>clone<span class="w"> </span>https://github.com/ideiasfactory/apikey_management.git
+<span class="nb">cd</span><span class="w"> </span>apikey_management
+
+<span class="c1"># Create virtual environment</span>
+python<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>.venv
+
+<span class="c1"># Activate virtual environment</span>
+<span class="c1"># Windows PowerShell:</span>
+.venv<span class="se">\S</span>cripts<span class="se">\A</span>ctivate.ps1
+<span class="c1"># Linux/Mac:</span>
+<span class="nb">source</span><span class="w"> </span>.venv/bin/activate
+
+<span class="c1"># Install dependencies</span>
+pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements.txt
+</code></pre></div>
+
+<h3 id="2-configure-environment">2. Configure Environment</h3>
+<p>Create a <code>.env</code> file with <strong>secure production values</strong>:</p>
+<div class="codehilite"><pre><span></span><code><span class="err">#</span><span class="w"> </span><span class="k">Database</span>
+<span class="n">DATABASE_URL</span><span class="o">=</span><span class="n">postgresql</span><span class="o">+</span><span class="nl">asyncpg</span><span class="p">:</span><span class="o">//</span><span class="nl">apikey_user</span><span class="p">:</span><span class="n">STRONG_PASSWORD</span><span class="nv">@localhost</span><span class="err">:</span><span class="mi">5432</span><span class="o">/</span><span class="n">apikey_management</span>
+
+<span class="err">#</span><span class="w"> </span><span class="n">Security</span>
+<span class="n">SECRET_KEY</span><span class="o">=</span><span class="n">generate</span><span class="o">-</span><span class="n">a</span><span class="o">-</span><span class="n">strong</span><span class="o">-</span><span class="n">random</span><span class="o">-</span><span class="n">secret</span><span class="o">-</span><span class="k">key</span><span class="o">-</span><span class="n">here</span><span class="o">-</span><span class="k">use</span><span class="o">-</span><span class="n">openssl</span><span class="o">-</span><span class="nf">rand</span><span class="o">-</span><span class="n">hex</span><span class="o">-</span><span class="mi">32</span>
+<span class="n">ADMIN_API_KEY</span><span class="o">=</span><span class="n">admin_master_key_change_this_immediately_after_bootstrap</span>
+<span class="n">ALGORITHM</span><span class="o">=</span><span class="n">HS256</span>
+
+<span class="err">#</span><span class="w"> </span><span class="n">API</span><span class="w"> </span><span class="n">Configuration</span>
+<span class="n">API_VERSION</span><span class="o">=</span><span class="mf">1.0.0</span>
+<span class="n">ENVIRONMENT</span><span class="o">=</span><span class="n">production</span>
+<span class="n">CORS_ORIGINS</span><span class="o">=</span><span class="nl">https</span><span class="p">:</span><span class="o">//</span><span class="n">your</span><span class="o">-</span><span class="n">production</span><span class="o">-</span><span class="k">domain</span><span class="p">.</span><span class="n">com</span>
+
+<span class="err">#</span><span class="w"> </span><span class="n">Rate</span><span class="w"> </span><span class="n">Limiting</span>
+<span class="n">DEFAULT_RATE_LIMIT</span><span class="o">=</span><span class="mi">1000</span>
+<span class="n">MAX_RATE_LIMIT</span><span class="o">=</span><span class="mi">100000</span>
+
+<span class="err">#</span><span class="w"> </span><span class="n">Logging</span>
+<span class="n">LOG_LEVEL</span><span class="o">=</span><span class="n">INFO</span>
+<span class="n">LOG_FORMAT</span><span class="o">=</span><span class="n">json</span>
+<span class="n">AUDIT_RETENTION_DAYS</span><span class="o">=</span><span class="mi">90</span>
+
+<span class="err">#</span><span class="w"> </span><span class="nl">Optional</span><span class="p">:</span><span class="w"> </span><span class="k">External</span><span class="w"> </span><span class="n">Services</span>
+<span class="n">WEBHOOK_TIMEOUT_SECONDS</span><span class="o">=</span><span class="mi">30</span>
+<span class="n">EMAIL_NOTIFICATIONS_ENABLED</span><span class="o">=</span><span class="k">true</span>
+<span class="n">SMTP_HOST</span><span class="o">=</span><span class="n">smtp</span><span class="p">.</span><span class="n">your</span><span class="o">-</span><span class="n">email</span><span class="o">-</span><span class="n">provider</span><span class="p">.</span><span class="n">com</span>
+<span class="n">SMTP_PORT</span><span class="o">=</span><span class="mi">587</span>
+<span class="n">SMTP_USER</span><span class="o">=</span><span class="n">notifications</span><span class="nv">@your</span><span class="o">-</span><span class="k">domain</span><span class="p">.</span><span class="n">com</span>
+<span class="n">SMTP_PASSWORD</span><span class="o">=</span><span class="n">your</span><span class="o">-</span><span class="n">smtp</span><span class="o">-</span><span class="n">password</span>
+</code></pre></div>
+
+<h3 id="3-generate-secure-keys">3. Generate Secure Keys</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Generate SECRET_KEY</span>
+openssl<span class="w"> </span>rand<span class="w"> </span>-hex<span class="w"> </span><span class="m">32</span>
+
+<span class="c1"># Generate ADMIN_API_KEY</span>
+openssl<span class="w"> </span>rand<span class="w"> </span>-hex<span class="w"> </span><span class="m">32</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>base64
+</code></pre></div>
+
+<h3 id="4-initialize-database">4. Initialize Database</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Run Alembic migrations</span>
+alembic<span class="w"> </span>upgrade<span class="w"> </span>head
+
+<span class="c1"># Create initial tables</span>
+python<span class="w"> </span>scripts/create_api_keys_table.py
+
+<span class="c1"># Verify database</span>
+psql<span class="w"> </span>-d<span class="w"> </span>apikey_management<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;\dt&quot;</span>
+</code></pre></div>
+
+<h3 id="5-start-the-service">5. Start the Service</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Production mode with multiple workers</span>
+uvicorn<span class="w"> </span>main:app<span class="w"> </span>--host<span class="w"> </span><span class="m">0</span>.0.0.0<span class="w"> </span>--port<span class="w"> </span><span class="m">8000</span><span class="w"> </span>--workers<span class="w"> </span><span class="m">4</span><span class="w"> </span>--log-config<span class="w"> </span>logging.json
+
+<span class="c1"># Or use systemd service (recommended)</span>
+sudo<span class="w"> </span>systemctl<span class="w"> </span>start<span class="w"> </span>apikey-management
+sudo<span class="w"> </span>systemctl<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>apikey-management
+</code></pre></div>
+
+<h3 id="6-verify-installation">6. Verify Installation</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Health check</span>
+curl<span class="w"> </span>https://your-service.com/health
+
+<span class="c1"># Expected response</span>
+<span class="o">{</span>
+<span class="w">  </span><span class="s2">&quot;status&quot;</span>:<span class="w"> </span><span class="s2">&quot;healthy&quot;</span>,
+<span class="w">  </span><span class="s2">&quot;database&quot;</span>:<span class="w"> </span><span class="s2">&quot;connected&quot;</span>,
+<span class="w">  </span><span class="s2">&quot;version&quot;</span>:<span class="w"> </span><span class="s2">&quot;1.0.0&quot;</span>,
+<span class="w">  </span><span class="s2">&quot;timestamp&quot;</span>:<span class="w"> </span><span class="s2">&quot;2025-11-23T10:00:00Z&quot;</span>
+<span class="o">}</span>
+</code></pre></div>
+
+<hr />
+<h2 id="bootstrap-process">Bootstrap Process</h2>
+<p>The bootstrap process creates the initial administrative setup with just <strong>2 simple steps</strong>.</p>
+<h3 id="step-1-create-admin-project">Step 1: Create Admin Project</h3>
+<div class="codehilite"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="s2">&quot;https://your-service.com/akm/v1/projects&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-Admin-Key: </span><span class="si">${</span><span class="nv">ADMIN_API_KEY</span><span class="si">}</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{</span>
+<span class="s1">    &quot;name&quot;: &quot;system-admin&quot;,</span>
+<span class="s1">    &quot;description&quot;: &quot;System administration project&quot;,</span>
+<span class="s1">    &quot;metadata&quot;: {</span>
+<span class="s1">      &quot;type&quot;: &quot;admin&quot;,</span>
+<span class="s1">      &quot;created_by&quot;: &quot;system&quot;</span>
+<span class="s1">    }</span>
+<span class="s1">  }&#39;</span>
+</code></pre></div>
+
+<p><strong>Response:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;proj_admin_001&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;system-admin&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;System administration project&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;created_at&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-11-23T10:00:00Z&quot;</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3 id="step-2-generate-admin-api-key">Step 2: Generate Admin API Key</h3>
+<div class="codehilite"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="s2">&quot;https://your-service.com/akm/v1/keys&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-Admin-Key: </span><span class="si">${</span><span class="nv">ADMIN_API_KEY</span><span class="si">}</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{</span>
+<span class="s1">    &quot;project_id&quot;: &quot;proj_admin_001&quot;,</span>
+<span class="s1">    &quot;name&quot;: &quot;primary-admin-key&quot;,</span>
+<span class="s1">    &quot;rate_limit&quot;: 100000,</span>
+<span class="s1">    &quot;expires_at&quot;: null</span>
+<span class="s1">  }&#39;</span>
+</code></pre></div>
+
+<p><strong>Response:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;key_admin_001&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;key&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;akm_admin_a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;primary-admin-key&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;rate_limit&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">100000</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;created_at&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-11-23T10:05:00Z&quot;</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>⚠️ <strong>CRITICAL</strong>: Save this admin key securely! Store it in a password manager or secrets vault.</p>
+<h3 id="step-3-project-admin-creates-scopes">Step 3: Project Admin Creates Scopes</h3>
+<p>Now the project administrator uses their API key to create necessary scopes:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Full administrative access</span>
+curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="s2">&quot;https://your-service.com/akm/v1/scopes&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: akm_admin_a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{</span>
+<span class="s1">    &quot;name&quot;: &quot;admin:full&quot;,</span>
+<span class="s1">    &quot;description&quot;: &quot;Full administrative access&quot;,</span>
+<span class="s1">    &quot;project_id&quot;: &quot;proj_admin_001&quot;</span>
+<span class="s1">  }&#39;</span>
+
+<span class="c1"># Project management</span>
+curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="s2">&quot;https://your-service.com/akm/v1/scopes&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: akm_admin_a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{</span>
+<span class="s1">    &quot;name&quot;: &quot;projects:manage&quot;,</span>
+<span class="s1">    &quot;description&quot;: &quot;Create and manage projects&quot;,</span>
+<span class="s1">    &quot;project_id&quot;: &quot;proj_admin_001&quot;</span>
+<span class="s1">  }&#39;</span>
+
+<span class="c1"># User management</span>
+curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="s2">&quot;https://your-service.com/akm/v1/scopes&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: akm_admin_a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{</span>
+<span class="s1">    &quot;name&quot;: &quot;users:manage&quot;,</span>
+<span class="s1">    &quot;description&quot;: &quot;Manage user access&quot;,</span>
+<span class="s1">    &quot;project_id&quot;: &quot;proj_admin_001&quot;</span>
+<span class="s1">  }&#39;</span>
+
+<span class="c1"># Audit log access</span>
+curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="s2">&quot;https://your-service.com/akm/v1/scopes&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: akm_admin_a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{</span>
+<span class="s1">    &quot;name&quot;: &quot;audit:read&quot;,</span>
+<span class="s1">    &quot;description&quot;: &quot;Read audit logs&quot;,</span>
+<span class="s1">    &quot;project_id&quot;: &quot;proj_admin_001&quot;</span>
+<span class="s1">  }&#39;</span>
+</code></pre></div>
+
+<h3 id="step-4-disable-bootstrap-mode">Step 4: Disable Bootstrap Mode</h3>
+<p>After creating the admin key, disable the <code>ADMIN_API_KEY</code> for security:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Edit .env file</span>
+<span class="c1"># Comment out or remove ADMIN_API_KEY</span>
+<span class="c1"># ADMIN_API_KEY=  # Disabled after bootstrap</span>
+
+<span class="c1"># Restart the service</span>
+sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class="w"> </span>apikey-management
+</code></pre></div>
+
+<p>From now on, use the generated admin API key (<code>akm_admin_...</code>) for all administrative operations.</p>
+<hr />
+<h2 id="user-onboarding">User Onboarding</h2>
+<p>When a new client wants to use your service, follow this <strong>2-step process</strong>:</p>
+<h3 id="step-1-create-client-project">Step 1: Create Client Project</h3>
+<div class="codehilite"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="s2">&quot;https://your-service.com/akm/v1/projects&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: akm_admin_a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{</span>
+<span class="s1">    &quot;name&quot;: &quot;client-acme-corp&quot;,</span>
+<span class="s1">    &quot;description&quot;: &quot;ACME Corporation - Production Environment&quot;,</span>
+<span class="s1">    &quot;metadata&quot;: {</span>
+<span class="s1">      &quot;client_name&quot;: &quot;ACME Corp&quot;,</span>
+<span class="s1">      &quot;client_email&quot;: &quot;admin@acme.com&quot;,</span>
+<span class="s1">      &quot;tier&quot;: &quot;enterprise&quot;,</span>
+<span class="s1">      &quot;onboarded_at&quot;: &quot;2025-11-23T10:00:00Z&quot;</span>
+<span class="s1">    }</span>
+<span class="s1">  }&#39;</span>
+</code></pre></div>
+
+<p><strong>Response:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;proj_client_acme_001&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;client-acme-corp&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ACME Corporation - Production Environment&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;created_at&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-11-23T10:00:00Z&quot;</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3 id="step-2-generate-project-admin-api-key">Step 2: Generate Project Admin API Key</h3>
+<div class="codehilite"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="s2">&quot;https://your-service.com/akm/v1/keys&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: akm_admin_a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{</span>
+<span class="s1">    &quot;project_id&quot;: &quot;proj_client_acme_001&quot;,</span>
+<span class="s1">    &quot;name&quot;: &quot;acme-project-admin-key&quot;,</span>
+<span class="s1">    &quot;rate_limit&quot;: 10000,</span>
+<span class="s1">    &quot;expires_at&quot;: &quot;2026-11-23T23:59:59Z&quot;</span>
+<span class="s1">  }&#39;</span>
+</code></pre></div>
+
+<p><strong>Response:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;key_acme_admin_001&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;key&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;akm_live_x9y8z7w6v5u4t3s2r1q0p9o8n7m6l5k4&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;acme-project-admin-key&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;rate_limit&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">10000</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;created_at&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-11-23T10:15:00Z&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;expires_at&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2026-11-23T23:59:59Z&quot;</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3 id="step-3-client-manages-their-own-scopes">Step 3: Client Manages Their Own Scopes</h3>
+<p>Once the client receives their project admin API key, <strong>they can manage their own scopes</strong>:</p>
+<h4 id="create-scopes">Create Scopes</h4>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Client creates their own scopes</span>
+curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="s2">&quot;https://your-service.com/akm/v1/scopes&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: akm_live_x9y8z7w6v5u4t3s2r1q0p9o8n7m6l5k4&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{</span>
+<span class="s1">    &quot;name&quot;: &quot;users:read&quot;,</span>
+<span class="s1">    &quot;description&quot;: &quot;Read user data&quot;,</span>
+<span class="s1">    &quot;project_id&quot;: &quot;proj_client_acme_001&quot;</span>
+<span class="s1">  }&#39;</span>
+</code></pre></div>
+
+<h4 id="import-openapi-spec-optional">Import OpenAPI Spec (Optional)</h4>
+<p>Client can import their own OpenAPI/Swagger spec:</p>
+<div class="codehilite"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="s2">&quot;https://your-service.com/akm/v1/import/openapi&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: akm_live_x9y8z7w6v5u4t3s2r1q0p9o8n7m6l5k4&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{</span>
+<span class="s1">    &quot;project_id&quot;: &quot;proj_client_acme_001&quot;,</span>
+<span class="s1">    &quot;spec_url&quot;: &quot;https://acme-api.com/openapi.json&quot;,</span>
+<span class="s1">    &quot;auto_create_scopes&quot;: true,</span>
+<span class="s1">    &quot;scope_prefix&quot;: &quot;acme&quot;</span>
+<span class="s1">  }&#39;</span>
+</code></pre></div>
+
+<p>This automatically creates scopes based on their API operations.</p>
+<h4 id="generate-additional-keys">Generate Additional Keys</h4>
+<p>Client can create additional API keys with specific scopes:</p>
+<div class="codehilite"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="s2">&quot;https://your-service.com/akm/v1/keys&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: akm_live_x9y8z7w6v5u4t3s2r1q0p9o8n7m6l5k4&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{</span>
+<span class="s1">    &quot;project_id&quot;: &quot;proj_client_acme_001&quot;,</span>
+<span class="s1">    &quot;name&quot;: &quot;acme-production-key&quot;,</span>
+<span class="s1">    &quot;scopes&quot;: [&quot;users:read&quot;, &quot;users:write&quot;, &quot;orders:read&quot;, &quot;orders:write&quot;],</span>
+<span class="s1">    &quot;rate_limit&quot;: 5000,</span>
+<span class="s1">    &quot;expires_at&quot;: &quot;2026-11-23T23:59:59Z&quot;</span>
+<span class="s1">  }&#39;</span>
+</code></pre></div>
+
+<h3 id="step-4-provide-credentials-to-client">Step 4: Provide Credentials to Client</h3>
+<p>Send the client their credentials securely:</p>
+<p><strong>Email Template:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="n">Subject</span><span class="o">:</span><span class="w"> </span><span class="n">Your</span><span class="w"> </span><span class="n">API</span><span class="w"> </span><span class="n">Key</span><span class="w"> </span><span class="n">Management</span><span class="w"> </span><span class="n">Service</span><span class="w"> </span><span class="n">Credentials</span>
+
+<span class="n">Hello</span><span class="w"> </span><span class="n">ACME</span><span class="w"> </span><span class="n">Corp</span><span class="w"> </span><span class="n">Team</span><span class="o">,</span>
+
+<span class="n">Your</span><span class="w"> </span><span class="n">API</span><span class="w"> </span><span class="n">Key</span><span class="w"> </span><span class="n">Management</span><span class="w"> </span><span class="n">Service</span><span class="w"> </span><span class="n">account</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">now</span><span class="w"> </span><span class="n">active</span><span class="o">!</span>
+
+<span class="n">Project</span><span class="w"> </span><span class="n">ID</span><span class="o">:</span><span class="w"> </span><span class="n">proj_client_acme_001</span>
+<span class="n">Project</span><span class="w"> </span><span class="n">Admin</span><span class="w"> </span><span class="n">API</span><span class="w"> </span><span class="n">Key</span><span class="o">:</span><span class="w"> </span><span class="n">akm_live_x9y8z7w6v5u4t3s2r1q0p9o8n7m6l5k4</span>
+<span class="n">Rate</span><span class="w"> </span><span class="n">Limit</span><span class="o">:</span><span class="w"> </span><span class="mi">10</span><span class="o">,</span><span class="mi">000</span><span class="w"> </span><span class="n">requests</span><span class="o">/</span><span class="n">hour</span>
+<span class="n">Expires</span><span class="o">:</span><span class="w"> </span><span class="mi">2026</span><span class="o">-</span><span class="mi">11</span><span class="o">-</span><span class="mi">23</span>
+
+<span class="n">What</span><span class="w"> </span><span class="n">You</span><span class="w"> </span><span class="n">Can</span><span class="w"> </span><span class="n">Do</span><span class="w"> </span><span class="n">Now</span><span class="o">:</span>
+<span class="err">✅</span><span class="w"> </span><span class="n">Create</span><span class="w"> </span><span class="n">and</span><span class="w"> </span><span class="n">manage</span><span class="w"> </span><span class="n">your</span><span class="w"> </span><span class="n">own</span><span class="w"> </span><span class="n">scopes</span>
+<span class="err">✅</span><span class="w"> </span><span class="n">Import</span><span class="w"> </span><span class="n">your</span><span class="w"> </span><span class="n">OpenAPI</span><span class="o">/</span><span class="n">Swagger</span><span class="w"> </span><span class="n">spec</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">auto</span><span class="o">-</span><span class="n">generate</span><span class="w"> </span><span class="n">scopes</span>
+<span class="err">✅</span><span class="w"> </span><span class="n">Generate</span><span class="w"> </span><span class="n">additional</span><span class="w"> </span><span class="n">API</span><span class="w"> </span><span class="n">keys</span><span class="w"> </span><span class="k">with</span><span class="w"> </span><span class="n">specific</span><span class="w"> </span><span class="n">permissions</span>
+<span class="err">✅</span><span class="w"> </span><span class="n">Monitor</span><span class="w"> </span><span class="n">usage</span><span class="w"> </span><span class="n">and</span><span class="w"> </span><span class="n">manage</span><span class="w"> </span><span class="n">your</span><span class="w"> </span><span class="n">keys</span>
+
+<span class="n">Quick</span><span class="w"> </span><span class="n">Start</span><span class="w"> </span><span class="n">Guide</span><span class="o">:</span><span class="w"> </span><span class="n">https</span><span class="o">://</span><span class="n">your</span><span class="o">-</span><span class="n">service</span><span class="o">.</span><span class="na">com</span><span class="o">/</span><span class="n">quickstart</span>
+<span class="n">API</span><span class="w"> </span><span class="n">Documentation</span><span class="o">:</span><span class="w"> </span><span class="n">https</span><span class="o">://</span><span class="n">your</span><span class="o">-</span><span class="n">service</span><span class="o">.</span><span class="na">com</span><span class="o">/</span><span class="n">docs</span>
+
+<span class="n">Important</span><span class="w"> </span><span class="n">Security</span><span class="w"> </span><span class="n">Notes</span><span class="o">:</span>
+<span class="o">-</span><span class="w"> </span><span class="n">Store</span><span class="w"> </span><span class="k">this</span><span class="w"> </span><span class="n">API</span><span class="w"> </span><span class="n">key</span><span class="w"> </span><span class="n">securely</span><span class="w"> </span><span class="o">(</span><span class="n">use</span><span class="w"> </span><span class="n">environment</span><span class="w"> </span><span class="n">variables</span><span class="o">)</span>
+<span class="o">-</span><span class="w"> </span><span class="n">Never</span><span class="w"> </span><span class="n">commit</span><span class="w"> </span><span class="n">keys</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">version</span><span class="w"> </span><span class="n">control</span>
+<span class="o">-</span><span class="w"> </span><span class="n">Rotate</span><span class="w"> </span><span class="n">keys</span><span class="w"> </span><span class="n">every</span><span class="w"> </span><span class="mi">90</span><span class="w"> </span><span class="n">days</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">security</span>
+<span class="o">-</span><span class="w"> </span><span class="n">You</span><span class="w"> </span><span class="n">can</span><span class="w"> </span><span class="n">generate</span><span class="w"> </span><span class="n">additional</span><span class="w"> </span><span class="n">keys</span><span class="w"> </span><span class="n">yourself</span>
+
+<span class="n">Support</span><span class="o">:</span><span class="w"> </span><span class="n">support</span><span class="err">@</span><span class="n">your</span><span class="o">-</span><span class="n">service</span><span class="o">.</span><span class="na">com</span>
+</code></pre></div>
+
+<hr />
+<h2 id="project-management">Project Management</h2>
+<h3 id="list-all-projects">List All Projects</h3>
+<div class="codehilite"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>GET<span class="w"> </span><span class="s2">&quot;https://your-service.com/akm/v1/projects&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: akm_admin_...&quot;</span>
+</code></pre></div>
+
+<h3 id="update-project">Update Project</h3>
+<div class="codehilite"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>PUT<span class="w"> </span><span class="s2">&quot;https://your-service.com/akm/v1/projects/proj_client_acme_001&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: akm_admin_...&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{</span>
+<span class="s1">    &quot;description&quot;: &quot;ACME Corporation - Production &amp; Staging&quot;,</span>
+<span class="s1">    &quot;metadata&quot;: {</span>
+<span class="s1">      &quot;tier&quot;: &quot;enterprise-plus&quot;,</span>
+<span class="s1">      &quot;upgraded_at&quot;: &quot;2025-11-23T15:00:00Z&quot;</span>
+<span class="s1">    }</span>
+<span class="s1">  }&#39;</span>
+</code></pre></div>
+
+<h3 id="suspend-project">Suspend Project</h3>
+<div class="codehilite"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="s2">&quot;https://your-service.com/akm/v1/projects/proj_client_acme_001/suspend&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: akm_admin_...&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{</span>
+<span class="s1">    &quot;reason&quot;: &quot;Payment overdue&quot;,</span>
+<span class="s1">    &quot;notify_client&quot;: true</span>
+<span class="s1">  }&#39;</span>
+</code></pre></div>
+
+<h3 id="delete-project">Delete Project</h3>
+<p>⚠️ <strong>Warning</strong>: This permanently deletes all keys and data!</p>
+<div class="codehilite"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>DELETE<span class="w"> </span><span class="s2">&quot;https://your-service.com/akm/v1/projects/proj_client_acme_001&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: akm_admin_...&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-Confirm-Delete: yes&quot;</span>
+</code></pre></div>
+
+<hr />
+<h2 id="security-configuration">Security Configuration</h2>
+<h3 id="rate-limit-policies">Rate Limit Policies</h3>
+<p>Define rate limit tiers:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># config/rate_limits.py</span>
+<span class="n">RATE_LIMIT_TIERS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;free&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>        <span class="c1"># 100 requests/hour</span>
+    <span class="s2">&quot;starter&quot;</span><span class="p">:</span> <span class="mi">1000</span><span class="p">,</span>    <span class="c1"># 1K requests/hour</span>
+    <span class="s2">&quot;professional&quot;</span><span class="p">:</span> <span class="mi">10000</span><span class="p">,</span>   <span class="c1"># 10K requests/hour</span>
+    <span class="s2">&quot;enterprise&quot;</span><span class="p">:</span> <span class="mi">100000</span><span class="p">,</span>    <span class="c1"># 100K requests/hour</span>
+    <span class="s2">&quot;unlimited&quot;</span><span class="p">:</span> <span class="kc">None</span>        <span class="c1"># No limit</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3 id="key-expiration-policies">Key Expiration Policies</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># config/security.py</span>
+<span class="n">KEY_EXPIRATION_POLICIES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;development&quot;</span><span class="p">:</span> <span class="mi">90</span><span class="p">,</span>    <span class="c1"># 90 days</span>
+    <span class="s2">&quot;staging&quot;</span><span class="p">:</span> <span class="mi">180</span><span class="p">,</span>       <span class="c1"># 180 days</span>
+    <span class="s2">&quot;production&quot;</span><span class="p">:</span> <span class="mi">365</span><span class="p">,</span>    <span class="c1"># 1 year</span>
+    <span class="s2">&quot;permanent&quot;</span><span class="p">:</span> <span class="kc">None</span>     <span class="c1"># No expiration</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3 id="ip-allowlisting">IP Allowlisting</h3>
+<p>Configure IP restrictions for sensitive projects:</p>
+<div class="codehilite"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="s2">&quot;https://your-service.com/akm/v1/projects/proj_client_acme_001/ip-allowlist&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: akm_admin_...&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{</span>
+<span class="s1">    &quot;allowed_ips&quot;: [</span>
+<span class="s1">      &quot;203.0.113.0/24&quot;,</span>
+<span class="s1">      &quot;198.51.100.50&quot;</span>
+<span class="s1">    ],</span>
+<span class="s1">    &quot;description&quot;: &quot;ACME production servers&quot;</span>
+<span class="s1">  }&#39;</span>
+</code></pre></div>
+
+<h3 id="webhook-configuration">Webhook Configuration</h3>
+<p>Set up webhooks for security events:</p>
+<div class="codehilite"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="s2">&quot;https://your-service.com/akm/v1/webhooks&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: akm_admin_...&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{</span>
+<span class="s1">    &quot;project_id&quot;: &quot;system-admin&quot;,</span>
+<span class="s1">    &quot;url&quot;: &quot;https://admin-alerts.your-service.com/webhooks&quot;,</span>
+<span class="s1">    &quot;events&quot;: [</span>
+<span class="s1">      &quot;key.created&quot;,</span>
+<span class="s1">      &quot;key.revoked&quot;,</span>
+<span class="s1">      &quot;key.expired&quot;,</span>
+<span class="s1">      &quot;rate_limit.exceeded&quot;,</span>
+<span class="s1">      &quot;suspicious_activity.detected&quot;</span>
+<span class="s1">    ],</span>
+<span class="s1">    &quot;secret&quot;: &quot;webhook_secret_for_validation&quot;</span>
+<span class="s1">  }&#39;</span>
+</code></pre></div>
+
+<hr />
+<h2 id="monitoring-audit">Monitoring &amp; Audit</h2>
+<h3 id="view-system-statistics">View System Statistics</h3>
+<div class="codehilite"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>GET<span class="w"> </span><span class="s2">&quot;https://your-service.com/akm/v1/admin/stats&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: akm_admin_...&quot;</span>
+</code></pre></div>
+
+<p><strong>Response:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;total_projects&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">42</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;total_keys&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">156</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;active_keys&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">142</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;expired_keys&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">14</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;total_requests_today&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1234567</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;rate_limit_hits_today&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">89</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;top_projects_by_usage&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span><span class="nt">&quot;project_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;proj_client_acme_001&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;requests&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">450000</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="nt">&quot;project_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;proj_client_widgets_002&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;requests&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">320000</span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3 id="query-audit-logs">Query Audit Logs</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># All events from last 24 hours</span>
+curl<span class="w"> </span>-X<span class="w"> </span>GET<span class="w"> </span><span class="s2">&quot;https://your-service.com/akm/v1/audit-logs?since=24h&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: akm_admin_...&quot;</span>
+
+<span class="c1"># Specific project</span>
+curl<span class="w"> </span>-X<span class="w"> </span>GET<span class="w"> </span><span class="s2">&quot;https://your-service.com/akm/v1/audit-logs?project_id=proj_client_acme_001&amp;limit=100&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: akm_admin_...&quot;</span>
+
+<span class="c1"># Specific event types</span>
+curl<span class="w"> </span>-X<span class="w"> </span>GET<span class="w"> </span><span class="s2">&quot;https://your-service.com/akm/v1/audit-logs?event_types=key.created,key.revoked&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: akm_admin_...&quot;</span>
+</code></pre></div>
+
+<h3 id="export-audit-logs">Export Audit Logs</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Export to CSV</span>
+curl<span class="w"> </span>-X<span class="w"> </span>GET<span class="w"> </span><span class="s2">&quot;https://your-service.com/akm/v1/audit-logs/export?format=csv&amp;start=2025-11-01&amp;end=2025-11-30&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: akm_admin_...&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-o<span class="w"> </span>audit_logs_november_2025.csv
+
+<span class="c1"># Export to JSON</span>
+curl<span class="w"> </span>-X<span class="w"> </span>GET<span class="w"> </span><span class="s2">&quot;https://your-service.com/akm/v1/audit-logs/export?format=json&amp;start=2025-11-01&amp;end=2025-11-30&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: akm_admin_...&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-o<span class="w"> </span>audit_logs_november_2025.json
+</code></pre></div>
+
+<h3 id="set-up-monitoring-alerts">Set Up Monitoring Alerts</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># scripts/monitoring_alerts.py</span>
+<span class="kn">import</span> <span class="nn">httpx</span>
+<span class="kn">import</span> <span class="nn">asyncio</span>
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">check_health</span><span class="p">():</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">httpx</span><span class="o">.</span><span class="n">AsyncClient</span><span class="p">()</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;https://your-service.com/health&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="mi">200</span><span class="p">:</span>
+            <span class="k">await</span> <span class="n">send_alert</span><span class="p">(</span><span class="s2">&quot;Health check failed!&quot;</span><span class="p">)</span>
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">check_rate_limits</span><span class="p">():</span>
+    <span class="c1"># Query keys approaching rate limits</span>
+    <span class="k">pass</span>
+
+<span class="c1"># Run every 5 minutes</span>
+<span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">check_health</span><span class="p">())</span>
+</code></pre></div>
+
+<hr />
+<h2 id="backup-recovery">Backup &amp; Recovery</h2>
+<h3 id="database-backup">Database Backup</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Daily backup script</span>
+<span class="c1">#!/bin/bash</span>
+<span class="nv">DATE</span><span class="o">=</span><span class="k">$(</span>date<span class="w"> </span>+%Y%m%d_%H%M%S<span class="k">)</span>
+<span class="nv">BACKUP_DIR</span><span class="o">=</span><span class="s2">&quot;/backups/apikey_management&quot;</span>
+
+<span class="c1"># Create backup</span>
+pg_dump<span class="w"> </span>-U<span class="w"> </span>apikey_user<span class="w"> </span>-d<span class="w"> </span>apikey_management<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-F<span class="w"> </span>c<span class="w"> </span>-f<span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">BACKUP_DIR</span><span class="si">}</span><span class="s2">/backup_</span><span class="si">${</span><span class="nv">DATE</span><span class="si">}</span><span class="s2">.dump&quot;</span>
+
+<span class="c1"># Compress</span>
+gzip<span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">BACKUP_DIR</span><span class="si">}</span><span class="s2">/backup_</span><span class="si">${</span><span class="nv">DATE</span><span class="si">}</span><span class="s2">.dump&quot;</span>
+
+<span class="c1"># Keep only last 30 days</span>
+find<span class="w"> </span><span class="si">${</span><span class="nv">BACKUP_DIR</span><span class="si">}</span><span class="w"> </span>-name<span class="w"> </span><span class="s2">&quot;backup_*.dump.gz&quot;</span><span class="w"> </span>-mtime<span class="w"> </span>+30<span class="w"> </span>-delete
+
+<span class="c1"># Upload to S3 (optional)</span>
+aws<span class="w"> </span>s3<span class="w"> </span>cp<span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">BACKUP_DIR</span><span class="si">}</span><span class="s2">/backup_</span><span class="si">${</span><span class="nv">DATE</span><span class="si">}</span><span class="s2">.dump.gz&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>s3://your-backup-bucket/apikey-management/
+</code></pre></div>
+
+<h3 id="restore-from-backup">Restore from Backup</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Stop the service</span>
+sudo<span class="w"> </span>systemctl<span class="w"> </span>stop<span class="w"> </span>apikey-management
+
+<span class="c1"># Restore database</span>
+gunzip<span class="w"> </span>-c<span class="w"> </span>backup_20251123_100000.dump.gz<span class="w"> </span><span class="p">|</span><span class="w"> </span>pg_restore<span class="w"> </span>-U<span class="w"> </span>apikey_user<span class="w"> </span>-d<span class="w"> </span>apikey_management
+
+<span class="c1"># Start the service</span>
+sudo<span class="w"> </span>systemctl<span class="w"> </span>start<span class="w"> </span>apikey-management
+</code></pre></div>
+
+<h3 id="exportimport-projects">Export/Import Projects</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Export single project</span>
+curl<span class="w"> </span>-X<span class="w"> </span>GET<span class="w"> </span><span class="s2">&quot;https://your-service.com/akm/v1/projects/proj_client_acme_001/export&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: akm_admin_...&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-o<span class="w"> </span>acme_project_export.json
+
+<span class="c1"># Import project</span>
+curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="s2">&quot;https://your-service.com/akm/v1/projects/import&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: akm_admin_...&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span>@acme_project_export.json
+</code></pre></div>
+
+<hr />
+<h2 id="maintenance-tasks">Maintenance Tasks</h2>
+<h3 id="rotate-admin-keys">Rotate Admin Keys</h3>
+<p>Every 90 days, rotate admin keys:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># 1. Generate new admin key</span>
+curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="s2">&quot;https://your-service.com/akm/v1/keys&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: akm_admin_OLD...&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{</span>
+<span class="s1">    &quot;project_id&quot;: &quot;proj_admin_001&quot;,</span>
+<span class="s1">    &quot;name&quot;: &quot;primary-admin-key-2025-Q4&quot;,</span>
+<span class="s1">    &quot;scopes&quot;: [&quot;admin:full&quot;, &quot;projects:manage&quot;, &quot;users:manage&quot;, &quot;audit:read&quot;],</span>
+<span class="s1">    &quot;rate_limit&quot;: 100000</span>
+<span class="s1">  }&#39;</span>
+
+<span class="c1"># 2. Update your scripts/configs with new key</span>
+
+<span class="c1"># 3. Revoke old key</span>
+curl<span class="w"> </span>-X<span class="w"> </span>DELETE<span class="w"> </span><span class="s2">&quot;https://your-service.com/akm/v1/keys/key_admin_001&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: akm_admin_NEW...&quot;</span>
+</code></pre></div>
+
+<h3 id="clean-expired-keys">Clean Expired Keys</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Automated cleanup script</span>
+curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="s2">&quot;https://your-service.com/akm/v1/admin/cleanup/expired-keys&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: akm_admin_...&quot;</span>
+</code></pre></div>
+
+<h3 id="purge-old-audit-logs">Purge Old Audit Logs</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Delete logs older than retention period</span>
+curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="s2">&quot;https://your-service.com/akm/v1/admin/cleanup/audit-logs&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: akm_admin_...&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{</span>
+<span class="s1">    &quot;older_than_days&quot;: 90,</span>
+<span class="s1">    &quot;dry_run&quot;: false</span>
+<span class="s1">  }&#39;</span>
+</code></pre></div>
+
+<h3 id="update-rate-limits">Update Rate Limits</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Bulk update for tier upgrade</span>
+curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="s2">&quot;https://your-service.com/akm/v1/admin/bulk-update-rate-limits&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: akm_admin_...&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{</span>
+<span class="s1">    &quot;project_ids&quot;: [&quot;proj_client_acme_001&quot;, &quot;proj_client_widgets_002&quot;],</span>
+<span class="s1">    &quot;new_rate_limit&quot;: 50000</span>
+<span class="s1">  }&#39;</span>
+</code></pre></div>
+
+<hr />
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="issue-client-cant-authenticate">Issue: Client Can't Authenticate</h3>
+<p><strong>Symptoms</strong>: <code>401 Unauthorized</code> errors</p>
+<p><strong>Diagnosis</strong>:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Check if key exists and is active</span>
+curl<span class="w"> </span>-X<span class="w"> </span>GET<span class="w"> </span><span class="s2">&quot;https://your-service.com/akm/v1/keys/key_acme_prod_001&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: akm_admin_...&quot;</span>
+
+<span class="c1"># Check audit logs for failed attempts</span>
+curl<span class="w"> </span>-X<span class="w"> </span>GET<span class="w"> </span><span class="s2">&quot;https://your-service.com/akm/v1/audit-logs?event_type=auth.failed&amp;project_id=proj_client_acme_001&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: akm_admin_...&quot;</span>
+</code></pre></div>
+
+<p><strong>Solutions</strong>:
+- Verify key hasn't expired
+- Check if project is suspended
+- Ensure key has required scopes
+- Regenerate key if compromised</p>
+<h3 id="issue-high-rate-limit-hits">Issue: High Rate Limit Hits</h3>
+<p><strong>Symptoms</strong>: Many <code>429 Too Many Requests</code> errors</p>
+<p><strong>Diagnosis</strong>:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Check rate limit statistics</span>
+curl<span class="w"> </span>-X<span class="w"> </span>GET<span class="w"> </span><span class="s2">&quot;https://your-service.com/akm/v1/admin/rate-limit-stats?project_id=proj_client_acme_001&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: akm_admin_...&quot;</span>
+</code></pre></div>
+
+<p><strong>Solutions</strong>:
+- Increase rate limit for legitimate clients
+- Identify and block abusive patterns
+- Contact client about optimization</p>
+<h3 id="issue-database-connection-failures">Issue: Database Connection Failures</h3>
+<p><strong>Symptoms</strong>: <code>500 Internal Server Error</code>, health check fails</p>
+<p><strong>Diagnosis</strong>:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Check database status</span>
+systemctl<span class="w"> </span>status<span class="w"> </span>postgresql
+
+<span class="c1"># Check connections</span>
+psql<span class="w"> </span>-d<span class="w"> </span>apikey_management<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;SELECT count(*) FROM pg_stat_activity;&quot;</span>
+
+<span class="c1"># Check logs</span>
+tail<span class="w"> </span>-f<span class="w"> </span>/var/log/apikey-management/app.log
+</code></pre></div>
+
+<p><strong>Solutions</strong>:
+- Restart PostgreSQL if needed
+- Increase connection pool size
+- Check for long-running queries</p>
+<h3 id="issue-webhook-delivery-failures">Issue: Webhook Delivery Failures</h3>
+<p><strong>Symptoms</strong>: Webhooks not received by clients</p>
+<p><strong>Diagnosis</strong>:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Check webhook logs</span>
+curl<span class="w"> </span>-X<span class="w"> </span>GET<span class="w"> </span><span class="s2">&quot;https://your-service.com/akm/v1/admin/webhook-logs?status=failed&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: akm_admin_...&quot;</span>
+</code></pre></div>
+
+<p><strong>Solutions</strong>:
+- Verify client webhook endpoint is accessible
+- Check webhook signature validation
+- Retry failed deliveries
+- Update webhook URL if changed</p>
+<hr />
+<h2 id="cli-administration-tool">CLI Administration Tool</h2>
+<p>For convenience, use the admin CLI:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Install CLI</span>
+pip<span class="w"> </span>install<span class="w"> </span>akm-admin-cli
+
+<span class="c1"># Configure</span>
+akm-admin<span class="w"> </span>configure<span class="w"> </span>--api-key<span class="w"> </span>akm_admin_...<span class="w"> </span>--base-url<span class="w"> </span>https://your-service.com/akm
+
+<span class="c1"># Common commands</span>
+akm-admin<span class="w"> </span>projects<span class="w"> </span>list
+akm-admin<span class="w"> </span>projects<span class="w"> </span>create<span class="w"> </span>--name<span class="w"> </span><span class="s2">&quot;client-name&quot;</span>
+akm-admin<span class="w"> </span>keys<span class="w"> </span>generate<span class="w"> </span>--project<span class="w"> </span>proj_xxx<span class="w"> </span>--scopes<span class="w"> </span><span class="s2">&quot;users:read,users:write&quot;</span>
+akm-admin<span class="w"> </span>keys<span class="w"> </span>list<span class="w"> </span>--project<span class="w"> </span>proj_xxx
+akm-admin<span class="w"> </span>keys<span class="w"> </span>revoke<span class="w"> </span>--key-id<span class="w"> </span>key_xxx
+akm-admin<span class="w"> </span>audit<span class="w"> </span>query<span class="w"> </span>--since<span class="w"> </span>24h
+akm-admin<span class="w"> </span>stats<span class="w"> </span>show
+</code></pre></div>
+
+<hr />
+<h2 id="additional-resources">Additional Resources</h2>
+<ul>
+<li><a href="/quickstart">Quick Start Guide</a> - Client integration guide</li>
+<li><a href="/api-versioning">API Versioning</a> - Version management</li>
+<li><a href="/deployment">Deployment Guide</a> - Production deployment</li>
+<li><a href="/testing">Testing Guide</a> - Running tests</li>
+<li><a href="/docs">API Reference</a> - Interactive documentation</li>
+</ul>
+<hr />
+<p><strong>Need Help?</strong> Contact the development team or check the <a href="https://github.com/ideiasfactory/apikey_management/issues">GitHub Issues</a>.</p>
+        </div>
+
+        <div class="footer">
+            <p>Built with ❤️ using FastAPI, PostgreSQL, and SQLAlchemy</p>
+            <p style="margin-top: 10px;">© 2025 API Key Management Service by <a href="https://github.com/ideiasfactory" target="_blank">Ideias Factory</a></p>
+        </div>
+    </div>
+
+    <a href="#" class="back-to-top">↑</a>
+
+    <script>
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        // Back to top button
+        const backToTop = document.querySelector('.back-to-top');
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTop.style.display = 'flex';
+            } else {
+                backToTop.style.display = 'none';
+            }
+        });
+
+        backToTop.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    </script>
+</body>
+</html>

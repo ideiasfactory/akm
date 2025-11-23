@@ -1,0 +1,44 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "src/api/index.py",
+      "use": "@vercel/python",
+      "config": {
+        "runtime": "python3.12"
+      }
+    },
+    {
+      "src": "public/**",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/favicon.ico",
+      "dest": "/public/favicon.ico"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "src/api/index.py"
+    }
+  ],
+  "env": {
+    "ENVIRONMENT": "production",
+    "API_VERSION": "1.0.0",
+    "LOG_LEVEL": "INFO"
+  },
+  "github": {
+    "enabled": false,
+    "autoAlias": false,
+    "silent": true,
+    "autoJobCancelation": true
+  },
+  "git": {
+    "deploymentEnabled": {
+      "master": false,
+      "main": false
+    }
+  },
+  "ignoreCommand": "bash scripts/vercel-ignore-build.sh"
+}

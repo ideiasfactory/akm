@@ -1,0 +1,234 @@
+"""
+API routes for API Key management.
+"""
+
+from typing import List, Optional
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from src.database.connection import get_session
+from src.database.repositories.api_key_repository import api_key_repository
+from src.database.repositories.scope_repository import scope_repository
+from src.database.models import AKMAPIKey
+from src.api.auth_middleware import PermissionChecker
+from src.api.models import (
+    APIKeyCreate,
+    APIKeyUpdate,
+    APIKeyScopesUpdate,
+    APIKeyResponse,
+    APIKeyCreateResponse,
+    APIKeyDetailedResponse,
+    ProjectInfo
+)
+
+router = APIRouter(prefix="/keys", tags=["API Keys"])
+
+
+@router.post("", response_model=APIKeyCreateResponse, status_code=status.HTTP_201_CREATED)
+async def create_api_key(
+    key_data: APIKeyCreate,
+    api_key: AKMAPIKey = Depends(PermissionChecker(["akm:keys:write"])),
+    session: AsyncSession = Depends(get_session)
+):
+    """
+    Create a new API key with scopes.
+    
+    Returns the plain API key - **save it securely**, it won't be shown again!
+    """
+    # Verify all scopes exist
+    scope_check = await scope_repository.bulk_exists(session, key_data.scopes)
+    invalid_scopes = [name for name, exists in scope_check.items() if not exists]
+    
+    if invalid_scopes:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Invalid scopes: {', '.join(invalid_scopes)}"
+        )
+    
+    # Create key
+    created_key, plain_key = await api_key_repository.create_key(
+        session,
+        project_id=key_data.project_id,
+        name=key_data.name,
+        scopes=key_data.scopes,
+        description=key_data.description,
+        expires_at=key_data.expires_at,
+        auto_generate=True
+    )
+    
+    # Reload to get relationships
+    created_key = await api_key_repository.get_by_id(session, created_key.id)
+    
+    key_dict = {k: v for k, v in created_key.__dict__.items() if k not in ['scopes', 'project']}
+    return APIKeyCreateResponse(
+        **key_dict,
+        scopes=[s.scope.scope_name for s in created_key.scopes],
+        key=plain_key
+    )
+
+
+@router.get("", response_model=List[APIKeyDetailedResponse])
+async def list_api_keys(
+    project_id: Optional[int] = None,
+    active_only: bool = True,
+    skip: int = 0,
+    limit: int = 100,
+    api_key: AKMAPIKey = Depends(PermissionChecker(["akm:keys:read"])),
+    session: AsyncSession = Depends(get_session)
+):
+    """List API keys, optionally filtered by project"""
+    keys = await api_key_repository.list_all(
+        session,
+        project_id=project_id,
+        active_only=active_only,
+        skip=skip,
+        limit=limit
+    )
+    
+    result = []
+    for key in keys:
+        key_dict = {k: v for k, v in key.__dict__.items() if k not in ['scopes', 'project']}
+        result.append(
+            APIKeyDetailedResponse(
+                **key_dict,
+                scopes=[s.scope.scope_name for s in key.scopes],
+                project=ProjectInfo(**key.project.__dict__) if key.project else None
+            )
+        )
+    
+    return result
+
+
+@router.get("/{key_id}", response_model=APIKeyDetailedResponse)
+async def get_api_key(
+    key_id: int,
+    api_key: AKMAPIKey = Depends(PermissionChecker(["akm:keys:read"])),
+    session: AsyncSession = Depends(get_session)
+):
+    """Get API key by ID"""
+    key = await api_key_repository.get_by_id(session, key_id, load_scopes=True)
+    
+    if not key:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"API key {key_id} not found"
+        )
+    
+    key_dict = {k: v for k, v in key.__dict__.items() if k not in ['scopes', 'project']}
+    return APIKeyDetailedResponse(
+        **key_dict,
+        scopes=[s.scope.scope_name for s in key.scopes],
+        project=ProjectInfo(**key.project.__dict__) if key.project else None
+    )
+
+
+@router.put("/{key_id}", response_model=APIKeyResponse)
+async def update_api_key(
+    key_id: int,
+    key_data: APIKeyUpdate,
+    api_key: AKMAPIKey = Depends(PermissionChecker(["akm:keys:write"])),
+    session: AsyncSession = Depends(get_session)
+):
+    """Update API key metadata"""
+    updated = await api_key_repository.update_key(
+        session,
+        key_id,
+        name=key_data.name,
+        description=key_data.description,
+        is_active=key_data.is_active,
+        expires_at=key_data.expires_at
+    )
+    
+    if not updated:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"API key {key_id} not found"
+        )
+    
+    # Reload with scopes
+    updated = await api_key_repository.get_by_id(session, key_id)
+    
+    key_dict = {k: v for k, v in updated.__dict__.items() if k not in ['scopes', 'project']}
+    return APIKeyDetailedResponse(
+        **key_dict,
+        scopes=[s.scope.scope_name for s in updated.scopes]
+    )
+
+
+@router.put("/{key_id}/scopes", response_model=APIKeyResponse)
+async def update_api_key_scopes(
+    key_id: int,
+    scope_data: APIKeyScopesUpdate,
+    api_key: AKMAPIKey = Depends(PermissionChecker(["akm:keys:write"])),
+    session: AsyncSession = Depends(get_session)
+):
+    """Replace all scopes for an API key"""
+    # Verify all scopes exist
+    scope_check = await scope_repository.bulk_exists(session, scope_data.scopes)
+    invalid_scopes = [name for name, exists in scope_check.items() if not exists]
+    
+    if invalid_scopes:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Invalid scopes: {', '.join(invalid_scopes)}"
+        )
+    
+    success = await api_key_repository.set_scopes(session, key_id, scope_data.scopes)
+    
+    if not success:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"API key {key_id} not found"
+        )
+    
+    # Reload with new scopes
+    updated = await api_key_repository.get_by_id(session, key_id)
+    
+    key_dict = {k: v for k, v in updated.__dict__.items() if k not in ['scopes', 'project']}
+    return APIKeyResponse(
+        **key_dict,
+        scopes=[s.scope.scope_name for s in updated.scopes]
+    )
+
+
+@router.delete("/{key_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_api_key(
+    key_id: int,
+    api_key: AKMAPIKey = Depends(PermissionChecker(["akm:keys:delete"])),
+    session: AsyncSession = Depends(get_session)
+):
+    """Permanently delete an API key (cascades to scopes and config)"""
+    success = await api_key_repository.delete_key(session, key_id)
+    
+    if not success:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"API key {key_id} not found"
+        )
+    
+    return None
+
+
+@router.post("/{key_id}/revoke", response_model=APIKeyResponse)
+async def revoke_api_key(
+    key_id: int,
+    api_key: AKMAPIKey = Depends(PermissionChecker(["akm:keys:write"])),
+    session: AsyncSession = Depends(get_session)
+):
+    """Revoke (deactivate) an API key without deleting it"""
+    success = await api_key_repository.revoke_key(session, key_id)
+    
+    if not success:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"API key {key_id} not found"
+        )
+    
+    # Return updated key
+    updated = await api_key_repository.get_by_id(session, key_id)
+    
+    key_dict = {k: v for k, v in updated.__dict__.items() if k not in ['scopes', 'project']}
+    return APIKeyResponse(
+        **key_dict,
+        scopes=[s.scope.scope_name for s in updated.scopes]
+    )
