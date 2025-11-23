@@ -29,10 +29,10 @@
     "LOG_LEVEL": "DEBUG"
   },
   "github": {
-    "enabled": false,
-    "autoAlias": false,
-    "silent": true,
-    "autoJobCancelation": true
+  "enabled": true,
+  "autoAlias": true,
+  "silent": false,
+  "autoJobCancelation": true
   },
   "git": {
     "deploymentEnabled": {
