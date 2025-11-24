@@ -62,7 +62,11 @@ Production-ready FastAPI application com multi-tenancy, RBAC, rate limiting, web
 - Sensitive data sanitization
 
 [Guias de Implementação](/static/guides/index.html)
+
 [Collection de Postman](https://www.postman.com/flavio-lopes-a2e55a26-6064350/ideias-factory-tech-public-workspace/collection/fv59rll/api-key-management-service?action=share&creator=50302320)
+
+[![Run in Postman](https://run.pstmn.io/button.svg)](https://god.gw.postman.com/run-collection/:collection_id?action=collection%2Ffork&source=rip_markdown&:collection_url)
+
 """,
     version=settings.api_version,
     docs_url="/docs",
