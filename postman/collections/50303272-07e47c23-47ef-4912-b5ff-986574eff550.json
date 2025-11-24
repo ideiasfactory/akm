@@ -250,10 +250,6 @@
 																		"method": "PUT",
 																		"header": [
 																			{
-																				"key": "X-API-Key",
-																				"value": "string"
-																			},
-																			{
 																				"key": "Content-Type",
 																				"value": "application/json"
 																			},
@@ -12558,7 +12554,7 @@
 	"variable": [
 		{
 			"key": "baseUrl",
-			"value": "/"
+			"value": "https://akm.ideiasfactory.tech/"
 		},
 		{
 			"key": "apiKey",
