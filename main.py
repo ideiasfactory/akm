@@ -61,7 +61,8 @@ Production-ready FastAPI application com multi-tenancy, RBAC, rate limiting, web
 - Real-time monitoring and alerting
 - Sensitive data sanitization
 
-[Guias de implementação](https://akm.ideiasfactory.tech/public/guides/index.html)
+[Guias de Implementação](/static/guides/index.html)
+[Collection de Postman](https://www.postman.com/flavio-lopes-a2e55a26-6064350/ideias-factory-tech-public-workspace/collection/fv59rll/api-key-management-service?action=share&creator=50302320)
 """,
     version=settings.api_version,
     docs_url="/docs",
@@ -405,8 +406,8 @@ app.add_middleware(RateLimitMiddleware)
 public_dir = Path(__file__).parent / "public"
 logger.info("Checking for public directory at %s", str(public_dir))
 if public_dir.exists():
-    app.mount("/public", StaticFiles(directory=str(public_dir)), name="public")
-    admin_guide_path = Path(__file__).parent / "public" / "admin"
+    app.mount("/static", StaticFiles(directory=str(public_dir)), name="static")
+    admin_guide_path = public_dir / "admin"
     logger.info("Checking for administration at %s", str(admin_guide_path))
     if admin_guide_path.exists():
         logger.info("Administration guide found at %s", str(admin_guide_path))
