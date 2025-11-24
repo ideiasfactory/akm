@@ -41,10 +41,53 @@ class ScopeRepository:
         session: AsyncSession,
         scope_name: str
     ) -> Optional[AKMScope]:
-        """Get scope by name"""
+        """Get scope by name (first match across all projects)"""
         stmt = select(AKMScope).where(AKMScope.scope_name == scope_name)
         result = await session.execute(stmt)
         return result.scalar_one_or_none()
+    
+    async def get_by_id(
+        self,
+        session: AsyncSession,
+        scope_id: int
+    ) -> Optional[AKMScope]:
+        """Get scope by ID"""
+        stmt = select(AKMScope).where(AKMScope.id == scope_id)
+        result = await session.execute(stmt)
+        return result.scalar_one_or_none()
+    
+    async def get_by_project_and_name(
+        self,
+        session: AsyncSession,
+        project_id: int,
+        scope_name: str
+    ) -> Optional[AKMScope]:
+        """Get scope by project_id and name"""
+        stmt = select(AKMScope).where(
+            AKMScope.project_id == project_id,
+            AKMScope.scope_name == scope_name
+        )
+        result = await session.execute(stmt)
+        return result.scalar_one_or_none()
+    
+    async def list_by_project(
+        self,
+        session: AsyncSession,
+        project_id: int,
+        active_only: bool = True,
+        skip: int = 0,
+        limit: int = 100
+    ) -> List[AKMScope]:
+        """List scopes for a specific project with pagination"""
+        stmt = select(AKMScope).where(AKMScope.project_id == project_id)
+        
+        if active_only:
+            stmt = stmt.where(AKMScope.is_active == True)
+        
+        stmt = stmt.offset(skip).limit(limit).order_by(AKMScope.scope_name)
+        
+        result = await session.execute(stmt)
+        return list(result.scalars().all())
     
     async def list_all(
         self,
@@ -71,8 +114,31 @@ class ScopeRepository:
         description: Optional[str] = None,
         is_active: Optional[bool] = None
     ) -> Optional[AKMScope]:
-        """Update scope"""
+        """Update scope by name (first match)"""
         scope = await self.get_by_name(session, scope_name)
+        
+        if not scope:
+            return None
+        
+        if description is not None:
+            scope.description = description
+        if is_active is not None:
+            scope.is_active = is_active
+        
+        await session.commit()
+        await session.refresh(scope)
+        
+        return scope
+    
+    async def update_by_id(
+        self,
+        session: AsyncSession,
+        scope_id: int,
+        description: Optional[str] = None,
+        is_active: Optional[bool] = None
+    ) -> Optional[AKMScope]:
+        """Update scope by ID"""
+        scope = await self.get_by_id(session, scope_id)
         
         if not scope:
             return None
@@ -92,8 +158,23 @@ class ScopeRepository:
         session: AsyncSession,
         scope_name: str
     ) -> bool:
-        """Delete scope (soft delete - deactivate)"""
+        """Delete scope by name (soft delete - deactivate, first match)"""
         scope = await self.get_by_name(session, scope_name)
+        
+        if not scope:
+            return False
+        
+        scope.is_active = False
+        await session.commit()
+        return True
+    
+    async def delete_by_id(
+        self,
+        session: AsyncSession,
+        scope_id: int
+    ) -> bool:
+        """Delete scope by ID (soft delete - deactivate)"""
+        scope = await self.get_by_id(session, scope_id)
         
         if not scope:
             return False
@@ -107,8 +188,23 @@ class ScopeRepository:
         session: AsyncSession,
         scope_name: str
     ) -> bool:
-        """Hard delete scope (cascades to API key scopes)"""
+        """Hard delete scope by name (cascades to API key scopes, first match)"""
         scope = await self.get_by_name(session, scope_name)
+        
+        if not scope:
+            return False
+        
+        await session.delete(scope)
+        await session.commit()
+        return True
+    
+    async def hard_delete_by_id(
+        self,
+        session: AsyncSession,
+        scope_id: int
+    ) -> bool:
+        """Hard delete scope by ID (cascades to API key scopes)"""
+        scope = await self.get_by_id(session, scope_id)
         
         if not scope:
             return False
@@ -147,11 +243,13 @@ class ScopeRepository:
     async def bulk_upsert(
         self,
         session: AsyncSession,
+        project_id: int,
         scopes_data: List[dict]
     ) -> dict:
-        """Bulk upsert scopes (create new or update existing)
+        """Bulk upsert scopes for a project (create new or update existing)
         
         Args:
+            project_id: Project ID to associate scopes with
             scopes_data: List of dicts with keys: scope_name, description, category, is_active
             
         Returns:
@@ -171,8 +269,8 @@ class ScopeRepository:
                 description = scope_data.get("description", "")
                 is_active = scope_data.get("is_active", True)
                 
-                # Check if scope exists
-                existing = await self.get_by_name(session, scope_name)
+                # Check if scope exists in this project
+                existing = await self.get_by_project_and_name(session, project_id, scope_name)
                 
                 if existing:
                     # Check if update is needed
@@ -194,6 +292,7 @@ class ScopeRepository:
                 else:
                     # Create new scope
                     new_scope = AKMScope(
+                        project_id=project_id,
                         scope_name=scope_name,
                         description=description,
                         is_active=is_active

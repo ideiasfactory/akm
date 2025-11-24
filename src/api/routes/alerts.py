@@ -1,5 +1,12 @@
 """
 API routes for Alert management.
+
+Alerts are now key-scoped following RESTful hierarchy:
+- POST   /projects/{project_id}/keys/{key_id}/alerts
+- GET    /projects/{project_id}/keys/{key_id}/alerts
+- GET    /projects/{project_id}/keys/{key_id}/alerts/{alert_id}
+- PUT    /projects/{project_id}/keys/{key_id}/alerts/{alert_id}
+- DELETE /projects/{project_id}/keys/{key_id}/alerts/{alert_id}
 """
 
 from typing import List, Optional
@@ -9,6 +16,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.database.connection import get_session
 from src.database.repositories.alert_repository import alert_repository
+from src.database.repositories.api_key_repository import api_key_repository
 from src.database.models import AKMAPIKey
 from src.api.auth_middleware import PermissionChecker
 from src.api.models import (
@@ -19,26 +27,36 @@ from src.api.models import (
     AlertStatsResponse
 )
 
-router = APIRouter(prefix="/alerts", tags=["Alerts"])
+router = APIRouter(tags=["Alerts"])
 
 
-# Alert Rules CRUD
-@router.post("/rules", response_model=AlertRuleResponse, status_code=status.HTTP_201_CREATED)
+# Alert Rules CRUD - Key-scoped
+@router.post("/projects/{project_id}/keys/{key_id}/alerts", response_model=AlertRuleResponse, status_code=status.HTTP_201_CREATED)
 async def create_alert_rule(
+    project_id: int,
+    key_id: int,
     rule_data: AlertRuleCreate,
     api_key: AKMAPIKey = Depends(PermissionChecker(["akm:alerts:write"])),
     session: AsyncSession = Depends(get_session)
 ):
-    """Create a new alert rule"""
+    """Create a new alert rule for an API key"""
+    # Verify key exists and belongs to project
+    key = await api_key_repository.get_by_id(session, key_id)
+    if not key or key.project_id != project_id:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"API key {key_id} not found in project {project_id}"
+        )
+    
     rule = await alert_repository.create_rule(
         session,
-        project_id=rule_data.project_id,
-        api_key_id=rule_data.api_key_id,
-        alert_type=rule_data.alert_type,
-        condition_metric=rule_data.condition_metric,
-        condition_operator=rule_data.condition_operator,
-        condition_threshold=rule_data.condition_threshold,
-        webhook_event_type=rule_data.webhook_event_type,
+        api_key_id=key_id,
+        rule_name=rule_data.rule_name,
+        metric_type=rule_data.metric_type,
+        threshold_value=rule_data.threshold_value,
+        threshold_percentage=rule_data.threshold_percentage,
+        comparison_operator=rule_data.comparison_operator,
+        window_minutes=rule_data.window_minutes,
         cooldown_minutes=rule_data.cooldown_minutes,
         is_active=rule_data.is_active
     )
@@ -46,10 +64,10 @@ async def create_alert_rule(
     return rule
 
 
-@router.get("/rules", response_model=List[AlertRuleResponse])
+@router.get("/projects/{project_id}/keys/{key_id}/alerts", response_model=List[AlertRuleResponse])
 async def list_alert_rules(
-    project_id: Optional[int] = None,
-    api_key_id: Optional[int] = None,
+    project_id: int,
+    key_id: int,
     alert_type: Optional[str] = None,
     active_only: bool = True,
     skip: int = 0,
@@ -57,11 +75,18 @@ async def list_alert_rules(
     api_key: AKMAPIKey = Depends(PermissionChecker(["akm:alerts:read"])),
     session: AsyncSession = Depends(get_session)
 ):
-    """List alert rules"""
+    """List alert rules for an API key"""
+    # Verify key exists and belongs to project
+    key = await api_key_repository.get_by_id(session, key_id)
+    if not key or key.project_id != project_id:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"API key {key_id} not found in project {project_id}"
+        )
+    
     rules = await alert_repository.list_rules(
         session,
-        project_id=project_id,
-        api_key_id=api_key_id,
+        api_key_id=key_id,
         alert_type=alert_type,
         active_only=active_only,
         skip=skip,
@@ -70,72 +95,111 @@ async def list_alert_rules(
     return rules
 
 
-@router.get("/rules/{rule_id}", response_model=AlertRuleResponse)
+@router.get("/projects/{project_id}/keys/{key_id}/alerts/{alert_id}", response_model=AlertRuleResponse)
 async def get_alert_rule(
-    rule_id: int,
+    project_id: int,
+    key_id: int,
+    alert_id: int,
     api_key: AKMAPIKey = Depends(PermissionChecker(["akm:alerts:read"])),
     session: AsyncSession = Depends(get_session)
 ):
     """Get alert rule by ID"""
-    rule = await alert_repository.get_rule(session, rule_id)
-    
-    if not rule:
+    # Verify key exists and belongs to project
+    key = await api_key_repository.get_by_id(session, key_id)
+    if not key or key.project_id != project_id:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Alert rule {rule_id} not found"
+            detail=f"API key {key_id} not found in project {project_id}"
+        )
+    
+    rule = await alert_repository.get_rule(session, alert_id)
+    
+    if not rule or rule.api_key_id != key_id:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Alert rule {alert_id} not found for key {key_id}"
         )
     
     return rule
 
 
-@router.put("/rules/{rule_id}", response_model=AlertRuleResponse)
+@router.put("/projects/{project_id}/keys/{key_id}/alerts/{alert_id}", response_model=AlertRuleResponse)
 async def update_alert_rule(
-    rule_id: int,
+    project_id: int,
+    key_id: int,
+    alert_id: int,
     rule_data: AlertRuleUpdate,
     api_key: AKMAPIKey = Depends(PermissionChecker(["akm:alerts:write"])),
     session: AsyncSession = Depends(get_session)
 ):
     """Update alert rule"""
+    # Verify key exists and belongs to project
+    key = await api_key_repository.get_by_id(session, key_id)
+    if not key or key.project_id != project_id:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"API key {key_id} not found in project {project_id}"
+        )
+    
+    rule = await alert_repository.get_rule(session, alert_id)
+    if not rule or rule.api_key_id != key_id:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Alert rule {alert_id} not found for key {key_id}"
+        )
+    
     updated = await alert_repository.update_rule(
         session,
-        rule_id,
-        condition_metric=rule_data.condition_metric,
-        condition_operator=rule_data.condition_operator,
-        condition_threshold=rule_data.condition_threshold,
-        webhook_event_type=rule_data.webhook_event_type,
+        alert_id,
+        metric_type=rule_data.metric_type,
+        threshold_value=rule_data.threshold_value,
+        threshold_percentage=rule_data.threshold_percentage,
+        comparison_operator=rule_data.comparison_operator,
+        window_minutes=rule_data.window_minutes,
         cooldown_minutes=rule_data.cooldown_minutes,
         is_active=rule_data.is_active
     )
     
-    if not updated:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Alert rule {rule_id} not found"
-        )
-    
     return updated
 
 
-@router.delete("/rules/{rule_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/projects/{project_id}/keys/{key_id}/alerts/{alert_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_alert_rule(
-    rule_id: int,
+    project_id: int,
+    key_id: int,
+    alert_id: int,
     api_key: AKMAPIKey = Depends(PermissionChecker(["akm:alerts:delete"])),
     session: AsyncSession = Depends(get_session)
 ):
     """Delete alert rule"""
-    success = await alert_repository.delete_rule(session, rule_id)
+    # Verify key exists and belongs to project
+    key = await api_key_repository.get_by_id(session, key_id)
+    if not key or key.project_id != project_id:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"API key {key_id} not found in project {project_id}"
+        )
+    
+    rule = await alert_repository.get_rule(session, alert_id)
+    if not rule or rule.api_key_id != key_id:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Alert rule {alert_id} not found for key {key_id}"
+        )
+    
+    success = await alert_repository.delete_rule(session, alert_id)
     
     if not success:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Alert rule {rule_id} not found"
+            detail=f"Alert rule {alert_id} not found"
         )
     
     return None
 
 
-# Alert History
-@router.get("/history", response_model=List[AlertHistoryResponse])
+# Alert History (Admin routes)
+@router.get("/alerts/history", response_model=List[AlertHistoryResponse])
 async def list_alert_history(
     rule_id: Optional[int] = None,
     start_date: Optional[datetime] = Query(None, description="Start date for history"),
@@ -157,7 +221,7 @@ async def list_alert_history(
     return history
 
 
-@router.get("/history/{history_id}", response_model=AlertHistoryResponse)
+@router.get("/alerts/history/{history_id}", response_model=AlertHistoryResponse)
 async def get_alert_history_item(
     history_id: int,
     api_key: AKMAPIKey = Depends(PermissionChecker(["akm:alerts:read"])),
@@ -175,8 +239,8 @@ async def get_alert_history_item(
     return item
 
 
-# Alert Statistics
-@router.get("/stats", response_model=AlertStatsResponse)
+# Alert Statistics (Admin routes)
+@router.get("/alerts/stats", response_model=AlertStatsResponse)
 async def get_alert_stats(
     project_id: Optional[int] = None,
     api_key_id: Optional[int] = None,

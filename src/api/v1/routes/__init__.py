@@ -3,8 +3,6 @@ API v1 Routes
 Re-export all routes from the main routes directory for v1 compatibility.
 """
 
-from src.api.routes.health import router as health_router
-from src.api.routes.home import router as home_router
 from src.api.routes.projects import router as projects_router
 from src.api.routes.keys import router as keys_router
 from src.api.routes.scopes import router as scopes_router
@@ -16,8 +14,6 @@ from src.api.routes.audit import router as audit_router
 from src.api.routes.sensitive_fields import router as sensitive_fields_router
 
 __all__ = [
-    "health_router",
-    "home_router",
     "projects_router",
     "keys_router",
     "scopes_router",

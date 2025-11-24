@@ -1,5 +1,12 @@
 """
 API routes for Webhook management.
+
+Webhooks are now key-scoped following RESTful hierarchy:
+- POST   /projects/{project_id}/keys/{key_id}/webhooks
+- GET    /projects/{project_id}/keys/{key_id}/webhooks
+- GET    /projects/{project_id}/keys/{key_id}/webhooks/{webhook_id}
+- PUT    /projects/{project_id}/keys/{key_id}/webhooks/{webhook_id}
+- DELETE /projects/{project_id}/keys/{key_id}/webhooks/{webhook_id}
 """
 
 from typing import List, Optional
@@ -8,6 +15,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.database.connection import get_session
 from src.database.repositories.webhook_repository import webhook_repository
+from src.database.repositories.api_key_repository import api_key_repository
 from src.database.models import AKMAPIKey
 from src.api.auth_middleware import PermissionChecker
 from src.api.models import (
@@ -18,20 +26,30 @@ from src.api.models import (
     WebhookDeliveryResponse
 )
 
-router = APIRouter(prefix="/webhooks", tags=["Webhooks"])
+router = APIRouter(tags=["Webhooks"])
 
 
-# Webhook CRUD
-@router.post("", response_model=WebhookResponse, status_code=status.HTTP_201_CREATED)
+# Webhook CRUD - Key-scoped
+@router.post("/projects/{project_id}/keys/{key_id}/webhooks", response_model=WebhookResponse, status_code=status.HTTP_201_CREATED)
 async def create_webhook(
+    project_id: int,
+    key_id: int,
     webhook_data: WebhookCreate,
     api_key: AKMAPIKey = Depends(PermissionChecker(["akm:webhooks:write"])),
     session: AsyncSession = Depends(get_session)
 ):
-    """Create a new webhook"""
+    """Create a new webhook for an API key"""
+    # Verify key exists and belongs to project
+    key = await api_key_repository.get_by_id(session, key_id)
+    if not key or key.project_id != project_id:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"API key {key_id} not found in project {project_id}"
+        )
+    
     webhook = await webhook_repository.create_webhook(
         session,
-        project_id=webhook_data.project_id,
+        api_key_id=key_id,
         url=webhook_data.url,
         secret=webhook_data.secret,
         is_active=webhook_data.is_active
@@ -40,19 +58,28 @@ async def create_webhook(
     return webhook
 
 
-@router.get("", response_model=List[WebhookResponse])
+@router.get("/projects/{project_id}/keys/{key_id}/webhooks", response_model=List[WebhookResponse])
 async def list_webhooks(
-    project_id: Optional[int] = None,
+    project_id: int,
+    key_id: int,
     active_only: bool = True,
     skip: int = 0,
     limit: int = 100,
     api_key: AKMAPIKey = Depends(PermissionChecker(["akm:webhooks:read"])),
     session: AsyncSession = Depends(get_session)
 ):
-    """List webhooks"""
+    """List webhooks for an API key"""
+    # Verify key exists and belongs to project
+    key = await api_key_repository.get_by_id(session, key_id)
+    if not key or key.project_id != project_id:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"API key {key_id} not found in project {project_id}"
+        )
+    
     webhooks = await webhook_repository.list_webhooks(
         session,
-        project_id=project_id,
+        api_key_id=key_id,
         active_only=active_only,
         skip=skip,
         limit=limit
@@ -60,32 +87,59 @@ async def list_webhooks(
     return webhooks
 
 
-@router.get("/{webhook_id}", response_model=WebhookResponse)
+@router.get("/projects/{project_id}/keys/{key_id}/webhooks/{webhook_id}", response_model=WebhookResponse)
 async def get_webhook(
+    project_id: int,
+    key_id: int,
     webhook_id: int,
     api_key: AKMAPIKey = Depends(PermissionChecker(["akm:webhooks:read"])),
     session: AsyncSession = Depends(get_session)
 ):
     """Get webhook by ID"""
-    webhook = await webhook_repository.get_webhook(session, webhook_id)
-    
-    if not webhook:
+    # Verify key exists and belongs to project
+    key = await api_key_repository.get_by_id(session, key_id)
+    if not key or key.project_id != project_id:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Webhook {webhook_id} not found"
+            detail=f"API key {key_id} not found in project {project_id}"
+        )
+    
+    webhook = await webhook_repository.get_webhook(session, webhook_id)
+    
+    if not webhook or webhook.api_key_id != key_id:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Webhook {webhook_id} not found for key {key_id}"
         )
     
     return webhook
 
 
-@router.put("/{webhook_id}", response_model=WebhookResponse)
+@router.put("/projects/{project_id}/keys/{key_id}/webhooks/{webhook_id}", response_model=WebhookResponse)
 async def update_webhook(
+    project_id: int,
+    key_id: int,
     webhook_id: int,
     webhook_data: WebhookUpdate,
     api_key: AKMAPIKey = Depends(PermissionChecker(["akm:webhooks:write"])),
     session: AsyncSession = Depends(get_session)
 ):
     """Update webhook"""
+    # Verify key exists and belongs to project
+    key = await api_key_repository.get_by_id(session, key_id)
+    if not key or key.project_id != project_id:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"API key {key_id} not found in project {project_id}"
+        )
+    
+    webhook = await webhook_repository.get_webhook(session, webhook_id)
+    if not webhook or webhook.api_key_id != key_id:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Webhook {webhook_id} not found for key {key_id}"
+        )
+    
     updated = await webhook_repository.update_webhook(
         session,
         webhook_id,
@@ -94,22 +148,33 @@ async def update_webhook(
         is_active=webhook_data.is_active
     )
     
-    if not updated:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Webhook {webhook_id} not found"
-        )
-    
     return updated
 
 
-@router.delete("/{webhook_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/projects/{project_id}/keys/{key_id}/webhooks/{webhook_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_webhook(
+    project_id: int,
+    key_id: int,
     webhook_id: int,
     api_key: AKMAPIKey = Depends(PermissionChecker(["akm:webhooks:delete"])),
     session: AsyncSession = Depends(get_session)
 ):
     """Delete webhook"""
+    # Verify key exists and belongs to project
+    key = await api_key_repository.get_by_id(session, key_id)
+    if not key or key.project_id != project_id:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"API key {key_id} not found in project {project_id}"
+        )
+    
+    webhook = await webhook_repository.get_webhook(session, webhook_id)
+    if not webhook or webhook.api_key_id != key_id:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Webhook {webhook_id} not found for key {key_id}"
+        )
+    
     success = await webhook_repository.delete_webhook(session, webhook_id)
     
     if not success:
@@ -122,8 +187,10 @@ async def delete_webhook(
 
 
 # Webhook Subscriptions
-@router.post("/{webhook_id}/subscriptions/{event_type}", status_code=status.HTTP_201_CREATED)
+@router.post("/projects/{project_id}/keys/{key_id}/webhooks/{webhook_id}/subscriptions/{event_type}", status_code=status.HTTP_201_CREATED)
 async def subscribe_to_event(
+    project_id: int,
+    key_id: int,
     webhook_id: int,
     event_type: str,
     api_key: AKMAPIKey = Depends(PermissionChecker(["akm:webhooks:write"])),
@@ -145,8 +212,10 @@ async def subscribe_to_event(
     return {"message": f"Webhook {webhook_id} subscribed to {event_type}"}
 
 
-@router.delete("/{webhook_id}/subscriptions/{event_type}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/projects/{project_id}/keys/{key_id}/webhooks/{webhook_id}/subscriptions/{event_type}", status_code=status.HTTP_204_NO_CONTENT)
 async def unsubscribe_from_event(
+    project_id: int,
+    key_id: int,
     webhook_id: int,
     event_type: str,
     api_key: AKMAPIKey = Depends(PermissionChecker(["akm:webhooks:write"])),
@@ -168,8 +237,8 @@ async def unsubscribe_from_event(
     return None
 
 
-# Webhook Events
-@router.get("/events/types", response_model=List[WebhookEventResponse])
+# Webhook Events (global)
+@router.get("/webhooks/events/types", response_model=List[WebhookEventResponse])
 async def list_event_types(
     api_key: AKMAPIKey = Depends(PermissionChecker(["akm:webhooks:read"])),
     session: AsyncSession = Depends(get_session)
@@ -180,8 +249,10 @@ async def list_event_types(
 
 
 # Webhook Deliveries
-@router.get("/{webhook_id}/deliveries", response_model=List[WebhookDeliveryResponse])
+@router.get("/projects/{project_id}/keys/{key_id}/webhooks/{webhook_id}/deliveries", response_model=List[WebhookDeliveryResponse])
 async def list_deliveries(
+    project_id: int,
+    key_id: int,
     webhook_id: int,
     success_only: Optional[bool] = None,
     skip: int = 0,
@@ -200,7 +271,7 @@ async def list_deliveries(
     return deliveries
 
 
-@router.get("/deliveries/{delivery_id}", response_model=WebhookDeliveryResponse)
+@router.get("/webhooks/deliveries/{delivery_id}", response_model=WebhookDeliveryResponse)
 async def get_delivery(
     delivery_id: int,
     api_key: AKMAPIKey = Depends(PermissionChecker(["akm:webhooks:read"])),
@@ -218,7 +289,7 @@ async def get_delivery(
     return delivery
 
 
-@router.post("/deliveries/{delivery_id}/retry", response_model=WebhookDeliveryResponse)
+@router.post("/webhooks/deliveries/{delivery_id}/retry", response_model=WebhookDeliveryResponse)
 async def retry_delivery(
     delivery_id: int,
     api_key: AKMAPIKey = Depends(PermissionChecker(["akm:webhooks:write"])),
