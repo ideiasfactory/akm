@@ -63,9 +63,9 @@ Production-ready FastAPI application com multi-tenancy, RBAC, rate limiting, web
 
 [QuickStart Guide](https://akm-green.vercel.app/quickstart)
 
-[Postman Collection](https://www.postman.com/ideias-factory-team-a2e55a26-6064350/ideias-factory-tech-public-workspace/collection/fv59rll/api-key-management-service?action=share&creator=50302320)
+[Postman Collection](https://www.postman.com/ideias-factory-team-a2e55a26-6064350/ideias-factory-tech-public-workspace/collection/5luojqx/api-key-management-service?action=share&source=copy-link&creator=50302320)
 
-[![Run in Postman](https://run.pstmn.io/button.svg)](https://god.gw.postman.com/run-collection/:collection_id?action=collection%2Ffork&source=rip_markdown&:collection_url)
+[<img src="https://run.pstmn.io/button.svg" alt="Run In Postman" style="width: 128px; height: 32px;">](https://app.getpostman.com/run-collection/1672847-8bbfc01a-2da8-4910-98c4-031b7c697a7e?action=collection%2Ffork&source=rip_markdown&collection-url=entityId%3D1672847-8bbfc01a-2da8-4910-98c4-031b7c697a7e%26entityType%3Dcollection%26workspaceId%3Dc8b0ab8a-0bc0-4306-a459-28362778da96)
 
 """,
     version=settings.api_version,
