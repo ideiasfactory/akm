@@ -10,15 +10,7 @@
       }
     }
   ],
-  "routes": [
-    {
-      "src": "/static/(.*)",
-      "dest": "/public/$1"
-    },
-    {
-      "src": "/public/(.*)",
-      "dest": "/public/$1"
-    },
+  "routes": [  
     {
       "src": "/(.*)",
       "dest": "src/api/index.py"
