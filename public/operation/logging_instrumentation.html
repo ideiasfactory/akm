@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logging Instrumentation - API Key Management Service</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --accent: #f093fb;
+            --dark: #1a1a2e;
+            --light: #f8f9fa;
+            --code-bg: #282c34;
+            --border: #e0e0e0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .nav {
+            background: var(--dark);
+            padding: 15px 40px;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .nav a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .nav a:hover {
+            background: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--dark);
+            margin: 30px 0 15px 0;
+            line-height: 1.3;
+        }
+
+        h1 { font-size: 2.5em; border-bottom: 3px solid var(--primary); padding-bottom: 10px; }
+        h2 { font-size: 2em; border-bottom: 2px solid var(--border); padding-bottom: 8px; margin-top: 40px; }
+        h3 { font-size: 1.5em; color: var(--primary); }
+        h4 { font-size: 1.3em; }
+
+        p {
+            margin: 15px 0;
+            line-height: 1.8;
+        }
+
+        a {
+            color: var(--primary);
+            text-decoration: none;
+            border-bottom: 1px dotted var(--primary);
+        }
+
+        a:hover {
+            color: var(--secondary);
+            border-bottom: 1px solid var(--secondary);
+        }
+
+        code {
+            background: #f4f4f4;
+            padding: 3px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #e83e8c;
+        }
+
+        pre {
+            background: var(--code-bg);
+            color: #abb2bf;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+            border-left: 4px solid var(--primary);
+        }
+
+        pre code {
+            background: none;
+            color: inherit;
+            padding: 0;
+            font-size: 0.95em;
+        }
+
+        blockquote {
+            border-left: 4px solid var(--primary);
+            padding: 15px 20px;
+            margin: 20px 0;
+            background: #f8f9fa;
+            font-style: italic;
+        }
+
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+
+        li {
+            margin: 8px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .success {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .info {
+            background: #d1ecf1;
+            border-left: 4px solid #17a2b8;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .footer {
+            background: var(--dark);
+            color: white;
+            padding: 30px 40px;
+            text-align: center;
+        }
+
+        .footer a {
+            color: var(--accent);
+            border-bottom: 1px dotted var(--accent);
+        }
+
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--primary);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            font-size: 24px;
+        }
+
+        .back-to-top:hover {
+            background: var(--secondary);
+            transform: translateY(-5px);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                border-radius: 0;
+            }
+
+            .header {
+                padding: 30px 20px;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .nav {
+                padding: 15px 20px;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            pre {
+                padding: 15px;
+                font-size: 0.85em;
+            }
+        }
+
+        /* Syntax highlighting for code blocks */
+        .codehilite .k { color: #c678dd; } /* keyword */
+        .codehilite .s { color: #98c379; } /* string */
+        .codehilite .n { color: #e06c75; } /* name */
+        .codehilite .c { color: #5c6370; font-style: italic; } /* comment */
+        .codehilite .m { color: #d19a66; } /* number */
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔐 Logging Instrumentation</h1>
+            <p>API Key Management Service</p>
+        </div>
+
+        <div class="nav">
+            <a href="/">🏠 Home</a>
+            <a href="/quickstart">🚀 Quick Start</a>
+            <a href="/public/guides/admnistration.html">🔐 Administration</a>
+            <a href="/docs">📚 API Docs</a>
+            <a href="/redoc">📖 ReDoc</a>
+        </div>
+
+        <div class="content">
+<h1 id="logging-instrumentation-summary">Logging Instrumentation Summary</h1>
+<h2 id="overview">Overview</h2>
+<p>This document describes the comprehensive logging instrumentation added to the Brazilian CDS Data Feeder API v2.0.0.</p>
+<h2 id="instrumented-files">Instrumented Files</h2>
+<h3 id="1-mainpy-application-entry-point">1. <strong>main.py</strong> - Application Entry Point</h3>
+<p><strong>Logging Added:</strong>
+- ✅ Application startup with context (version, environment, BetterStack status)
+- ✅ HTTP request middleware logging all incoming requests
+- ✅ Request logging includes: method, path, client IP, user agent, status code, duration</p>
+<p><strong>Key Log Events:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Startup</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Application starting&quot;</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;context&quot;</span><span class="p">:</span> <span class="p">{</span><span class="o">...</span><span class="p">}})</span>
+
+<span class="c1"># HTTP Requests (all endpoints)</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;HTTP </span><span class="si">{</span><span class="n">method</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">url</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">status_code</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">duration</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">s)&quot;</span><span class="p">)</span>
+</code></pre></div>
+
+<hr />
+<h3 id="2-srcapirouteshealthpy-health-check-endpoints">2. <strong>src/api/routes/health.py</strong> - Health Check Endpoints</h3>
+<p><strong>Logging Added:</strong>
+- ✅ Router initialization
+- ✅ Database health check attempts (debug)
+- ✅ Successful database connections (info)
+- ✅ Failed database connections (error with exception details)
+- ✅ Overall health status (info for healthy, warning for degraded)
+- ✅ Liveness probe checks (debug)
+- ✅ Readiness probe results (info for ready, warning for not ready)</p>
+<p><strong>Key Log Events:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Health Check</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Health check: System healthy&quot;</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;context&quot;</span><span class="p">:</span> <span class="p">{</span><span class="o">...</span><span class="p">}})</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Health check: System degraded - database not connected&quot;</span><span class="p">)</span>
+
+<span class="c1"># Database Status</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Database health check successful&quot;</span><span class="p">)</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Database health check failed&quot;</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;context&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="o">...</span><span class="p">}})</span>
+
+<span class="c1"># Readiness Probe</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Readiness probe: Service ready&quot;</span><span class="p">)</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Readiness probe: Service not ready - database disconnected&quot;</span><span class="p">)</span>
+</code></pre></div>
+
+<hr />
+<h3 id="3-srcapirouteshomepy-home-page-static-files">3. <strong>src/api/routes/home.py</strong> - Home Page &amp; Static Files</h3>
+<p><strong>Logging Added:</strong>
+- ✅ Template search process (debug)
+- ✅ Successful template loading with path (info)
+- ✅ Failed template reads (debug with error)
+- ✅ Fallback to inline HTML (warning)
+- ✅ Home page rendering attempts (debug with client IP)
+- ✅ Successful page renders with content length (info)
+- ✅ Home page data retrieval (info with counts)
+- ✅ Favicon search and serving (info with path)
+- ✅ Favicon not found (warning)
+- ✅ All exceptions caught and logged (error with stack trace)</p>
+<p><strong>Key Log Events:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Template Loading</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Home template found and loaded&quot;</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;context&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;template_path&quot;</span><span class="p">:</span> <span class="o">...</span><span class="p">}})</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Template not found - using fallback HTML&quot;</span><span class="p">)</span>
+
+<span class="c1"># Page Rendering</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Home page rendered successfully&quot;</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;context&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;content_length&quot;</span><span class="p">:</span> <span class="o">...</span><span class="p">}})</span>
+
+<span class="c1"># Favicon Serving</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Favicon found and served&quot;</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;context&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="o">...</span><span class="p">}})</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Favicon not found in any expected location&quot;</span><span class="p">)</span>
+
+<span class="c1"># Errors</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Failed to render home page&quot;</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;context&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="o">...</span><span class="p">}})</span>
+</code></pre></div>
+
+<hr />
+<h2 id="log-levels-usage">Log Levels Usage</h2>
+<h3 id="info-level">INFO Level</h3>
+<ul>
+<li>Successful operations (health checks, page renders, file serving)</li>
+<li>Router initialization</li>
+<li>Database connections established</li>
+<li>Readiness/liveness confirmations</li>
+</ul>
+<h3 id="warning-level">WARNING Level</h3>
+<ul>
+<li>System degraded (database disconnected but API running)</li>
+<li>Service not ready (readiness probe fails)</li>
+<li>Template not found (using fallback)</li>
+<li>Resource not found (favicon missing)</li>
+</ul>
+<h3 id="error-level">ERROR Level</h3>
+<ul>
+<li>Database connection failures with exceptions</li>
+<li>Failed page rendering with stack traces</li>
+<li>Failed data retrieval with error details</li>
+</ul>
+<h3 id="debug-level">DEBUG Level</h3>
+<ul>
+<li>Detailed operational info (template search paths)</li>
+<li>Liveness probe pings</li>
+<li>Database health check initiation</li>
+<li>Request context details</li>
+</ul>
+<hr />
+<h2 id="contextual-information-logged">Contextual Information Logged</h2>
+<p>All logs include rich context using <code>log_with_context()</code>:</p>
+<h3 id="health-endpoints">Health Endpoints</h3>
+<ul>
+<li><code>status</code>: Current health status</li>
+<li><code>uptime_seconds</code>: Application uptime</li>
+<li><code>db_connected</code>: Database connection status</li>
+<li><code>db_type</code>: Type of database</li>
+<li><code>error</code>: Exception messages</li>
+<li><code>error_type</code>: Exception class names</li>
+</ul>
+<h3 id="home-endpoints">Home Endpoints</h3>
+<ul>
+<li><code>version</code>: API version</li>
+<li><code>environment</code>: Deployment environment</li>
+<li><code>template_path</code>: Resolved template location</li>
+<li><code>content_length</code>: Size of rendered content</li>
+<li><code>features_count</code>: Number of features displayed</li>
+<li><code>endpoints_count</code>: Number of endpoints listed</li>
+<li><code>client_ip</code>: Client IP address</li>
+<li><code>path</code>: File paths for static resources</li>
+</ul>
+<h3 id="http-requests-middleware">HTTP Requests (Middleware)</h3>
+<ul>
+<li><code>method</code>: HTTP method (GET, POST, etc.)</li>
+<li><code>path</code>: Request path</li>
+<li><code>status_code</code>: Response status code</li>
+<li><code>duration</code>: Request processing time in seconds</li>
+<li><code>client_ip</code>: Client IP address</li>
+<li><code>user_agent</code>: Client user agent string</li>
+</ul>
+<hr />
+<h2 id="betterstack-integration">BetterStack Integration</h2>
+<h3 id="production-environment">Production Environment</h3>
+<ul>
+<li>All logs automatically sent to BetterStack (Logtail)</li>
+<li>Structured JSON format with metadata</li>
+<li>Includes: timestamp, level, message, context, environment, version</li>
+</ul>
+<h3 id="development-environment">Development Environment</h3>
+<ul>
+<li>Logs output to console only</li>
+<li>Human-readable format</li>
+<li>BetterStack integration disabled</li>
+</ul>
+<hr />
+<h2 id="testing-recommendations">Testing Recommendations</h2>
+<h3 id="local-testing">Local Testing</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Start the server</span>
+uvicorn<span class="w"> </span>main:app<span class="w"> </span>--reload
+
+<span class="c1"># Test endpoints and observe console logs</span>
+curl<span class="w"> </span>http://localhost:8000/
+curl<span class="w"> </span>http://localhost:8000/health
+curl<span class="w"> </span>http://localhost:8000/health/liveness
+curl<span class="w"> </span>http://localhost:8000/health/readiness
+curl<span class="w"> </span>http://localhost:8000/api/home/data
+curl<span class="w"> </span>http://localhost:8000/favicon.ico
+</code></pre></div>
+
+<h3 id="production-testing-vercel">Production Testing (Vercel)</h3>
+<ol>
+<li>Deploy to Vercel</li>
+<li>Access BetterStack dashboard</li>
+<li>Filter logs by:</li>
+<li>Level (info, warning, error)</li>
+<li>Source (health, home, main)</li>
+<li>Context fields (db_connected, status_code, etc.)</li>
+</ol>
+<hr />
+<h2 id="log-volume-estimates">Log Volume Estimates</h2>
+<h3 id="typical-traffic-pattern">Typical Traffic Pattern</h3>
+<ul>
+<li><strong>Startup</strong>: 1 log entry</li>
+<li><strong>Health Check</strong>: 3-4 log entries per request</li>
+<li><strong>Home Page</strong>: 4-6 log entries per request</li>
+<li><strong>Favicon</strong>: 2-3 log entries per request</li>
+<li><strong>HTTP Middleware</strong>: 1 log entry per request</li>
+</ul>
+<h3 id="expected-daily-volume-1000-requestsday">Expected Daily Volume (1000 requests/day)</h3>
+<ul>
+<li>~5000-7000 log entries</li>
+<li>~500KB compressed JSON (BetterStack)</li>
+</ul>
+<hr />
+<h2 id="next-steps">Next Steps</h2>
+<ol>
+<li>✅ Health routes instrumented</li>
+<li>✅ Home routes instrumented  </li>
+<li>✅ Main app instrumented</li>
+<li>⏳ Test locally with uvicorn</li>
+<li>⏳ Deploy to Vercel</li>
+<li>⏳ Verify logs in BetterStack dashboard</li>
+<li>⏳ Monitor for any issues or performance impacts</li>
+</ol>
+<hr />
+<h2 id="configuration">Configuration</h2>
+<p>Logging is configured via environment variables:</p>
+<div class="codehilite"><pre><span></span><code><span class="gh">#</span> Required for production logging
+BETTERSTACK_SOURCE_TOKEN=your_token_here
+BETTERSTACK_INGESTING_HOST=in.logs.betterstack.com
+
+<span class="gh">#</span> Optional - defaults
+LOG_LEVEL=INFO
+ENVIRONMENT=production  # Set to &#39;development&#39; to disable BetterStack
+</code></pre></div>
+
+<hr />
+<h2 id="maintenance">Maintenance</h2>
+<h3 id="adding-logging-to-new-routes">Adding Logging to New Routes</h3>
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">src.logging_config</span> <span class="kn">import</span> <span class="n">get_logger</span><span class="p">,</span> <span class="n">log_with_context</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="nd">@router</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/new-endpoint&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">new_endpoint</span><span class="p">():</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">log_with_context</span><span class="p">(</span><span class="n">logger</span><span class="p">,</span> <span class="s1">&#39;debug&#39;</span><span class="p">,</span> <span class="s1">&#39;Starting operation&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Your code here</span>
+
+        <span class="n">log_with_context</span><span class="p">(</span><span class="n">logger</span><span class="p">,</span> <span class="s1">&#39;info&#39;</span><span class="p">,</span> <span class="s1">&#39;Operation successful&#39;</span><span class="p">,</span> <span class="n">result</span><span class="o">=...</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">log_with_context</span><span class="p">(</span>
+            <span class="n">logger</span><span class="p">,</span> 
+            <span class="s1">&#39;error&#39;</span><span class="p">,</span> 
+            <span class="s1">&#39;Operation failed&#39;</span><span class="p">,</span>
+            <span class="n">error</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">),</span>
+            <span class="n">error_type</span><span class="o">=</span><span class="nb">type</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span>
+        <span class="p">)</span>
+        <span class="k">raise</span>
+</code></pre></div>
+
+<h3 id="monitoring-key-metrics">Monitoring Key Metrics</h3>
+<ul>
+<li>Error rate: <code>level:error</code></li>
+<li>Response times: <code>duration</code> field in HTTP logs</li>
+<li>Database issues: <code>db_connected:false</code></li>
+<li>Service health: <code>status:degraded</code> or <code>status:not_ready</code></li>
+</ul>
+<hr />
+<p><strong>Last Updated:</strong> 2024 (during logging instrumentation)
+<strong>Author:</strong> GitHub Copilot
+<strong>Version:</strong> 1.0.0</p>
+        </div>
+
+        <div class="footer">
+            <p>Built with ❤️ using FastAPI, PostgreSQL, and SQLAlchemy</p>
+            <p style="margin-top: 10px;">© 2025 API Key Management Service by <a href="https://github.com/ideiasfactory" target="_blank">Ideias Factory</a></p>
+        </div>
+    </div>
+
+    <a href="#" class="back-to-top">↑</a>
+
+    <script>
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        // Back to top button
+        const backToTop = document.querySelector('.back-to-top');
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTop.style.display = 'flex';
+            } else {
+                backToTop.style.display = 'none';
+            }
+        });
+
+        backToTop.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    </script>
+</body>
+</html>

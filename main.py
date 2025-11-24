@@ -20,11 +20,10 @@ from src.api import (
     openapi_scopes_router,
     audit_router,
     sensitive_fields_router,
+    project_configurations_router,
 )
 # Import v1 API router
 from src.api.v1 import v1_router
-# Import project configurations router
-from src.api.routes.project_configurations import router as project_configurations_router
 from src.api.versioning import LATEST_VERSION, get_deprecation_warning
 from src.middleware import RateLimitMiddleware, VersioningMiddleware
 from src.middleware.audit import AuditMiddleware
@@ -48,7 +47,22 @@ log_with_context(
 # Create FastAPI application with security scheme
 app = FastAPI(
     title="API Key Management Service",
-    description="Secure API Key Management and Authentication Service",
+    description="""
+**API Key Management and Authentication Service**
+
+Production-ready FastAPI application com multi-tenancy, RBAC, rate limiting, webhooks e audit logging.
+
+**Principais recursos:**
+- Multi-tenant project isolation
+- Secure API key management (SHA-256)
+- 30+ granular permission scopes
+- Rate limiting and IP restrictions
+- Webhook integrations (HMAC)
+- Real-time monitoring and alerting
+- Sensitive data sanitization
+
+[Documentação Completa HTML](/static/docs_index.html) | [API Guide](https://github.com/ideiasfactory/akm/blob/main/docs/)
+""",
     version=settings.api_version,
     docs_url="/docs",
     redoc_url="/redoc",
@@ -68,14 +82,26 @@ app = FastAPI(
         {
             "name": "API Keys",
             "description": "API Key creation and management",
+            "externalDocs": {
+                "description": "🔑 Authentication Guide",
+                "url": "/guides/authentication.html"
+            }
         },
         {
             "name": "Scopes",
             "description": "Permission scope management",
+            "externalDocs": {
+                "description": "📖 Bulk Insert Documentation",
+                "url": "/guides/scopes_bulk_insert.html"
+            }
         },
         {
             "name": "Webhooks",
             "description": "Webhook configuration and event subscriptions",
+            "externalDocs": {
+                "description": "🔔 Webhooks Documentation",
+                "url": "/guides/webhooks.html"
+            }
         },
         {
             "name": "API Key Configuration",
@@ -92,10 +118,18 @@ app = FastAPI(
         {
             "name": "Audit Logs",
             "description": "Audit trail and integrity verification (read-only)",
+            "externalDocs": {
+                "description": "📊 Audit & Logging Guide",
+                "url": "/operation/logging.html"
+            }
         },
         {
             "name": "Sensitive Fields",
             "description": "Manage sensitive field sanitization rules",
+            "externalDocs": {
+                "description": "📖 Sensitive Fields Guide",
+                "url": "/admin/sensitive_fields.html"
+            }
         },
         {
             "name": "Project Configurations",
@@ -117,9 +151,14 @@ def custom_openapi():
         version=app.version,
         description=app.description,
         routes=app.routes,
-        tags=app.openapi_tags,
+        tags=app.openapi_tags
     )
     
+    # Adiciona externalDocs global
+    openapi_schema["externalDocs"] = {
+        "description": "Documentação Completa HTML",
+        "url": "/static/docs_index.html"
+    }
     # Add security scheme for API Key authentication
     openapi_schema["components"]["securitySchemes"] = {
         "APIKeyHeader": {
@@ -357,8 +396,15 @@ app.add_middleware(RateLimitMiddleware)
 
 # Mount static files (for favicon and other public assets)
 public_dir = Path(__file__).parent / "public"
+logger.info("Checking for public directory at %s", str(public_dir))
 if public_dir.exists():
     app.mount("/public", StaticFiles(directory=str(public_dir)), name="public")
+    admin_guide_path = Path(__file__).parent / "public" / "admin"
+    logger.info("Checking for administration at %s", str(admin_guide_path))
+    if admin_guide_path.exists():
+        logger.info("Administration guide found at %s", str(admin_guide_path))
+        app.mount("/admin", StaticFiles(directory=str(admin_guide_path), html=True), name="admin")
+
 
 # Include routers
 app.include_router(home_router)  # Includes GET / for home page
@@ -392,3 +438,15 @@ log_with_context(
     versioned_prefix="/akm/v1",
     legacy_prefix="/akm (deprecated)"
 )
+
+if __name__ == "__main__":
+    import uvicorn
+
+    # Option A – pass the object directly (cleanest if `app` is defined in this file)
+    uvicorn.run(
+        "main:app",          # or just `app` if you prefer
+        host="127.0.0.1",
+        port=8000,
+        reload=True,
+        reload_excludes=[".git", "__pycache__", ".venv"]
+    )

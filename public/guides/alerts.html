@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alerts Guide - API Key Management Service</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --accent: #f093fb;
+            --dark: #1a1a2e;
+            --light: #f8f9fa;
+            --code-bg: #282c34;
+            --border: #e0e0e0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .nav {
+            background: var(--dark);
+            padding: 15px 40px;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .nav a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .nav a:hover {
+            background: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--dark);
+            margin: 30px 0 15px 0;
+            line-height: 1.3;
+        }
+
+        h1 { font-size: 2.5em; border-bottom: 3px solid var(--primary); padding-bottom: 10px; }
+        h2 { font-size: 2em; border-bottom: 2px solid var(--border); padding-bottom: 8px; margin-top: 40px; }
+        h3 { font-size: 1.5em; color: var(--primary); }
+        h4 { font-size: 1.3em; }
+
+        p {
+            margin: 15px 0;
+            line-height: 1.8;
+        }
+
+        a {
+            color: var(--primary);
+            text-decoration: none;
+            border-bottom: 1px dotted var(--primary);
+        }
+
+        a:hover {
+            color: var(--secondary);
+            border-bottom: 1px solid var(--secondary);
+        }
+
+        code {
+            background: #f4f4f4;
+            padding: 3px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #e83e8c;
+        }
+
+        pre {
+            background: var(--code-bg);
+            color: #abb2bf;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+            border-left: 4px solid var(--primary);
+        }
+
+        pre code {
+            background: none;
+            color: inherit;
+            padding: 0;
+            font-size: 0.95em;
+        }
+
+        blockquote {
+            border-left: 4px solid var(--primary);
+            padding: 15px 20px;
+            margin: 20px 0;
+            background: #f8f9fa;
+            font-style: italic;
+        }
+
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+
+        li {
+            margin: 8px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .success {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .info {
+            background: #d1ecf1;
+            border-left: 4px solid #17a2b8;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .footer {
+            background: var(--dark);
+            color: white;
+            padding: 30px 40px;
+            text-align: center;
+        }
+
+        .footer a {
+            color: var(--accent);
+            border-bottom: 1px dotted var(--accent);
+        }
+
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--primary);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            font-size: 24px;
+        }
+
+        .back-to-top:hover {
+            background: var(--secondary);
+            transform: translateY(-5px);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                border-radius: 0;
+            }
+
+            .header {
+                padding: 30px 20px;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .nav {
+                padding: 15px 20px;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            pre {
+                padding: 15px;
+                font-size: 0.85em;
+            }
+        }
+
+        /* Syntax highlighting for code blocks */
+        .codehilite .k { color: #c678dd; } /* keyword */
+        .codehilite .s { color: #98c379; } /* string */
+        .codehilite .n { color: #e06c75; } /* name */
+        .codehilite .c { color: #5c6370; font-style: italic; } /* comment */
+        .codehilite .m { color: #d19a66; } /* number */
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔐 Alerts Guide</h1>
+            <p>API Key Management Service</p>
+        </div>
+
+        <div class="nav">
+            <a href="/">🏠 Home</a>
+            <a href="/quickstart">🚀 Quick Start</a>
+            <a href="/public/guides/admnistration.html">🔐 Administration</a>
+            <a href="/docs">📚 API Docs</a>
+            <a href="/redoc">📖 ReDoc</a>
+        </div>
+
+        <div class="content">
+<h1 id="alerts-guide">Alerts Guide</h1>
+<p>Automated monitoring and notifications for API key events.</p>
+<h2 id="overview">Overview</h2>
+<p>Set up alerts to receive notifications when important events occur:</p>
+<ul>
+<li>🚦 Rate limits approaching/exceeded</li>
+<li>🛡️ Security violations (unauthorized IP, scope violations)</li>
+<li>⏰ Key expiration warnings</li>
+<li>📊 Unusual usage patterns</li>
+<li>🔧 System events</li>
+</ul>
+<h2 id="alert-types">Alert Types</h2>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Trigger Condition</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>RATE_LIMIT_THRESHOLD</code></td>
+<td>Usage &gt; threshold %</td>
+<td>80% of hourly limit reached</td>
+</tr>
+<tr>
+<td><code>RATE_LIMIT_EXCEEDED</code></td>
+<td>Limit exceeded</td>
+<td>1000/1000 requests used</td>
+</tr>
+<tr>
+<td><code>IP_VIOLATION</code></td>
+<td>Request from unauthorized IP</td>
+<td>203.0.113.42 not in allowlist</td>
+</tr>
+<tr>
+<td><code>SCOPE_VIOLATION</code></td>
+<td>Insufficient permissions</td>
+<td>Needs <code>akm:users:write</code></td>
+</tr>
+<tr>
+<td><code>EXPIRY_WARNING</code></td>
+<td>Key expiring soon</td>
+<td>Expires in 7 days</td>
+</tr>
+<tr>
+<td><code>USAGE_ANOMALY</code></td>
+<td>Unusual pattern</td>
+<td>10x normal traffic</td>
+</tr>
+<tr>
+<td><code>SUSPICIOUS_ACTIVITY</code></td>
+<td>Multiple violations</td>
+<td>5 failed auth attempts</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="creating-alerts">Creating Alerts</h2>
+<h3 id="endpoint">Endpoint</h3>
+<div class="codehilite"><pre><span></span><code>POST<span class="w"> </span>/akm/v1/projects/<span class="o">{</span>project_id<span class="o">}</span>/keys/<span class="o">{</span>key_id<span class="o">}</span>/alerts
+</code></pre></div>
+
+<h3 id="rate-limit-alert">Rate Limit Alert</h3>
+<div class="codehilite"><pre><span></span><code>POST<span class="w"> </span>/akm/v1/projects/1/keys/42/alerts
+Content-Type:<span class="w"> </span>application/json
+
+<span class="o">{</span>
+<span class="w">  </span><span class="s2">&quot;alert_type&quot;</span>:<span class="w"> </span><span class="s2">&quot;RATE_LIMIT_THRESHOLD&quot;</span>,
+<span class="w">  </span><span class="s2">&quot;threshold&quot;</span>:<span class="w"> </span><span class="m">80</span>,
+<span class="w">  </span><span class="s2">&quot;enabled&quot;</span>:<span class="w"> </span>true,
+<span class="w">  </span><span class="s2">&quot;notification_channels&quot;</span>:<span class="w"> </span><span class="o">[</span><span class="s2">&quot;webhook&quot;</span>,<span class="w"> </span><span class="s2">&quot;email&quot;</span><span class="o">]</span>,
+<span class="w">  </span><span class="s2">&quot;webhook_url&quot;</span>:<span class="w"> </span><span class="s2">&quot;https://your-app.com/alerts&quot;</span>,
+<span class="w">  </span><span class="s2">&quot;email_recipients&quot;</span>:<span class="w"> </span><span class="o">[</span><span class="s2">&quot;ops@example.com&quot;</span>,<span class="w"> </span><span class="s2">&quot;team@example.com&quot;</span><span class="o">]</span>,
+<span class="w">  </span><span class="s2">&quot;cooldown_minutes&quot;</span>:<span class="w"> </span><span class="m">30</span>,
+<span class="w">  </span><span class="s2">&quot;metadata&quot;</span>:<span class="w"> </span><span class="o">{</span>
+<span class="w">    </span><span class="s2">&quot;severity&quot;</span>:<span class="w"> </span><span class="s2">&quot;warning&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;team&quot;</span>:<span class="w"> </span><span class="s2">&quot;platform&quot;</span>
+<span class="w">  </span><span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div>
+
+<h3 id="ip-violation-alert">IP Violation Alert</h3>
+<div class="codehilite"><pre><span></span><code>POST<span class="w"> </span>/akm/v1/projects/1/keys/42/alerts
+<span class="o">{</span>
+<span class="w">  </span><span class="s2">&quot;alert_type&quot;</span>:<span class="w"> </span><span class="s2">&quot;IP_VIOLATION&quot;</span>,
+<span class="w">  </span><span class="s2">&quot;enabled&quot;</span>:<span class="w"> </span>true,
+<span class="w">  </span><span class="s2">&quot;notification_channels&quot;</span>:<span class="w"> </span><span class="o">[</span><span class="s2">&quot;webhook&quot;</span><span class="o">]</span>,
+<span class="w">  </span><span class="s2">&quot;webhook_url&quot;</span>:<span class="w"> </span><span class="s2">&quot;https://security.example.com/alerts&quot;</span>,
+<span class="w">  </span><span class="s2">&quot;cooldown_minutes&quot;</span>:<span class="w"> </span><span class="m">5</span>,
+<span class="w">  </span><span class="s2">&quot;metadata&quot;</span>:<span class="w"> </span><span class="o">{</span>
+<span class="w">    </span><span class="s2">&quot;severity&quot;</span>:<span class="w"> </span><span class="s2">&quot;critical&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;auto_block&quot;</span>:<span class="w"> </span><span class="nb">true</span>
+<span class="w">  </span><span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div>
+
+<h3 id="expiry-warning">Expiry Warning</h3>
+<div class="codehilite"><pre><span></span><code>POST<span class="w"> </span>/akm/v1/projects/1/keys/42/alerts
+<span class="o">{</span>
+<span class="w">  </span><span class="s2">&quot;alert_type&quot;</span>:<span class="w"> </span><span class="s2">&quot;EXPIRY_WARNING&quot;</span>,
+<span class="w">  </span><span class="s2">&quot;threshold&quot;</span>:<span class="w"> </span><span class="m">7</span>,
+<span class="w">  </span><span class="s2">&quot;enabled&quot;</span>:<span class="w"> </span>true,
+<span class="w">  </span><span class="s2">&quot;notification_channels&quot;</span>:<span class="w"> </span><span class="o">[</span><span class="s2">&quot;email&quot;</span><span class="o">]</span>,
+<span class="w">  </span><span class="s2">&quot;email_recipients&quot;</span>:<span class="w"> </span><span class="o">[</span><span class="s2">&quot;admin@example.com&quot;</span><span class="o">]</span>
+<span class="o">}</span>
+</code></pre></div>
+
+<hr />
+<h2 id="alert-parameters">Alert Parameters</h2>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>alert_type</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>Type of alert (see types above)</td>
+</tr>
+<tr>
+<td><code>threshold</code></td>
+<td>integer</td>
+<td>Conditional</td>
+<td>Percentage/days threshold</td>
+</tr>
+<tr>
+<td><code>enabled</code></td>
+<td>boolean</td>
+<td>No</td>
+<td>Enable/disable (default: true)</td>
+</tr>
+<tr>
+<td><code>notification_channels</code></td>
+<td>array</td>
+<td>Yes</td>
+<td>["webhook", "email"]</td>
+</tr>
+<tr>
+<td><code>webhook_url</code></td>
+<td>string</td>
+<td>If webhook</td>
+<td>URL to POST alert to</td>
+</tr>
+<tr>
+<td><code>email_recipients</code></td>
+<td>array</td>
+<td>If email</td>
+<td>Email addresses</td>
+</tr>
+<tr>
+<td><code>cooldown_minutes</code></td>
+<td>integer</td>
+<td>No</td>
+<td>Min time between alerts (default: 30)</td>
+</tr>
+<tr>
+<td><code>metadata</code></td>
+<td>object</td>
+<td>No</td>
+<td>Custom key-value data</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="alert-payload">Alert Payload</h2>
+<p>Alerts are delivered via webhook or email with this structure:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;alert_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">123</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;alert_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;RATE_LIMIT_THRESHOLD&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;api_key_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">42</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;project_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;triggered_at&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-11-23T21:30:00Z&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;severity&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;warning&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;details&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;current_usage&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">850</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;limit&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1000</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;percentage&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">85.0</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;window&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;per_hour&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;reset_at&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-11-23T22:00:00Z&quot;</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;recommended_actions&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="s2">&quot;Consider increasing rate limit&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;Monitor usage patterns&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;Contact support if needed&quot;</span>
+<span class="w">  </span><span class="p">],</span>
+<span class="w">  </span><span class="nt">&quot;correlation_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;alert_abc123&quot;</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<hr />
+<h2 id="managing-alerts">Managing Alerts</h2>
+<h3 id="list-alerts">List Alerts</h3>
+<div class="codehilite"><pre><span></span><code>GET<span class="w"> </span>/akm/v1/projects/<span class="o">{</span>project_id<span class="o">}</span>/keys/<span class="o">{</span>key_id<span class="o">}</span>/alerts
+</code></pre></div>
+
+<h3 id="get-alert-details">Get Alert Details</h3>
+<div class="codehilite"><pre><span></span><code>GET<span class="w"> </span>/akm/v1/projects/<span class="o">{</span>project_id<span class="o">}</span>/keys/<span class="o">{</span>key_id<span class="o">}</span>/alerts/<span class="o">{</span>alert_id<span class="o">}</span>
+</code></pre></div>
+
+<h3 id="update-alert">Update Alert</h3>
+<div class="codehilite"><pre><span></span><code>PUT<span class="w"> </span>/akm/v1/projects/<span class="o">{</span>project_id<span class="o">}</span>/keys/<span class="o">{</span>key_id<span class="o">}</span>/alerts/<span class="o">{</span>alert_id<span class="o">}</span>
+<span class="o">{</span>
+<span class="w">  </span><span class="s2">&quot;threshold&quot;</span>:<span class="w"> </span><span class="m">90</span>,
+<span class="w">  </span><span class="s2">&quot;enabled&quot;</span>:<span class="w"> </span><span class="nb">true</span>
+<span class="o">}</span>
+</code></pre></div>
+
+<h3 id="delete-alert">Delete Alert</h3>
+<div class="codehilite"><pre><span></span><code>DELETE<span class="w"> </span>/akm/v1/projects/<span class="o">{</span>project_id<span class="o">}</span>/keys/<span class="o">{</span>key_id<span class="o">}</span>/alerts/<span class="o">{</span>alert_id<span class="o">}</span>
+</code></pre></div>
+
+<hr />
+<h2 id="alert-history">Alert History</h2>
+<p>View past alerts:</p>
+<div class="codehilite"><pre><span></span><code>GET<span class="w"> </span>/akm/v1/alerts/history?key_id<span class="o">=</span><span class="m">42</span><span class="p">&amp;</span><span class="nv">days</span><span class="o">=</span><span class="m">7</span>
+</code></pre></div>
+
+<p>Response:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;total&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">15</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;alerts&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;alert_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">123</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;alert_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;RATE_LIMIT_THRESHOLD&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;triggered_at&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-11-23T21:30:00Z&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;resolved_at&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-11-23T21:45:00Z&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;duration_minutes&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">15</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;details&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;percentage&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">85.0</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<hr />
+<h2 id="alert-statistics">Alert Statistics</h2>
+<p>Aggregate metrics:</p>
+<div class="codehilite"><pre><span></span><code>GET<span class="w"> </span>/akm/v1/alerts/stats?project_id<span class="o">=</span><span class="m">1</span><span class="p">&amp;</span><span class="nv">period</span><span class="o">=</span>7d
+</code></pre></div>
+
+<p>Response:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;period&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;7d&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;total_alerts&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">42</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;by_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;RATE_LIMIT_THRESHOLD&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">20</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;IP_VIOLATION&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;SCOPE_VIOLATION&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;EXPIRY_WARNING&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">4</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;by_severity&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;critical&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;warning&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">25</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;info&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">12</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;most_triggered&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;key_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">42</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;count&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">15</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;alert_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;RATE_LIMIT_THRESHOLD&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<hr />
+<h2 id="cooldown-period">Cooldown Period</h2>
+<p>Prevents alert spam by enforcing minimum time between notifications:</p>
+<div class="codehilite"><pre><span></span><code><span class="o">{</span>
+<span class="w">  </span><span class="s2">&quot;cooldown_minutes&quot;</span>:<span class="w"> </span><span class="m">30</span>
+<span class="o">}</span>
+</code></pre></div>
+
+<p><strong>Example:</strong>
+- Alert triggers at 21:00
+- Next alert can trigger at 21:30 or later
+- Violations during cooldown are logged but not notified</p>
+<hr />
+<h2 id="notification-channels">Notification Channels</h2>
+<h3 id="webhook">Webhook</h3>
+<p>POST request to your endpoint with alert payload:</p>
+<div class="codehilite"><pre><span></span><code><span class="err">POST https://your-app.com/alerts</span>
+<span class="err">Content-Type: application/json</span>
+<span class="err">X-Alert-Signature: &lt;hmac-signature&gt;</span>
+
+<span class="err">{</span>
+<span class="err">  &quot;alert_id&quot;: 123,</span>
+<span class="err">  &quot;alert_type&quot;: &quot;RATE_LIMIT_THRESHOLD&quot;,</span>
+<span class="err">  ...</span>
+<span class="err">}</span>
+</code></pre></div>
+
+<h3 id="email">Email</h3>
+<p>HTML formatted email with:
+- Alert summary
+- Key details
+- Recommended actions
+- Link to dashboard</p>
+<hr />
+<h2 id="common-alert-configurations">Common Alert Configurations</h2>
+<h3 id="1-rate-limit-monitoring">1. Rate Limit Monitoring</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Warning at 80%</span>
+POST<span class="w"> </span>/akm/v1/projects/1/keys/42/alerts
+<span class="o">{</span>
+<span class="w">  </span><span class="s2">&quot;alert_type&quot;</span>:<span class="w"> </span><span class="s2">&quot;RATE_LIMIT_THRESHOLD&quot;</span>,
+<span class="w">  </span><span class="s2">&quot;threshold&quot;</span>:<span class="w"> </span><span class="m">80</span>,
+<span class="w">  </span><span class="s2">&quot;notification_channels&quot;</span>:<span class="w"> </span><span class="o">[</span><span class="s2">&quot;email&quot;</span><span class="o">]</span>,
+<span class="w">  </span><span class="s2">&quot;email_recipients&quot;</span>:<span class="w"> </span><span class="o">[</span><span class="s2">&quot;ops@example.com&quot;</span><span class="o">]</span>,
+<span class="w">  </span><span class="s2">&quot;cooldown_minutes&quot;</span>:<span class="w"> </span><span class="m">60</span>
+<span class="o">}</span>
+
+<span class="c1"># Critical at 95%</span>
+POST<span class="w"> </span>/akm/v1/projects/1/keys/42/alerts
+<span class="o">{</span>
+<span class="w">  </span><span class="s2">&quot;alert_type&quot;</span>:<span class="w"> </span><span class="s2">&quot;RATE_LIMIT_THRESHOLD&quot;</span>,
+<span class="w">  </span><span class="s2">&quot;threshold&quot;</span>:<span class="w"> </span><span class="m">95</span>,
+<span class="w">  </span><span class="s2">&quot;notification_channels&quot;</span>:<span class="w"> </span><span class="o">[</span><span class="s2">&quot;webhook&quot;</span>,<span class="w"> </span><span class="s2">&quot;email&quot;</span><span class="o">]</span>,
+<span class="w">  </span><span class="s2">&quot;webhook_url&quot;</span>:<span class="w"> </span><span class="s2">&quot;https://pagerduty.com/webhook&quot;</span>,
+<span class="w">  </span><span class="s2">&quot;email_recipients&quot;</span>:<span class="w"> </span><span class="o">[</span><span class="s2">&quot;oncall@example.com&quot;</span><span class="o">]</span>,
+<span class="w">  </span><span class="s2">&quot;cooldown_minutes&quot;</span>:<span class="w"> </span><span class="m">15</span>
+<span class="o">}</span>
+</code></pre></div>
+
+<h3 id="2-security-monitoring">2. Security Monitoring</h3>
+<div class="codehilite"><pre><span></span><code>POST<span class="w"> </span>/akm/v1/projects/1/keys/42/alerts
+<span class="o">{</span>
+<span class="w">  </span><span class="s2">&quot;alert_type&quot;</span>:<span class="w"> </span><span class="s2">&quot;IP_VIOLATION&quot;</span>,
+<span class="w">  </span><span class="s2">&quot;notification_channels&quot;</span>:<span class="w"> </span><span class="o">[</span><span class="s2">&quot;webhook&quot;</span><span class="o">]</span>,
+<span class="w">  </span><span class="s2">&quot;webhook_url&quot;</span>:<span class="w"> </span><span class="s2">&quot;https://security.example.com/incidents&quot;</span>,
+<span class="w">  </span><span class="s2">&quot;cooldown_minutes&quot;</span>:<span class="w"> </span><span class="m">5</span>,
+<span class="w">  </span><span class="s2">&quot;metadata&quot;</span>:<span class="w"> </span><span class="o">{</span>
+<span class="w">    </span><span class="s2">&quot;severity&quot;</span>:<span class="w"> </span><span class="s2">&quot;critical&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;auto_revoke&quot;</span>:<span class="w"> </span><span class="nb">false</span>
+<span class="w">  </span><span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div>
+
+<h3 id="3-key-lifecycle">3. Key Lifecycle</h3>
+<div class="codehilite"><pre><span></span><code>POST<span class="w"> </span>/akm/v1/projects/1/keys/42/alerts
+<span class="o">{</span>
+<span class="w">  </span><span class="s2">&quot;alert_type&quot;</span>:<span class="w"> </span><span class="s2">&quot;EXPIRY_WARNING&quot;</span>,
+<span class="w">  </span><span class="s2">&quot;threshold&quot;</span>:<span class="w"> </span><span class="m">30</span>,
+<span class="w">  </span><span class="s2">&quot;notification_channels&quot;</span>:<span class="w"> </span><span class="o">[</span><span class="s2">&quot;email&quot;</span><span class="o">]</span>,
+<span class="w">  </span><span class="s2">&quot;email_recipients&quot;</span>:<span class="w"> </span><span class="o">[</span><span class="s2">&quot;admin@example.com&quot;</span><span class="o">]</span>
+<span class="o">}</span>
+</code></pre></div>
+
+<hr />
+<h2 id="best-practices">Best Practices</h2>
+<h3 id="1-appropriate-thresholds">1. Appropriate Thresholds</h3>
+<ul>
+<li><strong>80%</strong> - Warning, review needed</li>
+<li><strong>90%</strong> - Action required  </li>
+<li><strong>95%</strong> - Critical, immediate attention</li>
+</ul>
+<h3 id="2-cooldown-configuration">2. Cooldown Configuration</h3>
+<ul>
+<li><strong>High frequency events</strong> (rate limits): 30-60 min</li>
+<li><strong>Security events</strong>: 5-15 min</li>
+<li><strong>Lifecycle events</strong>: No cooldown</li>
+</ul>
+<h3 id="3-notification-routing">3. Notification Routing</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Development keys - email only</span>
+<span class="o">{</span>
+<span class="w">  </span><span class="s2">&quot;notification_channels&quot;</span>:<span class="w"> </span><span class="o">[</span><span class="s2">&quot;email&quot;</span><span class="o">]</span>,
+<span class="w">  </span><span class="s2">&quot;email_recipients&quot;</span>:<span class="w"> </span><span class="o">[</span><span class="s2">&quot;dev-team@example.com&quot;</span><span class="o">]</span>
+<span class="o">}</span>
+
+<span class="c1"># Production keys - webhook + email</span>
+<span class="o">{</span>
+<span class="w">  </span><span class="s2">&quot;notification_channels&quot;</span>:<span class="w"> </span><span class="o">[</span><span class="s2">&quot;webhook&quot;</span>,<span class="w"> </span><span class="s2">&quot;email&quot;</span><span class="o">]</span>,
+<span class="w">  </span><span class="s2">&quot;webhook_url&quot;</span>:<span class="w"> </span><span class="s2">&quot;https://pagerduty.com/webhook&quot;</span>,
+<span class="w">  </span><span class="s2">&quot;email_recipients&quot;</span>:<span class="w"> </span><span class="o">[</span><span class="s2">&quot;oncall@example.com&quot;</span><span class="o">]</span>
+<span class="o">}</span>
+</code></pre></div>
+
+<h3 id="4-metadata-for-context">4. Metadata for Context</h3>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;metadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;environment&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;production&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;service&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;api-gateway&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;team&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;platform&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;severity&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;high&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;runbook&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://wiki.example.com/runbooks/rate-limits&quot;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<hr />
+<h2 id="handling-alerts">Handling Alerts</h2>
+<h3 id="webhook-handler-example">Webhook Handler Example</h3>
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">FastAPI</span><span class="p">,</span> <span class="n">Request</span>
+<span class="kn">import</span> <span class="nn">hmac</span>
+<span class="kn">import</span> <span class="nn">hashlib</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">()</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/alerts&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">handle_alert</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">):</span>
+    <span class="n">payload</span> <span class="o">=</span> <span class="k">await</span> <span class="n">request</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+    <span class="n">alert_type</span> <span class="o">=</span> <span class="n">payload</span><span class="p">[</span><span class="s2">&quot;alert_type&quot;</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">alert_type</span> <span class="o">==</span> <span class="s2">&quot;RATE_LIMIT_THRESHOLD&quot;</span><span class="p">:</span>
+        <span class="c1"># Check if approaching limit</span>
+        <span class="n">percentage</span> <span class="o">=</span> <span class="n">payload</span><span class="p">[</span><span class="s2">&quot;details&quot;</span><span class="p">][</span><span class="s2">&quot;percentage&quot;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">percentage</span> <span class="o">&gt;=</span> <span class="mi">95</span><span class="p">:</span>
+            <span class="c1"># Critical - page on-call</span>
+            <span class="k">await</span> <span class="n">page_oncall</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">percentage</span> <span class="o">&gt;=</span> <span class="mi">80</span><span class="p">:</span>
+            <span class="c1"># Warning - notify team</span>
+            <span class="k">await</span> <span class="n">notify_team</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">alert_type</span> <span class="o">==</span> <span class="s2">&quot;IP_VIOLATION&quot;</span><span class="p">:</span>
+        <span class="c1"># Security event - auto-block if configured</span>
+        <span class="k">if</span> <span class="n">payload</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;metadata&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;auto_block&quot;</span><span class="p">):</span>
+            <span class="k">await</span> <span class="n">block_ip</span><span class="p">(</span><span class="n">payload</span><span class="p">[</span><span class="s2">&quot;details&quot;</span><span class="p">][</span><span class="s2">&quot;ip_address&quot;</span><span class="p">])</span>
+
+        <span class="c1"># Always log security events</span>
+        <span class="k">await</span> <span class="n">log_security_incident</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;processed&quot;</span><span class="p">}</span>
+</code></pre></div>
+
+<hr />
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="alert-not-triggering">Alert Not Triggering</h3>
+<ol>
+<li>Check alert is enabled</li>
+<li>Verify threshold configuration</li>
+<li>Check cooldown period hasn't elapsed</li>
+<li>Review alert history for recent triggers</li>
+</ol>
+<h3 id="too-many-alerts">Too Many Alerts</h3>
+<ol>
+<li>Increase cooldown period</li>
+<li>Adjust threshold (make less sensitive)</li>
+<li>Review and disable noisy alerts</li>
+<li>Use aggregation/batching</li>
+</ol>
+<h3 id="webhook-delivery-fails">Webhook Delivery Fails</h3>
+<ol>
+<li>Verify endpoint is accessible</li>
+<li>Check webhook URL is correct</li>
+<li>Ensure endpoint returns 2xx status</li>
+<li>Review alert delivery logs</li>
+</ol>
+<hr />
+<h2 id="next-steps">Next Steps</h2>
+<ul>
+<li>📖 <a href="./DEVELOPER_GUIDE.md">Developer Guide</a></li>
+<li>🔔 <a href="./WEBHOOKS.md">Webhooks</a></li>
+<li>🚦 <a href="./CONFIGURATION_GUIDE.md">Configuration Guide</a></li>
+</ul>
+<hr />
+<p><strong>Support:</strong> <a href="https://github.com/ideiasfactory/akm/issues">Open an issue</a> for alert-related questions.</p>
+        </div>
+
+        <div class="footer">
+            <p>Built with ❤️ using FastAPI, PostgreSQL, and SQLAlchemy</p>
+            <p style="margin-top: 10px;">© 2025 API Key Management Service by <a href="https://github.com/ideiasfactory" target="_blank">Ideias Factory</a></p>
+        </div>
+    </div>
+
+    <a href="#" class="back-to-top">↑</a>
+
+    <script>
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        // Back to top button
+        const backToTop = document.querySelector('.back-to-top');
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTop.style.display = 'flex';
+            } else {
+                backToTop.style.display = 'none';
+            }
+        });
+
+        backToTop.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    </script>
+</body>
+</html>

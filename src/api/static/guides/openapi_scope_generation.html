@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenAPI Scope Generation - API Key Management Service</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --accent: #f093fb;
+            --dark: #1a1a2e;
+            --light: #f8f9fa;
+            --code-bg: #282c34;
+            --border: #e0e0e0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .nav {
+            background: var(--dark);
+            padding: 15px 40px;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .nav a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .nav a:hover {
+            background: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--dark);
+            margin: 30px 0 15px 0;
+            line-height: 1.3;
+        }
+
+        h1 { font-size: 2.5em; border-bottom: 3px solid var(--primary); padding-bottom: 10px; }
+        h2 { font-size: 2em; border-bottom: 2px solid var(--border); padding-bottom: 8px; margin-top: 40px; }
+        h3 { font-size: 1.5em; color: var(--primary); }
+        h4 { font-size: 1.3em; }
+
+        p {
+            margin: 15px 0;
+            line-height: 1.8;
+        }
+
+        a {
+            color: var(--primary);
+            text-decoration: none;
+            border-bottom: 1px dotted var(--primary);
+        }
+
+        a:hover {
+            color: var(--secondary);
+            border-bottom: 1px solid var(--secondary);
+        }
+
+        code {
+            background: #f4f4f4;
+            padding: 3px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #e83e8c;
+        }
+
+        pre {
+            background: var(--code-bg);
+            color: #abb2bf;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+            border-left: 4px solid var(--primary);
+        }
+
+        pre code {
+            background: none;
+            color: inherit;
+            padding: 0;
+            font-size: 0.95em;
+        }
+
+        blockquote {
+            border-left: 4px solid var(--primary);
+            padding: 15px 20px;
+            margin: 20px 0;
+            background: #f8f9fa;
+            font-style: italic;
+        }
+
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+
+        li {
+            margin: 8px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .success {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .info {
+            background: #d1ecf1;
+            border-left: 4px solid #17a2b8;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .footer {
+            background: var(--dark);
+            color: white;
+            padding: 30px 40px;
+            text-align: center;
+        }
+
+        .footer a {
+            color: var(--accent);
+            border-bottom: 1px dotted var(--accent);
+        }
+
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--primary);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            font-size: 24px;
+        }
+
+        .back-to-top:hover {
+            background: var(--secondary);
+            transform: translateY(-5px);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                border-radius: 0;
+            }
+
+            .header {
+                padding: 30px 20px;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .nav {
+                padding: 15px 20px;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            pre {
+                padding: 15px;
+                font-size: 0.85em;
+            }
+        }
+
+        /* Syntax highlighting for code blocks */
+        .codehilite .k { color: #c678dd; } /* keyword */
+        .codehilite .s { color: #98c379; } /* string */
+        .codehilite .n { color: #e06c75; } /* name */
+        .codehilite .c { color: #5c6370; font-style: italic; } /* comment */
+        .codehilite .m { color: #d19a66; } /* number */
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔐 OpenAPI Scope Generation</h1>
+            <p>API Key Management Service</p>
+        </div>
+
+        <div class="nav">
+            <a href="/">🏠 Home</a>
+            <a href="/quickstart">🚀 Quick Start</a>
+            <a href="/public/guides/admnistration.html">🔐 Administration</a>
+            <a href="/docs">📚 API Docs</a>
+            <a href="/redoc">📖 ReDoc</a>
+        </div>
+
+        <div class="content">
+<h1 id="openapi-scope-generation">OpenAPI Scope Generation</h1>
+<p>Sistema automático de geração de escopos a partir de especificações OpenAPI/Swagger.</p>
+<h2 id="visao-geral">🎯 Visão Geral</h2>
+<p>Este sistema permite gerar automaticamente uma estrutura completa de escopos de permissão analisando especificações OpenAPI (Swagger). Isso é especialmente útil quando você está integrando uma API externa ou documentando permissões para sua própria API.</p>
+<h2 id="formatos-suportados">📋 Formatos Suportados</h2>
+<h3 id="fontes-de-entrada">Fontes de Entrada</h3>
+<ul>
+<li><strong>URL</strong>: Buscar spec de uma URL pública</li>
+<li><strong>File Upload</strong>: Enviar arquivo JSON ou YAML</li>
+<li><strong>JSON Direct</strong>: Fornecer spec diretamente no body</li>
+</ul>
+<h3 id="formatos-de-arquivo">Formatos de Arquivo</h3>
+<ul>
+<li>OpenAPI 3.0.x (JSON/YAML)</li>
+<li>Swagger 2.0 (JSON/YAML)</li>
+</ul>
+<h2 id="estrategias-de-geracao">🔧 Estratégias de Geração</h2>
+<h3 id="1-path_resource-recomendado">1. <strong>PATH_RESOURCE</strong> (Recomendado)</h3>
+<p>Agrupa endpoints por recurso e gera escopos CRUD.</p>
+<p><strong>Exemplo:</strong></p>
+<div class="codehilite"><pre><span></span><code>GET    /api/users      → api:users:read
+POST   /api/users      → api:users:write
+PUT    /api/users/{id} → api:users:write
+DELETE /api/users/{id} → api:users:delete
+                        → api:users:* (wildcard)
+</code></pre></div>
+
+<p><strong>Quando usar:</strong> APIs RESTful com recursos bem definidos.</p>
+<h3 id="2-path_method">2. <strong>PATH_METHOD</strong></h3>
+<p>Um escopo por combinação de path + método HTTP.</p>
+<p><strong>Exemplo:</strong></p>
+<div class="codehilite"><pre><span></span><code>GET    /api/users      → api:users_get:read
+POST   /api/users      → api:users_post:write
+GET    /api/users/{id} → api:users_get:read
+</code></pre></div>
+
+<p><strong>Quando usar:</strong> Controle granular por endpoint específico.</p>
+<h3 id="3-tag_based">3. <strong>TAG_BASED</strong></h3>
+<p>Usa as tags do OpenAPI para agrupar operações.</p>
+<p><strong>Exemplo (tags: ["Users", "Admin"]):</strong></p>
+<div class="codehilite"><pre><span></span><code>GET    /api/users  [tag: Users] → api:users:read
+POST   /api/admin  [tag: Admin] → api:admin:write
+                                 → api:users:* (wildcard)
+                                 → api:admin:* (wildcard)
+</code></pre></div>
+
+<p><strong>Quando usar:</strong> API bem organizada com tags significativas.</p>
+<h3 id="4-operation_id">4. <strong>OPERATION_ID</strong></h3>
+<p>Um escopo por operationId definido na spec.</p>
+<p><strong>Exemplo:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="n">operationId</span><span class="o">:</span><span class="w"> </span><span class="n">getUsers</span><span class="w">    </span><span class="err">→</span><span class="w"> </span><span class="n">api</span><span class="o">:</span><span class="n">getUsers</span><span class="o">:</span><span class="n">execute</span>
+<span class="n">operationId</span><span class="o">:</span><span class="w"> </span><span class="n">createUser</span><span class="w">  </span><span class="err">→</span><span class="w"> </span><span class="n">api</span><span class="o">:</span><span class="n">createUser</span><span class="o">:</span><span class="n">execute</span>
+</code></pre></div>
+
+<p><strong>Quando usar:</strong> operationIds bem definidos e únicos.</p>
+<h2 id="endpoints">🚀 Endpoints</h2>
+<h3 id="1-analisar-spec-preview">1. Analisar Spec (Preview)</h3>
+<div class="codehilite"><pre><span></span><code><span class="err">POST /akm/scopes/openapi/analyze</span>
+</code></pre></div>
+
+<p>Analisa a spec e retorna estatísticas <strong>sem gerar</strong> os escopos.</p>
+<p><strong>Request:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;source_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;url&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;source&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://petstore3.swagger.io/api/v3/openapi.json&quot;</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p><strong>Response:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;api_title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Swagger Petstore&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;api_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1.0.0&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;total_paths&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">13</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;total_operations&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">19</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;http_methods&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;DELETE&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;GET&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;POST&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;PUT&quot;</span><span class="p">],</span>
+<span class="w">  </span><span class="nt">&quot;tags&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;pet&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;store&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;user&quot;</span><span class="p">],</span>
+<span class="w">  </span><span class="nt">&quot;estimated_scopes_by_strategy&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;path_method&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">19</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;path_resource&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">12</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;tag_based&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">12</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;operation_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">19</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;sample_scopes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;path_resource&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="s2">&quot;api:pet:read&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;api:pet:write&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;api:store:read&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;api:user:read&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;api:user:write&quot;</span>
+<span class="w">    </span><span class="p">]</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3 id="2-gerar-escopos">2. Gerar Escopos</h3>
+<div class="codehilite"><pre><span></span><code><span class="err">POST /akm/scopes/openapi/generate</span>
+</code></pre></div>
+
+<p>Gera escopos completos com descrições.</p>
+<p><strong>Request:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;source_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;url&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;source&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://api.example.com/openapi.json&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;strategy&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;path_resource&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;naming_config&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;namespace&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;api&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;include_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;action_mapping&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;GET&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;read&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;POST&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;write&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;PUT&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;write&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;PATCH&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;write&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;DELETE&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;delete&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;category&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;api&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;generate_wildcards&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p><strong>Response:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;api_title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;My API&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;api_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1.0.0&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;total_scopes&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">15</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;strategy_used&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;path_resource&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;scopes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;scope_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;api:users:read&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Read operations for users (GET)&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;category&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;api&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;is_active&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;metadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;resource&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;users&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;action&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;read&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;methods&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;GET&quot;</span><span class="p">],</span>
+<span class="w">        </span><span class="nt">&quot;paths&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;/api/users&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;/api/users/{id}&quot;</span><span class="p">]</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;scope_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;api:users:write&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Write operations for users (POST, PUT)&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;category&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;api&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;is_active&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;metadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;resource&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;users&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;action&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;write&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;methods&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;PUT&quot;</span><span class="p">],</span>
+<span class="w">        </span><span class="nt">&quot;paths&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;/api/users&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;/api/users/{id}&quot;</span><span class="p">]</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;scope_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;api:users:*&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Full access to users resource&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;category&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;api&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;is_active&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;metadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;resource&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;users&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;wildcard&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">],</span>
+<span class="w">  </span><span class="nt">&quot;warnings&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[]</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3 id="3-gerar-de-url-simplificado">3. Gerar de URL (Simplificado)</h3>
+<div class="codehilite"><pre><span></span><code><span class="err">POST /akm/scopes/openapi/generate/url?url={url}&amp;strategy={strategy}</span>
+</code></pre></div>
+
+<p><strong>Exemplo:</strong></p>
+<div class="codehilite"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="s2">&quot;http://localhost:8000/akm/scopes/openapi/generate/url?url=https://petstore3.swagger.io/api/v3/openapi.json&amp;strategy=path_resource&amp;namespace=petstore&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: </span><span class="nv">$ADMIN_API_KEY</span><span class="s2">&quot;</span>
+</code></pre></div>
+
+<h3 id="4-gerar-de-arquivo">4. Gerar de Arquivo</h3>
+<div class="codehilite"><pre><span></span><code><span class="err">POST /akm/scopes/openapi/generate/file</span>
+</code></pre></div>
+
+<p><strong>Exemplo:</strong></p>
+<div class="codehilite"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8000/akm/scopes/openapi/generate/file<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: </span><span class="nv">$ADMIN_API_KEY</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-F<span class="w"> </span><span class="s2">&quot;file=@openapi.json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-F<span class="w"> </span><span class="s2">&quot;strategy=path_resource&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-F<span class="w"> </span><span class="s2">&quot;namespace=myapi&quot;</span>
+</code></pre></div>
+
+<h3 id="5-gerar-e-importar-tudo-em-um">5. Gerar e Importar (Tudo em Um)</h3>
+<div class="codehilite"><pre><span></span><code><span class="err">POST /akm/scopes/openapi/generate-and-import</span>
+</code></pre></div>
+
+<p>Gera escopos e importa diretamente no banco.</p>
+<p><strong>Request:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;source_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;url&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;source&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://api.example.com/openapi.json&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;strategy&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;path_resource&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;naming_config&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;namespace&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;myapi&quot;</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;category&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;api&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;generate_wildcards&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;import_to_db&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p><strong>Response:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;total_processed&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">15</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;created&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">12</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;updated&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;skipped&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;errors&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
+<span class="w">  </span><span class="nt">&quot;scope_names&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="s2">&quot;myapi:users:read&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;myapi:users:write&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;myapi:users:delete&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;myapi:users:*&quot;</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h2 id="exemplos-de-uso">💡 Exemplos de Uso</h2>
+<h3 id="exemplo-1-analise-previa">Exemplo 1: Análise Prévia</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># 1. Analisar spec primeiro</span>
+curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8000/akm/scopes/openapi/analyze<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: </span><span class="nv">$ADMIN_API_KEY</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{</span>
+<span class="s1">    &quot;source_type&quot;: &quot;url&quot;,</span>
+<span class="s1">    &quot;source&quot;: &quot;https://petstore3.swagger.io/api/v3/openapi.json&quot;</span>
+<span class="s1">  }&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span>.
+
+<span class="c1"># Output mostra quantos scopes cada estratégia geraria</span>
+</code></pre></div>
+
+<h3 id="exemplo-2-gerar-de-url-publica">Exemplo 2: Gerar de URL Pública</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Gerar escopos do Petstore Swagger</span>
+curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="s2">&quot;http://localhost:8000/akm/scopes/openapi/generate/url?url=https://petstore3.swagger.io/api/v3/openapi.json&amp;namespace=petstore&amp;strategy=path_resource&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: </span><span class="nv">$ADMIN_API_KEY</span><span class="s2">&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span>.<span class="w"> </span>&gt;<span class="w"> </span>petstore_scopes.json
+</code></pre></div>
+
+<h3 id="exemplo-3-gerar-de-arquivo-local">Exemplo 3: Gerar de Arquivo Local</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># 1. Baixar spec</span>
+curl<span class="w"> </span>https://api.example.com/openapi.json<span class="w"> </span>&gt;<span class="w"> </span>myapi_openapi.json
+
+<span class="c1"># 2. Gerar escopos</span>
+curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8000/akm/scopes/openapi/generate/file<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: </span><span class="nv">$ADMIN_API_KEY</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-F<span class="w"> </span><span class="s2">&quot;file=@myapi_openapi.json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-F<span class="w"> </span><span class="s2">&quot;strategy=path_resource&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-F<span class="w"> </span><span class="s2">&quot;namespace=myapi&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span>.<span class="w"> </span>&gt;<span class="w"> </span>myapi_scopes.json
+</code></pre></div>
+
+<h3 id="exemplo-4-gerar-e-importar-direto">Exemplo 4: Gerar e Importar Direto</h3>
+<div class="codehilite"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8000/akm/scopes/openapi/generate-and-import<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: </span><span class="nv">$ADMIN_API_KEY</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{</span>
+<span class="s1">    &quot;source_type&quot;: &quot;url&quot;,</span>
+<span class="s1">    &quot;source&quot;: &quot;https://api.example.com/openapi.json&quot;,</span>
+<span class="s1">    &quot;strategy&quot;: &quot;path_resource&quot;,</span>
+<span class="s1">    &quot;naming_config&quot;: {</span>
+<span class="s1">      &quot;namespace&quot;: &quot;myapi&quot;,</span>
+<span class="s1">      &quot;include_version&quot;: false</span>
+<span class="s1">    },</span>
+<span class="s1">    &quot;category&quot;: &quot;api&quot;,</span>
+<span class="s1">    &quot;generate_wildcards&quot;: true</span>
+<span class="s1">  }&#39;</span>
+</code></pre></div>
+
+<h3 id="exemplo-5-comparar-estrategias">Exemplo 5: Comparar Estratégias</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Função helper</span>
+analyze_strategy<span class="o">()</span><span class="w"> </span><span class="o">{</span>
+<span class="w">  </span>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8000/akm/scopes/openapi/generate<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: </span><span class="nv">$ADMIN_API_KEY</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-d<span class="w"> </span><span class="s2">&quot;{</span>
+<span class="s2">      \&quot;source_type\&quot;: \&quot;url\&quot;,</span>
+<span class="s2">      \&quot;source\&quot;: \&quot;</span><span class="nv">$1</span><span class="s2">\&quot;,</span>
+<span class="s2">      \&quot;strategy\&quot;: \&quot;</span><span class="nv">$2</span><span class="s2">\&quot;,</span>
+<span class="s2">      \&quot;naming_config\&quot;: {\&quot;namespace\&quot;: \&quot;api\&quot;}</span>
+<span class="s2">    }&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span><span class="s1">&#39;.total_scopes, .scopes[0:3]&#39;</span>
+<span class="o">}</span>
+
+<span class="c1"># Comparar</span>
+analyze_strategy<span class="w"> </span><span class="s2">&quot;https://petstore3.swagger.io/api/v3/openapi.json&quot;</span><span class="w"> </span><span class="s2">&quot;path_resource&quot;</span>
+analyze_strategy<span class="w"> </span><span class="s2">&quot;https://petstore3.swagger.io/api/v3/openapi.json&quot;</span><span class="w"> </span><span class="s2">&quot;tag_based&quot;</span>
+analyze_strategy<span class="w"> </span><span class="s2">&quot;https://petstore3.swagger.io/api/v3/openapi.json&quot;</span><span class="w"> </span><span class="s2">&quot;operation_id&quot;</span>
+</code></pre></div>
+
+<h2 id="workflow-completo">🔄 Workflow Completo</h2>
+<h3 id="setup-de-api-externa">Setup de API Externa</h3>
+<div class="codehilite"><pre><span></span><code><span class="ch">#!/bin/bash</span>
+
+<span class="nv">API_URL</span><span class="o">=</span><span class="s2">&quot;https://api.github.com/openapi.json&quot;</span>
+<span class="nv">NAMESPACE</span><span class="o">=</span><span class="s2">&quot;github&quot;</span>
+
+<span class="c1"># 1. Analisar</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;=== Analyzing API ===&quot;</span>
+curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8000/akm/scopes/openapi/analyze<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: </span><span class="nv">$ADMIN_API_KEY</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s2">&quot;{\&quot;source_type\&quot;: \&quot;url\&quot;, \&quot;source\&quot;: \&quot;</span><span class="nv">$API_URL</span><span class="s2">\&quot;}&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span><span class="s1">&#39;.estimated_scopes_by_strategy&#39;</span>
+
+<span class="c1"># 2. Gerar preview</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;=== Generating Preview ===&quot;</span>
+curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8000/akm/scopes/openapi/generate<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: </span><span class="nv">$ADMIN_API_KEY</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s2">&quot;{</span>
+<span class="s2">    \&quot;source_type\&quot;: \&quot;url\&quot;,</span>
+<span class="s2">    \&quot;source\&quot;: \&quot;</span><span class="nv">$API_URL</span><span class="s2">\&quot;,</span>
+<span class="s2">    \&quot;strategy\&quot;: \&quot;path_resource\&quot;,</span>
+<span class="s2">    \&quot;naming_config\&quot;: {\&quot;namespace\&quot;: \&quot;</span><span class="nv">$NAMESPACE</span><span class="s2">\&quot;}</span>
+<span class="s2">  }&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span><span class="s1">&#39;.total_scopes, .scopes[0:5]&#39;</span>
+
+<span class="c1"># 3. Confirmar e importar</span>
+<span class="nb">read</span><span class="w"> </span>-p<span class="w"> </span><span class="s2">&quot;Import to database? (y/n) &quot;</span><span class="w"> </span>-n<span class="w"> </span><span class="m">1</span><span class="w"> </span>-r
+<span class="nb">echo</span>
+<span class="k">if</span><span class="w"> </span><span class="o">[[</span><span class="w"> </span><span class="nv">$REPLY</span><span class="w"> </span><span class="o">=</span>~<span class="w"> </span>^<span class="o">[</span>Yy<span class="o">]</span>$<span class="w"> </span><span class="o">]]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="w">  </span>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8000/akm/scopes/openapi/generate-and-import<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: </span><span class="nv">$ADMIN_API_KEY</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-d<span class="w"> </span><span class="s2">&quot;{</span>
+<span class="s2">      \&quot;source_type\&quot;: \&quot;url\&quot;,</span>
+<span class="s2">      \&quot;source\&quot;: \&quot;</span><span class="nv">$API_URL</span><span class="s2">\&quot;,</span>
+<span class="s2">      \&quot;strategy\&quot;: \&quot;path_resource\&quot;,</span>
+<span class="s2">      \&quot;naming_config\&quot;: {\&quot;namespace\&quot;: \&quot;</span><span class="nv">$NAMESPACE</span><span class="s2">\&quot;},</span>
+<span class="s2">      \&quot;category\&quot;: \&quot;external_api\&quot;</span>
+<span class="s2">    }&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span>.
+<span class="k">fi</span>
+</code></pre></div>
+
+<h2 id="configuracao-avancada">⚙️ Configuração Avançada</h2>
+<h3 id="custom-action-mapping">Custom Action Mapping</h3>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;naming_config&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;namespace&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;api&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;action_mapping&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;GET&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;view&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;POST&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;create&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;PUT&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;update&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;PATCH&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;modify&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;DELETE&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;remove&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;HEAD&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;check&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;OPTIONS&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;discover&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>Resultado:</p>
+<div class="codehilite"><pre><span></span><code>GET    /users → api:users:view
+POST   /users → api:users:create
+PUT    /users → api:users:update
+DELETE /users → api:users:remove
+</code></pre></div>
+
+<h3 id="include-api-version">Include API Version</h3>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;naming_config&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;namespace&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;api&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;include_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>Resultado:</p>
+<div class="codehilite"><pre><span></span><code><span class="n">api</span><span class="o">:</span><span class="n">v1</span><span class="o">:</span><span class="n">users</span><span class="o">:</span><span class="n">read</span>
+<span class="n">api</span><span class="o">:</span><span class="n">v1</span><span class="o">:</span><span class="n">users</span><span class="o">:</span><span class="n">write</span>
+</code></pre></div>
+
+<h3 id="sem-wildcards">Sem Wildcards</h3>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;generate_wildcards&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>Não gera escopos com <code>*</code> (útil para controle mais restrito).</p>
+<h2 id="metadata-gerada">📊 Metadata Gerada</h2>
+<p>Cada escopo gerado inclui metadata útil:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;scope_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;api:users:read&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;metadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;resource&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;users&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;action&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;read&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;methods&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;GET&quot;</span><span class="p">],</span>
+<span class="w">    </span><span class="nt">&quot;paths&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;/api/users&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;/api/users/{id}&quot;</span><span class="p">],</span>
+<span class="w">    </span><span class="nt">&quot;tags&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;Users&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Account&quot;</span><span class="p">]</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>Útil para:
+- Documentação automática
+- Auditoria
+- Debugging</p>
+<h2 id="estrategias-por-caso-de-uso">🎨 Estratégias por Caso de Uso</h2>
+<table>
+<thead>
+<tr>
+<th>Caso de Uso</th>
+<th>Estratégia Recomendada</th>
+<th>Motivo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>API REST padrão</td>
+<td><code>path_resource</code></td>
+<td>CRUD natural, wildcards úteis</td>
+</tr>
+<tr>
+<td>Microserviços</td>
+<td><code>tag_based</code></td>
+<td>Agrupa por serviço/módulo</td>
+</tr>
+<tr>
+<td>API GraphQL-like</td>
+<td><code>operation_id</code></td>
+<td>Operações nomeadas</td>
+</tr>
+<tr>
+<td>Controle fino</td>
+<td><code>path_method</code></td>
+<td>Máxima granularidade</td>
+</tr>
+<tr>
+<td>API pública</td>
+<td><code>path_resource</code></td>
+<td>Fácil entendimento</td>
+</tr>
+<tr>
+<td>API interna</td>
+<td><code>tag_based</code></td>
+<td>Alinha com arquitetura</td>
+</tr>
+</tbody>
+</table>
+<h2 id="limitacoes">⚠️ Limitações</h2>
+<ol>
+<li><strong>operationId obrigatório</strong>: Estratégia <code>operation_id</code> requer operationIds únicos</li>
+<li><strong>Tags vazias</strong>: Operações sem tags vão para categoria "untagged"</li>
+<li><strong>Path parameters</strong>: <code>{id}</code>, <code>{uuid}</code> são removidos do nome do escopo</li>
+<li><strong>Descrições longas</strong>: Limitadas a 500 caracteres</li>
+<li><strong>Specs inválidas</strong>: Requer OpenAPI/Swagger válidos</li>
+</ol>
+<h2 id="permissoes">🔐 Permissões</h2>
+<table>
+<thead>
+<tr>
+<th>Endpoint</th>
+<th>Scope Necessário</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/analyze</code></td>
+<td><code>akm:scopes:read</code></td>
+</tr>
+<tr>
+<td><code>/generate</code></td>
+<td><code>akm:scopes:read</code></td>
+</tr>
+<tr>
+<td><code>/generate/file</code></td>
+<td><code>akm:scopes:read</code></td>
+</tr>
+<tr>
+<td><code>/generate/url</code></td>
+<td><code>akm:scopes:read</code></td>
+</tr>
+<tr>
+<td><code>/generate-and-import</code></td>
+<td><code>akm:scopes:write</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="tips-tricks">💡 Tips &amp; Tricks</h2>
+<h3 id="1-preview-antes-de-importar">1. Preview Antes de Importar</h3>
+<p>Sempre use <code>/analyze</code> ou <code>/generate</code> antes de importar:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Preview</span>
+curl<span class="w"> </span>...<span class="w"> </span>/generate<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span><span class="s1">&#39;.total_scopes&#39;</span>
+
+<span class="c1"># Se OK, importar</span>
+curl<span class="w"> </span>...<span class="w"> </span>/generate-and-import
+</code></pre></div>
+
+<h3 id="2-exportar-para-bulk-import">2. Exportar para Bulk Import</h3>
+<p>Gere o JSON e use com bulk import:</p>
+<div class="codehilite"><pre><span></span><code>curl<span class="w"> </span>...<span class="w"> </span>/generate<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span><span class="s1">&#39;.scopes&#39;</span><span class="w"> </span>&gt;<span class="w"> </span>external_api_scopes.json
+
+<span class="c1"># Converter para formato bulk</span>
+jq<span class="w"> </span><span class="s1">&#39;{version: &quot;1.0.0&quot;, scopes: .}&#39;</span><span class="w"> </span>external_api_scopes.json<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span><span class="p">|</span><span class="w"> </span>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>.../scopes/bulk<span class="w"> </span>-d<span class="w"> </span>@-
+</code></pre></div>
+
+<h3 id="3-versionar-specs">3. Versionar Specs</h3>
+<p>Mantenha versões das specs para regenerar:</p>
+<div class="codehilite"><pre><span></span><code>mkdir<span class="w"> </span>-p<span class="w"> </span>specs/
+curl<span class="w"> </span><span class="nv">$API_URL</span><span class="w"> </span>&gt;<span class="w"> </span>specs/api_v1.0.0.json
+</code></pre></div>
+
+<h3 id="4-cicd-integration">4. CI/CD Integration</h3>
+<div class="codehilite"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Generate API Scopes</span>
+<span class="w">  </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
+<span class="w">    </span><span class="no">curl -X POST $API/scopes/openapi/generate-and-import \</span>
+<span class="w">      </span><span class="no">-H &quot;X-API-Key: ${{ secrets.API_KEY }}&quot; \</span>
+<span class="w">      </span><span class="no">-d @openapi.json</span>
+</code></pre></div>
+
+<h2 id="referencias">📚 Referências</h2>
+<ul>
+<li><a href="https://swagger.io/specification/">OpenAPI Specification</a></li>
+<li><a href="https://editor.swagger.io/">Swagger Editor</a></li>
+<li><a href="https://petstore3.swagger.io/">Petstore Example</a></li>
+</ul>
+        </div>
+
+        <div class="footer">
+            <p>Built with ❤️ using FastAPI, PostgreSQL, and SQLAlchemy</p>
+            <p style="margin-top: 10px;">© 2025 API Key Management Service by <a href="https://github.com/ideiasfactory" target="_blank">Ideias Factory</a></p>
+        </div>
+    </div>
+
+    <a href="#" class="back-to-top">↑</a>
+
+    <script>
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        // Back to top button
+        const backToTop = document.querySelector('.back-to-top');
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTop.style.display = 'flex';
+            } else {
+                backToTop.style.display = 'none';
+            }
+        });
+
+        backToTop.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    </script>
+</body>
+</html>

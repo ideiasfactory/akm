@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scopes Bulk Insert Guide - API Key Management Service</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --accent: #f093fb;
+            --dark: #1a1a2e;
+            --light: #f8f9fa;
+            --code-bg: #282c34;
+            --border: #e0e0e0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .nav {
+            background: var(--dark);
+            padding: 15px 40px;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .nav a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .nav a:hover {
+            background: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--dark);
+            margin: 30px 0 15px 0;
+            line-height: 1.3;
+        }
+
+        h1 { font-size: 2.5em; border-bottom: 3px solid var(--primary); padding-bottom: 10px; }
+        h2 { font-size: 2em; border-bottom: 2px solid var(--border); padding-bottom: 8px; margin-top: 40px; }
+        h3 { font-size: 1.5em; color: var(--primary); }
+        h4 { font-size: 1.3em; }
+
+        p {
+            margin: 15px 0;
+            line-height: 1.8;
+        }
+
+        a {
+            color: var(--primary);
+            text-decoration: none;
+            border-bottom: 1px dotted var(--primary);
+        }
+
+        a:hover {
+            color: var(--secondary);
+            border-bottom: 1px solid var(--secondary);
+        }
+
+        code {
+            background: #f4f4f4;
+            padding: 3px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #e83e8c;
+        }
+
+        pre {
+            background: var(--code-bg);
+            color: #abb2bf;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+            border-left: 4px solid var(--primary);
+        }
+
+        pre code {
+            background: none;
+            color: inherit;
+            padding: 0;
+            font-size: 0.95em;
+        }
+
+        blockquote {
+            border-left: 4px solid var(--primary);
+            padding: 15px 20px;
+            margin: 20px 0;
+            background: #f8f9fa;
+            font-style: italic;
+        }
+
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+
+        li {
+            margin: 8px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .success {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .info {
+            background: #d1ecf1;
+            border-left: 4px solid #17a2b8;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .footer {
+            background: var(--dark);
+            color: white;
+            padding: 30px 40px;
+            text-align: center;
+        }
+
+        .footer a {
+            color: var(--accent);
+            border-bottom: 1px dotted var(--accent);
+        }
+
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--primary);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            font-size: 24px;
+        }
+
+        .back-to-top:hover {
+            background: var(--secondary);
+            transform: translateY(-5px);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                border-radius: 0;
+            }
+
+            .header {
+                padding: 30px 20px;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .nav {
+                padding: 15px 20px;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            pre {
+                padding: 15px;
+                font-size: 0.85em;
+            }
+        }
+
+        /* Syntax highlighting for code blocks */
+        .codehilite .k { color: #c678dd; } /* keyword */
+        .codehilite .s { color: #98c379; } /* string */
+        .codehilite .n { color: #e06c75; } /* name */
+        .codehilite .c { color: #5c6370; font-style: italic; } /* comment */
+        .codehilite .m { color: #d19a66; } /* number */
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔐 Scopes Bulk Insert Guide</h1>
+            <p>API Key Management Service</p>
+        </div>
+
+        <div class="nav">
+            <a href="/">🏠 Home</a>
+            <a href="/quickstart">🚀 Quick Start</a>
+            <a href="/public/guides/admnistration.html">🔐 Administration</a>
+            <a href="/docs">📚 API Docs</a>
+            <a href="/redoc">📖 ReDoc</a>
+        </div>
+
+        <div class="content">
+<h1 id="scopes-bulk-insert-guide">Scopes Bulk Insert Guide</h1>
+<p>Complete guide for bulk importing scopes into AKM.</p>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ul>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#bulk-insert-via-json">Bulk Insert via JSON</a></li>
+<li><a href="#bulk-insert-via-file-upload">Bulk Insert via File Upload</a></li>
+<li><a href="#generate-from-openapi-spec">Generate from OpenAPI Spec</a></li>
+<li><a href="#best-practices">Best Practices</a></li>
+<li><a href="#troubleshooting">Troubleshooting</a></li>
+</ul>
+<hr />
+<h2 id="overview">Overview</h2>
+<p>Bulk operations allow you to create or update multiple scopes in a single request. This is ideal for:</p>
+<ul>
+<li>Initial project setup</li>
+<li>Migrating from other systems</li>
+<li>Synchronizing with OpenAPI specifications</li>
+<li>Managing large scope sets</li>
+</ul>
+<h3 id="supported-methods">Supported Methods</h3>
+<ol>
+<li><strong>JSON Payload</strong> - Send scopes directly in request body</li>
+<li><strong>File Upload</strong> - Upload JSON file with scopes</li>
+<li><strong>OpenAPI Generation</strong> - Auto-generate from Swagger/OpenAPI spec</li>
+</ol>
+<hr />
+<h2 id="bulk-insert-via-json">Bulk Insert via JSON</h2>
+<h3 id="endpoint">Endpoint</h3>
+<div class="codehilite"><pre><span></span><code>POST /akm/v1/projects/{project_id}/scopes/bulk
+</code></pre></div>
+
+<h3 id="request-format">Request Format</h3>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;scopes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;scope_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;akm:users:read&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Read user data&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;resource_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;users&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;action&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;read&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;metadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;category&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;user_management&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;endpoints&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;/users&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;/users/{id}&quot;</span><span class="p">]</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;scope_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;akm:users:write&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Create and update users&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;resource_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;users&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;action&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;write&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;metadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;category&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;user_management&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;endpoints&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;/users&quot;</span><span class="p">]</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3 id="required-fields">Required Fields</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>scope_name</code></td>
+<td>string</td>
+<td>Unique scope identifier (format: <code>prefix:resource:action</code>)</td>
+</tr>
+<tr>
+<td><code>description</code></td>
+<td>string</td>
+<td>Human-readable description</td>
+</tr>
+<tr>
+<td><code>resource_type</code></td>
+<td>string</td>
+<td>Resource being protected (e.g., "users", "projects")</td>
+</tr>
+<tr>
+<td><code>action</code></td>
+<td>string</td>
+<td>Action allowed (e.g., "read", "write", "delete")</td>
+</tr>
+</tbody>
+</table>
+<h3 id="optional-fields">Optional Fields</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>metadata</code></td>
+<td>object</td>
+<td>Custom key-value data</td>
+</tr>
+<tr>
+<td><code>is_active</code></td>
+<td>boolean</td>
+<td>Enable/disable scope (default: true)</td>
+</tr>
+<tr>
+<td><code>parent_scope</code></td>
+<td>string</td>
+<td>Parent scope for hierarchical permissions</td>
+</tr>
+</tbody>
+</table>
+<h3 id="example-request">Example Request</h3>
+<div class="codehilite"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="s2">&quot;https://api.example.com/akm/v1/projects/1/scopes/bulk&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: akm_your_key_here&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{</span>
+<span class="s1">    &quot;scopes&quot;: [</span>
+<span class="s1">      {</span>
+<span class="s1">        &quot;scope_name&quot;: &quot;akm:products:read&quot;,</span>
+<span class="s1">        &quot;description&quot;: &quot;Read product catalog&quot;,</span>
+<span class="s1">        &quot;resource_type&quot;: &quot;products&quot;,</span>
+<span class="s1">        &quot;action&quot;: &quot;read&quot;</span>
+<span class="s1">      },</span>
+<span class="s1">      {</span>
+<span class="s1">        &quot;scope_name&quot;: &quot;akm:products:write&quot;,</span>
+<span class="s1">        &quot;description&quot;: &quot;Manage product catalog&quot;,</span>
+<span class="s1">        &quot;resource_type&quot;: &quot;products&quot;,</span>
+<span class="s1">        &quot;action&quot;: &quot;write&quot;</span>
+<span class="s1">      },</span>
+<span class="s1">      {</span>
+<span class="s1">        &quot;scope_name&quot;: &quot;akm:orders:read&quot;,</span>
+<span class="s1">        &quot;description&quot;: &quot;View orders&quot;,</span>
+<span class="s1">        &quot;resource_type&quot;: &quot;orders&quot;,</span>
+<span class="s1">        &quot;action&quot;: &quot;read&quot;</span>
+<span class="s1">      }</span>
+<span class="s1">    ]</span>
+<span class="s1">  }&#39;</span>
+</code></pre></div>
+
+<h3 id="response-format">Response Format</h3>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;total_processed&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;created&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;updated&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;skipped&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;errors&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
+<span class="w">  </span><span class="nt">&quot;scope_names&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="s2">&quot;akm:products:read&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;akm:products:write&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;akm:orders:read&quot;</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3 id="response-fields">Response Fields</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>total_processed</code></td>
+<td>int</td>
+<td>Total scopes in request</td>
+</tr>
+<tr>
+<td><code>created</code></td>
+<td>int</td>
+<td>New scopes created</td>
+</tr>
+<tr>
+<td><code>updated</code></td>
+<td>int</td>
+<td>Existing scopes updated</td>
+</tr>
+<tr>
+<td><code>skipped</code></td>
+<td>int</td>
+<td>Scopes skipped (duplicates, no changes)</td>
+</tr>
+<tr>
+<td><code>errors</code></td>
+<td>array</td>
+<td>List of errors encountered</td>
+</tr>
+<tr>
+<td><code>scope_names</code></td>
+<td>array</td>
+<td>Names of all processed scopes</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="bulk-insert-via-file-upload">Bulk Insert via File Upload</h2>
+<h3 id="endpoint_1">Endpoint</h3>
+<div class="codehilite"><pre><span></span><code>POST /akm/v1/projects/{project_id}/scopes/bulk/file
+</code></pre></div>
+
+<h3 id="file-format">File Format</h3>
+<p>Upload a JSON file with the same structure as the JSON payload:</p>
+<p><strong>scopes.json:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;scopes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;scope_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;akm:api:read&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Read API endpoints&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;resource_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;api&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;action&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;read&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;scope_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;akm:api:write&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Modify API configuration&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;resource_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;api&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;action&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;write&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3 id="example-request_1">Example Request</h3>
+<div class="codehilite"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="s2">&quot;https://api.example.com/akm/v1/projects/1/scopes/bulk/file&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: akm_your_key_here&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-F<span class="w"> </span><span class="s2">&quot;file=@scopes.json&quot;</span>
+</code></pre></div>
+
+<h3 id="python-example">Python Example</h3>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">requests</span>
+
+<span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;https://api.example.com/akm/v1/projects/1/scopes/bulk/file&quot;</span>
+<span class="n">headers</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;X-API-Key&quot;</span><span class="p">:</span> <span class="s2">&quot;akm_your_key_here&quot;</span><span class="p">}</span>
+
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;scopes.json&quot;</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">files</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;file&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;scopes.json&quot;</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="s2">&quot;application/json&quot;</span><span class="p">)}</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="n">files</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">())</span>
+</code></pre></div>
+
+<hr />
+<h2 id="generate-from-openapi-spec">Generate from OpenAPI Spec</h2>
+<p>Automatically generate scopes from your OpenAPI/Swagger specification.</p>
+<h3 id="endpoint_2">Endpoint</h3>
+<div class="codehilite"><pre><span></span><code>POST /akm/v1/openapi-scopes/generate/{project_id}
+</code></pre></div>
+
+<h3 id="request-format_1">Request Format</h3>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;openapi_url&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://api.example.com/openapi.json&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;prefix&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;akm&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;auto_apply&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;mapping_rules&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;GET&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;read&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;POST&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;write&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;PUT&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;write&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;PATCH&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;write&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;DELETE&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;delete&quot;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3 id="parameters">Parameters</h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>openapi_url</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>URL to OpenAPI/Swagger spec (JSON or YAML)</td>
+</tr>
+<tr>
+<td><code>prefix</code></td>
+<td>string</td>
+<td>No</td>
+<td>Scope prefix (default: "akm")</td>
+</tr>
+<tr>
+<td><code>auto_apply</code></td>
+<td>boolean</td>
+<td>No</td>
+<td>Auto-create scopes (default: false)</td>
+</tr>
+<tr>
+<td><code>mapping_rules</code></td>
+<td>object</td>
+<td>No</td>
+<td>HTTP method to action mapping</td>
+</tr>
+</tbody>
+</table>
+<h3 id="how-it-works">How It Works</h3>
+<ol>
+<li><strong>Fetch OpenAPI spec</strong> from provided URL</li>
+<li><strong>Parse endpoints</strong> and extract:</li>
+<li>Paths (e.g., <code>/users/{id}</code>)</li>
+<li>HTTP methods (GET, POST, etc.)</li>
+<li>Tags (group related endpoints)</li>
+<li>Operation IDs</li>
+<li><strong>Generate scopes</strong> using pattern:
+   <code>{prefix}:{resource}:{action}</code></li>
+<li><strong>Return preview</strong> or auto-create if <code>auto_apply: true</code></li>
+</ol>
+<h3 id="example-openapi-spec">Example: OpenAPI Spec</h3>
+<div class="codehilite"><pre><span></span><code><span class="nt">openapi</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3.0.0</span>
+<span class="nt">paths</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">/users</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">get</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">Users</span><span class="p p-Indicator">]</span>
+<span class="w">      </span><span class="nt">operationId</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">listUsers</span>
+<span class="w">      </span><span class="nt">summary</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">List all users</span>
+<span class="w">    </span><span class="nt">post</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">Users</span><span class="p p-Indicator">]</span>
+<span class="w">      </span><span class="nt">operationId</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">createUser</span>
+<span class="w">      </span><span class="nt">summary</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Create new user</span>
+<span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">/users/{id}</span><span class="p p-Indicator">:</span>
+<span class="w">    </span><span class="nt">get</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">Users</span><span class="p p-Indicator">]</span>
+<span class="w">      </span><span class="nt">operationId</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">getUser</span>
+<span class="w">      </span><span class="nt">summary</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Get user by ID</span>
+<span class="w">    </span><span class="nt">delete</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">Users</span><span class="p p-Indicator">]</span>
+<span class="w">      </span><span class="nt">operationId</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">deleteUser</span>
+<span class="w">      </span><span class="nt">summary</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Delete user</span>
+</code></pre></div>
+
+<h3 id="generated-scopes">Generated Scopes</h3>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;project_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;total_generated&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;scopes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;scope_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;akm:users:read&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Read user data (from OpenAPI)&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;resource_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;users&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;action&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;read&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;metadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;source&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;openapi&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;endpoints&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;/users&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;/users/{id}&quot;</span><span class="p">],</span>
+<span class="w">        </span><span class="nt">&quot;methods&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;GET&quot;</span><span class="p">],</span>
+<span class="w">        </span><span class="nt">&quot;operations&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;listUsers&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;getUser&quot;</span><span class="p">]</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;scope_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;akm:users:write&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Create and update users (from OpenAPI)&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;resource_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;users&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;action&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;write&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;metadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;source&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;openapi&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;endpoints&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;/users&quot;</span><span class="p">],</span>
+<span class="w">        </span><span class="nt">&quot;methods&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;POST&quot;</span><span class="p">],</span>
+<span class="w">        </span><span class="nt">&quot;operations&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;createUser&quot;</span><span class="p">]</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;scope_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;akm:users:delete&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Delete users (from OpenAPI)&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;resource_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;users&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;action&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;delete&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;metadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;source&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;openapi&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;endpoints&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;/users/{id}&quot;</span><span class="p">],</span>
+<span class="w">        </span><span class="nt">&quot;methods&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;DELETE&quot;</span><span class="p">],</span>
+<span class="w">        </span><span class="nt">&quot;operations&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;deleteUser&quot;</span><span class="p">]</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">],</span>
+<span class="w">  </span><span class="nt">&quot;applied&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3 id="auto-apply-example">Auto-Apply Example</h3>
+<div class="codehilite"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="s2">&quot;https://api.example.com/akm/v1/openapi-scopes/generate/1&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: akm_your_key_here&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{</span>
+<span class="s1">    &quot;openapi_url&quot;: &quot;https://api.example.com/openapi.json&quot;,</span>
+<span class="s1">    &quot;prefix&quot;: &quot;akm&quot;,</span>
+<span class="s1">    &quot;auto_apply&quot;: true</span>
+<span class="s1">  }&#39;</span>
+</code></pre></div>
+
+<p>Response includes <code>"applied": true</code> and scopes are immediately created.</p>
+<hr />
+<h2 id="best-practices">Best Practices</h2>
+<h3 id="naming-conventions">Naming Conventions</h3>
+<p>✅ <strong>Good:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="n">akm</span><span class="o">:</span><span class="n">users</span><span class="o">:</span><span class="n">read</span>
+<span class="n">akm</span><span class="o">:</span><span class="n">products</span><span class="o">:</span><span class="n">write</span>
+<span class="n">akm</span><span class="o">:</span><span class="n">orders</span><span class="o">:</span><span class="n">delete</span>
+<span class="n">akm</span><span class="o">:</span><span class="n">admin</span><span class="o">:*</span>
+</code></pre></div>
+
+<p>❌ <strong>Bad:</strong></p>
+<div class="codehilite"><pre><span></span><code>read_users
+WRITE-PRODUCTS
+orders_delete_permission
+</code></pre></div>
+
+<p><strong>Rules:</strong>
+- Use lowercase
+- Colon-separated format: <code>prefix:resource:action</code>
+- Consistent resource names (plural recommended)
+- Standard actions: read, write, delete, admin, *</p>
+<h3 id="resource-organization">Resource Organization</h3>
+<p>Group related scopes by resource:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;scopes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="c1">// User management</span>
+<span class="w">    </span><span class="p">{</span><span class="nt">&quot;scope_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;akm:users:read&quot;</span><span class="p">,</span><span class="w"> </span><span class="err">...</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="nt">&quot;scope_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;akm:users:write&quot;</span><span class="p">,</span><span class="w"> </span><span class="err">...</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="nt">&quot;scope_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;akm:users:delete&quot;</span><span class="p">,</span><span class="w"> </span><span class="err">...</span><span class="p">},</span>
+
+<span class="w">    </span><span class="c1">// Product catalog</span>
+<span class="w">    </span><span class="p">{</span><span class="nt">&quot;scope_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;akm:products:read&quot;</span><span class="p">,</span><span class="w"> </span><span class="err">...</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="nt">&quot;scope_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;akm:products:write&quot;</span><span class="p">,</span><span class="w"> </span><span class="err">...</span><span class="p">},</span>
+
+<span class="w">    </span><span class="c1">// Order processing</span>
+<span class="w">    </span><span class="p">{</span><span class="nt">&quot;scope_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;akm:orders:read&quot;</span><span class="p">,</span><span class="w"> </span><span class="err">...</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="nt">&quot;scope_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;akm:orders:write&quot;</span><span class="p">,</span><span class="w"> </span><span class="err">...</span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3 id="metadata-best-practices">Metadata Best Practices</h3>
+<p>Include helpful metadata:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;scope_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;akm:payments:write&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Process payments and refunds&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;resource_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;payments&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;action&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;write&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;metadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;category&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;financial&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;risk_level&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;high&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;requires_mfa&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;endpoints&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="s2">&quot;/payments/charge&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;/payments/refund&quot;</span>
+<span class="w">    </span><span class="p">],</span>
+<span class="w">    </span><span class="nt">&quot;documentation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://docs.example.com/payments&quot;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3 id="idempotency">Idempotency</h3>
+<p>Bulk insert is <strong>idempotent</strong>:
+- Existing scopes are updated (based on <code>scope_name</code>)
+- New scopes are created
+- No duplicates are created</p>
+<p>Safe to run multiple times with the same data.</p>
+<h3 id="error-handling">Error Handling</h3>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;total_processed&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;created&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;updated&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;skipped&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;errors&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;scope_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;invalid:scope&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;error&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Invalid scope name format&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">],</span>
+<span class="w">  </span><span class="nt">&quot;scope_names&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="s2">&quot;akm:users:read&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;akm:users:write&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;akm:products:read&quot;</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>Individual errors don't stop the entire batch. Successfully processed scopes are still created/updated.</p>
+<hr />
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="common-errors">Common Errors</h3>
+<h4 id="1-invalid-scope-name-format">1. Invalid Scope Name Format</h4>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;error&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Invalid scope name format&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;detail&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Scope name must match pattern: prefix:resource:action&quot;</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p><strong>Solution:</strong> Use colon-separated format: <code>akm:resource:action</code></p>
+<h4 id="2-duplicate-scope-names-in-request">2. Duplicate Scope Names in Request</h4>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;error&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Duplicate scope names in request&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;duplicates&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;akm:users:read&quot;</span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p><strong>Solution:</strong> Remove duplicate entries from your JSON.</p>
+<h4 id="3-project-not-found">3. Project Not Found</h4>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;error&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Project not found&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;project_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">999</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p><strong>Solution:</strong> Verify project ID exists and you have access.</p>
+<h4 id="4-insufficient-permissions">4. Insufficient Permissions</h4>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;error&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Insufficient permissions&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;required_scope&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;akm:scopes:write&quot;</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p><strong>Solution:</strong> Ensure your API key has <code>akm:scopes:write</code> or <code>akm:*</code> scope.</p>
+<h4 id="5-file-too-large">5. File Too Large</h4>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;error&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;File too large&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;max_size&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;10MB&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;received&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;15MB&quot;</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p><strong>Solution:</strong> Split large files into smaller batches (recommended: 100-500 scopes per request).</p>
+<h3 id="validation">Validation</h3>
+<p>Before bulk import, validate your JSON:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Using Python</span>
+python<span class="w"> </span>-m<span class="w"> </span>json.tool<span class="w"> </span>scopes.json
+
+<span class="c1"># Using jq</span>
+jq<span class="w"> </span>.<span class="w"> </span>scopes.json
+</code></pre></div>
+
+<h3 id="testing">Testing</h3>
+<p>Test with a small batch first:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Test with 2-3 scopes</span>
+curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="s2">&quot;https://api.example.com/akm/v1/projects/1/scopes/bulk&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: akm_your_key_here&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{</span>
+<span class="s1">    &quot;scopes&quot;: [</span>
+<span class="s1">      {</span>
+<span class="s1">        &quot;scope_name&quot;: &quot;akm:test:read&quot;,</span>
+<span class="s1">        &quot;description&quot;: &quot;Test scope&quot;,</span>
+<span class="s1">        &quot;resource_type&quot;: &quot;test&quot;,</span>
+<span class="s1">        &quot;action&quot;: &quot;read&quot;</span>
+<span class="s1">      }</span>
+<span class="s1">    ]</span>
+<span class="s1">  }&#39;</span>
+</code></pre></div>
+
+<hr />
+<h2 id="examples">Examples</h2>
+<h3 id="complete-e-commerce-scopes">Complete E-commerce Scopes</h3>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;scopes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;scope_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;akm:products:read&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;View product catalog&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;resource_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;products&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;action&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;read&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;scope_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;akm:products:write&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Manage products&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;resource_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;products&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;action&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;write&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;scope_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;akm:inventory:read&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Check inventory levels&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;resource_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;inventory&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;action&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;read&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;scope_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;akm:inventory:write&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Update inventory&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;resource_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;inventory&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;action&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;write&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;scope_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;akm:orders:read&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;View orders&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;resource_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;orders&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;action&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;read&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;scope_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;akm:orders:write&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Process orders&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;resource_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;orders&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;action&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;write&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;scope_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;akm:customers:read&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;View customer data&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;resource_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;customers&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;action&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;read&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;scope_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;akm:payments:write&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Process payments&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;resource_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;payments&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;action&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;write&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;scope_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;akm:shipping:write&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Manage shipping&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;resource_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;shipping&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;action&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;write&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;scope_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;akm:admin:*&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Full admin access&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;resource_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;admin&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;action&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;*&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3 id="hierarchical-permissions">Hierarchical Permissions</h3>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;scopes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;scope_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;akm:resources:*&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;All resource operations&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;resource_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;resources&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;action&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;*&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;scope_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;akm:resources:read&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Read resources&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;resource_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;resources&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;action&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;read&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;parent_scope&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;akm:resources:*&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;scope_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;akm:resources:write&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Write resources&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;resource_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;resources&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;action&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;write&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;parent_scope&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;akm:resources:*&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<hr />
+<h2 id="next-steps">Next Steps</h2>
+<ul>
+<li>📖 <a href="./DEVELOPER_GUIDE.md">Developer Guide</a></li>
+<li>🔑 <a href="./AUTHENTICATION.md">Authentication Guide</a></li>
+<li>🚀 <a href="../README.md#quick-start">Quick Start</a></li>
+</ul>
+<hr />
+<h2 id="support">Support</h2>
+<p>Having issues with bulk import? <a href="https://github.com/ideiasfactory/akm/issues">Open an issue</a> with:
+- Sample JSON (redact sensitive data)
+- Error response
+- Project ID and scope count</p>
+        </div>
+
+        <div class="footer">
+            <p>Built with ❤️ using FastAPI, PostgreSQL, and SQLAlchemy</p>
+            <p style="margin-top: 10px;">© 2025 API Key Management Service by <a href="https://github.com/ideiasfactory" target="_blank">Ideias Factory</a></p>
+        </div>
+    </div>
+
+    <a href="#" class="back-to-top">↑</a>
+
+    <script>
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        // Back to top button
+        const backToTop = document.querySelector('.back-to-top');
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTop.style.display = 'flex';
+            } else {
+                backToTop.style.display = 'none';
+            }
+        });
+
+        backToTop.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    </script>
+</body>
+</html>

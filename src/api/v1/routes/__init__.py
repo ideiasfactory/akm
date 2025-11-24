@@ -12,6 +12,7 @@ from src.api.routes.alerts import router as alerts_router
 from src.api.routes.openapi_scopes import router as openapi_scopes_router
 from src.api.routes.audit import router as audit_router
 from src.api.routes.sensitive_fields import router as sensitive_fields_router
+from src.api.routes.project_configurations import router as project_configurations_router
 
 __all__ = [
     "projects_router",
@@ -23,4 +24,5 @@ __all__ = [
     "openapi_scopes_router",
     "audit_router",
     "sensitive_fields_router",
+    "project_configurations_router",
 ]

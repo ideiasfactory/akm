@@ -22,11 +22,11 @@ from src.logging_config import get_logger, log_with_context
 
 logger = get_logger(__name__)
 
-router = APIRouter(prefix="/projects", tags=["Project Configurations"])
+router = APIRouter(tags=["Project Configurations"])
 
 
 @router.put(
-    "/{project_id}/configuration",
+    "/projects/{project_id}/configuration",
     response_model=ProjectConfigurationResponse,
     status_code=status.HTTP_200_OK,
     summary="Create or update project configuration",
@@ -106,7 +106,7 @@ async def upsert_project_configuration(
 
 
 @router.get(
-    "/{project_id}/configuration",
+    "/projects/{project_id}/configuration",
     response_model=Optional[ProjectConfigurationResponse],
     status_code=status.HTTP_200_OK,
     summary="Get project configuration",
@@ -162,7 +162,7 @@ async def get_project_configuration(
 
 
 @router.delete(
-    "/{project_id}/configuration",
+    "/projects/{project_id}/configuration",
     response_model=ProjectConfigurationDeleteResponse,
     status_code=status.HTTP_200_OK,
     summary="Delete project configuration",

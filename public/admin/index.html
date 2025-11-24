@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administration Documentation - API Key Management Service</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --accent: #f093fb;
+            --dark: #1a1a2e;
+            --light: #f8f9fa;
+            --border: #e0e0e0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 60px;
+            color: white;
+        }
+
+        h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .subtitle {
+            font-size: 1.25rem;
+            opacity: 0.95;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .nav-bar {
+            background: white;
+            border-radius: 12px;
+            padding: 20px 30px;
+            margin-bottom: 40px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-bar a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            padding: 8px 16px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-bar a:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .section {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .section h2 {
+            color: var(--primary);
+            font-size: 2rem;
+            margin-bottom: 24px;
+            padding-bottom: 12px;
+            border-bottom: 3px solid var(--accent);
+        }
+
+        .docs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
+            margin-top: 30px;
+        }
+
+        .doc-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #fff 100%);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .doc-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .doc-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.2);
+            border-color: var(--primary);
+        }
+
+        .doc-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .doc-card h3 {
+            color: var(--dark);
+            font-size: 1.25rem;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .doc-card .icon {
+            font-size: 1.5rem;
+        }
+
+        .doc-card p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+
+        .doc-card .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-right: 8px;
+            margin-bottom: 8px;
+        }
+
+        .badge-essential {
+            background: #ff9500;
+            color: white;
+        }
+
+        .badge-technical {
+            background: #5856d6;
+            color: white;
+        }
+
+        .doc-card a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            transition: gap 0.3s ease;
+        }
+
+        .doc-card a:hover {
+            gap: 8px;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 60px;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: white;
+        }
+
+        footer a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            margin: 0 12px;
+            transition: opacity 0.3s ease;
+        }
+
+        footer a:hover {
+            opacity: 0.8;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .nav-bar {
+                padding: 15px;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .docs-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>👔 Administration Documentation</h1>
+            <p class="subtitle">System architecture, configuration, and maintenance guides for administrators</p>
+        </header>
+
+        <nav class="nav-bar">
+            <a href="/docs">API Reference</a>
+            <a href="/">Home</a>
+            <a href="../guides/index.html">Developer Guides</a>
+            <a href="../operation/index.html">Operations</a>
+            <a href="https://github.com/ideiasfactory/akm" target="_blank">GitHub</a>
+        </nav>
+
+        <!-- System Architecture -->
+        <section class="section">
+            <h2>🏗️ System Architecture</h2>
+            <div class="docs-grid">
+                <div class="doc-card" onclick="window.location.href='akm_system.html'">
+                    <h3><span class="icon">🏛️</span> AKM System Overview</h3>
+                    <span class="badge badge-essential">Essential</span>
+                    <p>Complete system architecture overview covering multi-tenant design, security model, and core components.</p>
+                    <a href="akm_system.html">Read Guide →</a>
+                </div>
+
+                <div class="doc-card" onclick="window.location.href='api_versioning.html'">
+                    <h3><span class="icon">🔄</span> API Versioning</h3>
+                    <span class="badge badge-essential">Essential</span>
+                    <p>API versioning strategy, migration paths, and backwards compatibility guidelines.</p>
+                    <a href="api_versioning.html">Read Guide →</a>
+                </div>
+
+                <div class="doc-card" onclick="window.location.href='deployment.html'">
+                    <h3><span class="icon">🚀</span> Deployment Guide</h3>
+                    <span class="badge badge-essential">Essential</span>
+                    <p>Production deployment strategies for Vercel, Docker, and traditional servers with CI/CD pipelines.</p>
+                    <a href="deployment.html">Read Guide →</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- API Key Management -->
+        <section class="section">
+            <h2>🔑 API Key Management</h2>
+            <div class="docs-grid">
+                <div class="doc-card" onclick="window.location.href='api_key_management.html'">
+                    <h3><span class="icon">🔐</span> API Key Management</h3>
+                    <span class="badge badge-essential">Essential</span>
+                    <p>Comprehensive guide to API key lifecycle, security best practices, and management scripts.</p>
+                    <a href="api_key_management.html">Read Guide →</a>
+                </div>
+
+                <div class="doc-card" onclick="window.location.href='authentication_summary.html'">
+                    <h3><span class="icon">🎫</span> Authentication Summary</h3>
+                    <p>Quick reference for authentication mechanisms, token formats, and security considerations.</p>
+                    <a href="authentication_summary.html">Read Guide →</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Configuration & Scopes -->
+        <section class="section">
+            <h2>⚙️ Configuration & Permissions</h2>
+            <div class="docs-grid">
+                <div class="doc-card" onclick="window.location.href='dynamic_configuration.html'">
+                    <h3><span class="icon">🔧</span> Dynamic Configuration</h3>
+                    <span class="badge badge-technical">Technical</span>
+                    <p>Advanced configuration management including runtime updates, inheritance rules, and override strategies.</p>
+                    <a href="dynamic_configuration.html">Read Guide →</a>
+                </div>
+
+                <div class="doc-card" onclick="window.location.href='bulk_scopes.html'">
+                    <h3><span class="icon">📦</span> Bulk Scopes</h3>
+                    <p>Administrative guide for bulk scope management, import/export operations, and permission templates.</p>
+                    <a href="bulk_scopes.html">Read Guide →</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Audit & Security -->
+        <section class="section">
+            <h2>🛡️ Audit & Security</h2>
+            <div class="docs-grid">
+                <div class="doc-card" onclick="window.location.href='audit_system.html'">
+                    <h3><span class="icon">📊</span> Audit System</h3>
+                    <span class="badge badge-essential">Essential</span>
+                    <p>Complete audit trail system with tamper detection, compliance reporting, and log retention policies.</p>
+                    <a href="audit_system.html">Read Guide →</a>
+                </div>
+
+                <div class="doc-card" onclick="window.location.href='audit_quick_start.html'">
+                    <h3><span class="icon">⚡</span> Audit Quick Start</h3>
+                    <p>Quick guide to setting up audit logging, querying logs, and generating compliance reports.</p>
+                    <a href="audit_quick_start.html">Read Guide →</a>
+                </div>
+
+                <div class="doc-card" onclick="window.location.href='sensitive_fields.html'">
+                    <h3><span class="icon">🔒</span> Sensitive Fields</h3>
+                    <span class="badge badge-technical">Technical</span>
+                    <p>Technical implementation guide for sensitive data sanitization, redaction patterns, and compliance.</p>
+                    <a href="sensitive_fields.html">Read Guide →</a>
+                </div>
+
+                <div class="doc-card" onclick="window.location.href='sensitive_fields_implementation.html'">
+                    <h3><span class="icon">🛠️</span> Sensitive Fields Implementation</h3>
+                    <span class="badge badge-technical">Technical</span>
+                    <p>Deep dive into sensitive fields architecture, custom sanitizers, and performance optimization.</p>
+                    <a href="sensitive_fields_implementation.html">Read Guide →</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Testing & Quality -->
+        <section class="section">
+            <h2>🧪 Testing & Quality Assurance</h2>
+            <div class="docs-grid">
+                <div class="doc-card" onclick="window.location.href='testing.html'">
+                    <h3><span class="icon">✅</span> Testing Guide</h3>
+                    <span class="badge badge-essential">Essential</span>
+                    <p>Comprehensive testing strategy including unit tests, integration tests, and end-to-end testing scenarios.</p>
+                    <a href="testing.html">Read Guide →</a>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <p><strong>API Key Management Service</strong> - Production-Ready Authentication</p>
+            <div style="margin-top: 12px;">
+                <a href="/docs">API Reference</a>
+                <a href="https://github.com/ideiasfactory/akm" target="_blank">GitHub Repository</a>
+                <a href="https://github.com/ideiasfactory/akm/issues" target="_blank">Report Issues</a>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>

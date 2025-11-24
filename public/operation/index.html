@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Operations Documentation - API Key Management Service</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --accent: #f093fb;
+            --dark: #1a1a2e;
+            --light: #f8f9fa;
+            --border: #e0e0e0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 60px;
+            color: white;
+        }
+
+        h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .subtitle {
+            font-size: 1.25rem;
+            opacity: 0.95;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .nav-bar {
+            background: white;
+            border-radius: 12px;
+            padding: 20px 30px;
+            margin-bottom: 40px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-bar a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            padding: 8px 16px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-bar a:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .section {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .section h2 {
+            color: var(--primary);
+            font-size: 2rem;
+            margin-bottom: 24px;
+            padding-bottom: 12px;
+            border-bottom: 3px solid var(--accent);
+        }
+
+        .docs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
+            margin-top: 30px;
+        }
+
+        .doc-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #fff 100%);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .doc-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .doc-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.2);
+            border-color: var(--primary);
+        }
+
+        .doc-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .doc-card h3 {
+            color: var(--dark);
+            font-size: 1.25rem;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .doc-card .icon {
+            font-size: 1.5rem;
+        }
+
+        .doc-card p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+
+        .doc-card .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-right: 8px;
+            margin-bottom: 8px;
+        }
+
+        .badge-essential {
+            background: #ff9500;
+            color: white;
+        }
+
+        .badge-security {
+            background: #ff3b30;
+            color: white;
+        }
+
+        .doc-card a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            transition: gap 0.3s ease;
+        }
+
+        .doc-card a:hover {
+            gap: 8px;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 60px;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: white;
+        }
+
+        footer a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            margin: 0 12px;
+            transition: opacity 0.3s ease;
+        }
+
+        footer a:hover {
+            opacity: 0.8;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .nav-bar {
+                padding: 15px;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .docs-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>⚙️ Operations Documentation</h1>
+            <p class="subtitle">Environment setup, CI/CD, logging, and operational best practices</p>
+        </header>
+
+        <nav class="nav-bar">
+            <a href="/docs">API Reference</a>
+            <a href="/">Home</a>
+            <a href="../guides/index.html">Developer Guides</a>
+            <a href="../admin/index.html">Admin Docs</a>
+            <a href="https://github.com/ideiasfactory/akm" target="_blank">GitHub</a>
+        </nav>
+
+        <!-- Environment Setup -->
+        <section class="section">
+            <h2>🌍 Environment Configuration</h2>
+            <div class="docs-grid">
+                <div class="doc-card" onclick="window.location.href='environment.html'">
+                    <h3><span class="icon">🔧</span> Environment Setup</h3>
+                    <span class="badge badge-essential">Essential</span>
+                    <p>Complete guide to configuring development, staging, and production environments with environment variables and secrets.</p>
+                    <a href="environment.html">Read Guide →</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- CI/CD & Secrets -->
+        <section class="section">
+            <h2>🔐 Secrets Management</h2>
+            <div class="docs-grid">
+                <div class="doc-card" onclick="window.location.href='github_secrets_setup.html'">
+                    <h3><span class="icon">🔑</span> GitHub Secrets Setup</h3>
+                    <span class="badge badge-security">Security</span>
+                    <p>Step-by-step guide to configuring GitHub Secrets for CI/CD pipelines and automated deployments.</p>
+                    <a href="github_secrets_setup.html">Read Guide →</a>
+                </div>
+
+                <div class="doc-card" onclick="window.location.href='git_actions_secrets.html'">
+                    <h3><span class="icon">✅</span> GitHub Actions Best Practices</h3>
+                    <span class="badge badge-security">Security</span>
+                    <p>Best practices for managing secrets in GitHub Actions workflows with security considerations.</p>
+                    <a href="git_actions_secrets.html">Read Guide →</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Logging & Monitoring -->
+        <section class="section">
+            <h2>📊 Logging & Monitoring</h2>
+            <div class="docs-grid">
+                <div class="doc-card" onclick="window.location.href='logging.html'">
+                    <h3><span class="icon">📝</span> Logging Guide</h3>
+                    <span class="badge badge-essential">Essential</span>
+                    <p>Comprehensive logging strategy including structured logging, log levels, and integration with observability platforms.</p>
+                    <a href="logging.html">Read Guide →</a>
+                </div>
+
+                <div class="doc-card" onclick="window.location.href='logging_instrumentation.html'">
+                    <h3><span class="icon">🔬</span> Logging Instrumentation</h3>
+                    <p>Advanced logging instrumentation techniques including context propagation, correlation IDs, and performance tracing.</p>
+                    <a href="logging_instrumentation.html">Read Guide →</a>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <p><strong>API Key Management Service</strong> - Production-Ready Authentication</p>
+            <div style="margin-top: 12px;">
+                <a href="/docs">API Reference</a>
+                <a href="https://github.com/ideiasfactory/akm" target="_blank">GitHub Repository</a>
+                <a href="https://github.com/ideiasfactory/akm/issues" target="_blank">Report Issues</a>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>

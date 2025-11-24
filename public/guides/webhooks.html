@@ -1,0 +1,1324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Webhooks Guide - API Key Management Service</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --accent: #f093fb;
+            --dark: #1a1a2e;
+            --light: #f8f9fa;
+            --code-bg: #282c34;
+            --border: #e0e0e0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .nav {
+            background: var(--dark);
+            padding: 15px 40px;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .nav a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .nav a:hover {
+            background: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--dark);
+            margin: 30px 0 15px 0;
+            line-height: 1.3;
+        }
+
+        h1 { font-size: 2.5em; border-bottom: 3px solid var(--primary); padding-bottom: 10px; }
+        h2 { font-size: 2em; border-bottom: 2px solid var(--border); padding-bottom: 8px; margin-top: 40px; }
+        h3 { font-size: 1.5em; color: var(--primary); }
+        h4 { font-size: 1.3em; }
+
+        p {
+            margin: 15px 0;
+            line-height: 1.8;
+        }
+
+        a {
+            color: var(--primary);
+            text-decoration: none;
+            border-bottom: 1px dotted var(--primary);
+        }
+
+        a:hover {
+            color: var(--secondary);
+            border-bottom: 1px solid var(--secondary);
+        }
+
+        code {
+            background: #f4f4f4;
+            padding: 3px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #e83e8c;
+        }
+
+        pre {
+            background: var(--code-bg);
+            color: #abb2bf;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+            border-left: 4px solid var(--primary);
+        }
+
+        pre code {
+            background: none;
+            color: inherit;
+            padding: 0;
+            font-size: 0.95em;
+        }
+
+        blockquote {
+            border-left: 4px solid var(--primary);
+            padding: 15px 20px;
+            margin: 20px 0;
+            background: #f8f9fa;
+            font-style: italic;
+        }
+
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+
+        li {
+            margin: 8px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .success {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .info {
+            background: #d1ecf1;
+            border-left: 4px solid #17a2b8;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .footer {
+            background: var(--dark);
+            color: white;
+            padding: 30px 40px;
+            text-align: center;
+        }
+
+        .footer a {
+            color: var(--accent);
+            border-bottom: 1px dotted var(--accent);
+        }
+
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--primary);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            font-size: 24px;
+        }
+
+        .back-to-top:hover {
+            background: var(--secondary);
+            transform: translateY(-5px);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                border-radius: 0;
+            }
+
+            .header {
+                padding: 30px 20px;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .nav {
+                padding: 15px 20px;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            pre {
+                padding: 15px;
+                font-size: 0.85em;
+            }
+        }
+
+        /* Syntax highlighting for code blocks */
+        .codehilite .k { color: #c678dd; } /* keyword */
+        .codehilite .s { color: #98c379; } /* string */
+        .codehilite .n { color: #e06c75; } /* name */
+        .codehilite .c { color: #5c6370; font-style: italic; } /* comment */
+        .codehilite .m { color: #d19a66; } /* number */
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔐 Webhooks Guide</h1>
+            <p>API Key Management Service</p>
+        </div>
+
+        <div class="nav">
+            <a href="/">🏠 Home</a>
+            <a href="/quickstart">🚀 Quick Start</a>
+            <a href="/public/guides/admnistration.html">🔐 Administration</a>
+            <a href="/docs">📚 API Docs</a>
+            <a href="/redoc">📖 ReDoc</a>
+        </div>
+
+        <div class="content">
+<h1 id="webhooks-documentation">Webhooks Documentation</h1>
+<p>Complete guide for implementing webhooks with AKM.</p>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ul>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#quick-start">Quick Start</a></li>
+<li><a href="#webhook-registration">Webhook Registration</a></li>
+<li><a href="#event-subscriptions">Event Subscriptions</a></li>
+<li><a href="#event-types">Event Types</a></li>
+<li><a href="#payload-format">Payload Format</a></li>
+<li><a href="#security">Security</a></li>
+<li><a href="#delivery--retries">Delivery &amp; Retries</a></li>
+<li><a href="#testing">Testing</a></li>
+<li><a href="#best-practices">Best Practices</a></li>
+<li><a href="#troubleshooting">Troubleshooting</a></li>
+</ul>
+<hr />
+<h2 id="overview">Overview</h2>
+<p>Webhooks allow your application to receive real-time notifications when events occur in AKM. Instead of polling for changes, AKM pushes data to your endpoint when something happens.</p>
+<h3 id="use-cases">Use Cases</h3>
+<ul>
+<li>🔔 <strong>Real-time notifications</strong> - Get instant updates on API key events</li>
+<li>🛡️ <strong>Security monitoring</strong> - Track unauthorized access attempts</li>
+<li>📊 <strong>Usage analytics</strong> - Monitor API key usage patterns</li>
+<li>🚨 <strong>Alerting</strong> - Trigger actions when alerts fire</li>
+<li>📝 <strong>Audit tracking</strong> - Log all changes for compliance</li>
+</ul>
+<h3 id="how-it-works">How It Works</h3>
+<div class="codehilite"><pre><span></span><code><span class="n">sequenceDiagram</span>
+<span class="w">    </span><span class="n">participant</span><span class="w"> </span><span class="n">AKM</span>
+<span class="w">    </span><span class="n">participant</span><span class="w"> </span><span class="n">Your</span><span class="w"> </span><span class="n">App</span>
+
+<span class="w">    </span><span class="n">Your</span><span class="w"> </span><span class="n">App</span><span class="o">-&gt;&gt;</span><span class="n">AKM</span><span class="p">:</span><span class="w"> </span><span class="n">Register</span><span class="w"> </span><span class="n">webhook</span><span class="w"> </span><span class="n">URL</span>
+<span class="w">    </span><span class="n">Your</span><span class="w"> </span><span class="n">App</span><span class="o">-&gt;&gt;</span><span class="n">AKM</span><span class="p">:</span><span class="w"> </span><span class="n">Subscribe</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">events</span>
+<span class="w">    </span><span class="n">Note</span><span class="w"> </span><span class="n">over</span><span class="w"> </span><span class="n">AKM</span><span class="p">:</span><span class="w"> </span><span class="n">Event</span><span class="w"> </span><span class="n">occurs</span>
+<span class="w">    </span><span class="n">AKM</span><span class="o">-&gt;&gt;</span><span class="n">Your</span><span class="w"> </span><span class="n">App</span><span class="p">:</span><span class="w"> </span><span class="n">POST</span><span class="w"> </span><span class="n">webhook</span><span class="w"> </span><span class="n">payload</span>
+<span class="w">    </span><span class="n">Your</span><span class="w"> </span><span class="n">App</span><span class="o">--&gt;&gt;</span><span class="n">AKM</span><span class="p">:</span><span class="w"> </span><span class="mi">200</span><span class="w"> </span><span class="n">OK</span>
+<span class="w">    </span><span class="n">Note</span><span class="w"> </span><span class="n">over</span><span class="w"> </span><span class="n">Your</span><span class="w"> </span><span class="n">App</span><span class="p">:</span><span class="w"> </span><span class="n">Process</span><span class="w"> </span><span class="n">event</span>
+</code></pre></div>
+
+<hr />
+<h2 id="quick-start">Quick Start</h2>
+<h3 id="1-register-webhook">1. Register Webhook</h3>
+<div class="codehilite"><pre><span></span><code>POST<span class="w"> </span>/akm/v1/projects/<span class="o">{</span>project_id<span class="o">}</span>/keys/<span class="o">{</span>key_id<span class="o">}</span>/webhooks
+Content-Type:<span class="w"> </span>application/json
+
+<span class="o">{</span>
+<span class="w">  </span><span class="s2">&quot;url&quot;</span>:<span class="w"> </span><span class="s2">&quot;https://your-app.com/webhooks/akm&quot;</span>,
+<span class="w">  </span><span class="s2">&quot;secret&quot;</span>:<span class="w"> </span><span class="s2">&quot;your-webhook-secret-here&quot;</span>,
+<span class="w">  </span><span class="s2">&quot;enabled&quot;</span>:<span class="w"> </span>true,
+<span class="w">  </span><span class="s2">&quot;description&quot;</span>:<span class="w"> </span><span class="s2">&quot;Production webhook&quot;</span>
+<span class="o">}</span>
+</code></pre></div>
+
+<h3 id="2-subscribe-to-events">2. Subscribe to Events</h3>
+<div class="codehilite"><pre><span></span><code>PUT<span class="w"> </span>/akm/v1/projects/<span class="o">{</span>project_id<span class="o">}</span>/keys/<span class="o">{</span>key_id<span class="o">}</span>/webhooks/<span class="o">{</span>webhook_id<span class="o">}</span>/subscriptions/api_key.created
+PUT<span class="w"> </span>/akm/v1/projects/<span class="o">{</span>project_id<span class="o">}</span>/keys/<span class="o">{</span>key_id<span class="o">}</span>/webhooks/<span class="o">{</span>webhook_id<span class="o">}</span>/subscriptions/rate_limit.exceeded
+</code></pre></div>
+
+<h3 id="3-implement-endpoint">3. Implement Endpoint</h3>
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">FastAPI</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">HTTPException</span>
+<span class="kn">import</span> <span class="nn">hmac</span>
+<span class="kn">import</span> <span class="nn">hashlib</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">()</span>
+
+<span class="n">WEBHOOK_SECRET</span> <span class="o">=</span> <span class="s2">&quot;your-webhook-secret-here&quot;</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/webhooks/akm&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">handle_akm_webhook</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">):</span>
+    <span class="c1"># Get signature</span>
+    <span class="n">signature</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;X-Webhook-Signature&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">signature</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span><span class="n">status_code</span><span class="o">=</span><span class="mi">401</span><span class="p">,</span> <span class="n">detail</span><span class="o">=</span><span class="s2">&quot;Missing signature&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Get body</span>
+    <span class="n">body</span> <span class="o">=</span> <span class="k">await</span> <span class="n">request</span><span class="o">.</span><span class="n">body</span><span class="p">()</span>
+
+    <span class="c1"># Verify signature</span>
+    <span class="n">expected</span> <span class="o">=</span> <span class="n">hmac</span><span class="o">.</span><span class="n">new</span><span class="p">(</span>
+        <span class="n">WEBHOOK_SECRET</span><span class="o">.</span><span class="n">encode</span><span class="p">(),</span>
+        <span class="n">body</span><span class="p">,</span>
+        <span class="n">hashlib</span><span class="o">.</span><span class="n">sha256</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">hmac</span><span class="o">.</span><span class="n">compare_digest</span><span class="p">(</span><span class="n">signature</span><span class="p">,</span> <span class="n">expected</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span><span class="n">status_code</span><span class="o">=</span><span class="mi">401</span><span class="p">,</span> <span class="n">detail</span><span class="o">=</span><span class="s2">&quot;Invalid signature&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Parse payload</span>
+    <span class="n">payload</span> <span class="o">=</span> <span class="k">await</span> <span class="n">request</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+    <span class="n">event_type</span> <span class="o">=</span> <span class="n">payload</span><span class="p">[</span><span class="s2">&quot;event_type&quot;</span><span class="p">]</span>
+
+    <span class="c1"># Handle event</span>
+    <span class="k">if</span> <span class="n">event_type</span> <span class="o">==</span> <span class="s2">&quot;api_key.created&quot;</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;New API key created: </span><span class="si">{</span><span class="n">payload</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">][</span><span class="s1">&#39;key_id&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">event_type</span> <span class="o">==</span> <span class="s2">&quot;rate_limit.exceeded&quot;</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Rate limit exceeded for key: </span><span class="si">{</span><span class="n">payload</span><span class="p">[</span><span class="s1">&#39;api_key_id&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;received&quot;</span><span class="p">}</span>
+</code></pre></div>
+
+<h3 id="4-test-it">4. Test It</h3>
+<div class="codehilite"><pre><span></span><code>POST<span class="w"> </span>/akm/v1/projects/<span class="o">{</span>project_id<span class="o">}</span>/keys/<span class="o">{</span>key_id<span class="o">}</span>/webhooks/<span class="o">{</span>webhook_id<span class="o">}</span>/test
+</code></pre></div>
+
+<p>You should receive a test event at your endpoint!</p>
+<hr />
+<h2 id="webhook-registration">Webhook Registration</h2>
+<h3 id="create-webhook">Create Webhook</h3>
+<div class="codehilite"><pre><span></span><code>POST<span class="w"> </span>/akm/v1/projects/<span class="o">{</span>project_id<span class="o">}</span>/keys/<span class="o">{</span>key_id<span class="o">}</span>/webhooks
+Content-Type:<span class="w"> </span>application/json
+X-API-Key:<span class="w"> </span>your_api_key
+
+<span class="o">{</span>
+<span class="w">  </span><span class="s2">&quot;url&quot;</span>:<span class="w"> </span><span class="s2">&quot;https://your-app.com/webhooks/akm&quot;</span>,
+<span class="w">  </span><span class="s2">&quot;secret&quot;</span>:<span class="w"> </span><span class="s2">&quot;whsec_randomSecretKey123&quot;</span>,
+<span class="w">  </span><span class="s2">&quot;enabled&quot;</span>:<span class="w"> </span>true,
+<span class="w">  </span><span class="s2">&quot;description&quot;</span>:<span class="w"> </span><span class="s2">&quot;Production webhook for key monitoring&quot;</span>,
+<span class="w">  </span><span class="s2">&quot;headers&quot;</span>:<span class="w"> </span><span class="o">{</span>
+<span class="w">    </span><span class="s2">&quot;X-Custom-Header&quot;</span>:<span class="w"> </span><span class="s2">&quot;value&quot;</span>
+<span class="w">  </span><span class="o">}</span>,
+<span class="w">  </span><span class="s2">&quot;timeout_seconds&quot;</span>:<span class="w"> </span><span class="m">30</span>,
+<span class="w">  </span><span class="s2">&quot;max_retries&quot;</span>:<span class="w"> </span><span class="m">5</span>
+<span class="o">}</span>
+</code></pre></div>
+
+<h3 id="parameters">Parameters</h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>url</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>Your webhook endpoint URL (must be HTTPS)</td>
+</tr>
+<tr>
+<td><code>secret</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>Secret key for HMAC signature verification</td>
+</tr>
+<tr>
+<td><code>enabled</code></td>
+<td>boolean</td>
+<td>No</td>
+<td>Enable/disable webhook (default: true)</td>
+</tr>
+<tr>
+<td><code>description</code></td>
+<td>string</td>
+<td>No</td>
+<td>Description for reference</td>
+</tr>
+<tr>
+<td><code>headers</code></td>
+<td>object</td>
+<td>No</td>
+<td>Custom headers to include in requests</td>
+</tr>
+<tr>
+<td><code>timeout_seconds</code></td>
+<td>integer</td>
+<td>No</td>
+<td>Request timeout (default: 30, max: 60)</td>
+</tr>
+<tr>
+<td><code>max_retries</code></td>
+<td>integer</td>
+<td>No</td>
+<td>Retry attempts (default: 5, max: 10)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="response">Response</h3>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">123</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;api_key_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">42</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;url&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://your-app.com/webhooks/akm&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;enabled&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Production webhook&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;created_at&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-11-23T21:00:00Z&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;updated_at&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-11-23T21:00:00Z&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;subscriptions&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[]</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3 id="list-webhooks">List Webhooks</h3>
+<div class="codehilite"><pre><span></span><code>GET<span class="w"> </span>/akm/v1/projects/<span class="o">{</span>project_id<span class="o">}</span>/keys/<span class="o">{</span>key_id<span class="o">}</span>/webhooks
+</code></pre></div>
+
+<h3 id="get-webhook-details">Get Webhook Details</h3>
+<div class="codehilite"><pre><span></span><code>GET<span class="w"> </span>/akm/v1/projects/<span class="o">{</span>project_id<span class="o">}</span>/keys/<span class="o">{</span>key_id<span class="o">}</span>/webhooks/<span class="o">{</span>webhook_id<span class="o">}</span>
+</code></pre></div>
+
+<h3 id="update-webhook">Update Webhook</h3>
+<div class="codehilite"><pre><span></span><code>PUT<span class="w"> </span>/akm/v1/projects/<span class="o">{</span>project_id<span class="o">}</span>/keys/<span class="o">{</span>key_id<span class="o">}</span>/webhooks/<span class="o">{</span>webhook_id<span class="o">}</span>
+Content-Type:<span class="w"> </span>application/json
+
+<span class="o">{</span>
+<span class="w">  </span><span class="s2">&quot;url&quot;</span>:<span class="w"> </span><span class="s2">&quot;https://new-url.com/webhooks/akm&quot;</span>,
+<span class="w">  </span><span class="s2">&quot;enabled&quot;</span>:<span class="w"> </span><span class="nb">true</span>
+<span class="o">}</span>
+</code></pre></div>
+
+<h3 id="delete-webhook">Delete Webhook</h3>
+<div class="codehilite"><pre><span></span><code>DELETE<span class="w"> </span>/akm/v1/projects/<span class="o">{</span>project_id<span class="o">}</span>/keys/<span class="o">{</span>key_id<span class="o">}</span>/webhooks/<span class="o">{</span>webhook_id<span class="o">}</span>
+</code></pre></div>
+
+<hr />
+<h2 id="event-subscriptions">Event Subscriptions</h2>
+<p>After registering a webhook, subscribe to specific events.</p>
+<h3 id="subscribe-to-event">Subscribe to Event</h3>
+<div class="codehilite"><pre><span></span><code>PUT<span class="w"> </span>/akm/v1/projects/<span class="o">{</span>project_id<span class="o">}</span>/keys/<span class="o">{</span>key_id<span class="o">}</span>/webhooks/<span class="o">{</span>webhook_id<span class="o">}</span>/subscriptions/<span class="o">{</span>event_type<span class="o">}</span>
+</code></pre></div>
+
+<p>Example:</p>
+<div class="codehilite"><pre><span></span><code>PUT<span class="w"> </span>/akm/v1/projects/1/keys/42/webhooks/123/subscriptions/api_key.created
+</code></pre></div>
+
+<h3 id="unsubscribe-from-event">Unsubscribe from Event</h3>
+<div class="codehilite"><pre><span></span><code>DELETE<span class="w"> </span>/akm/v1/projects/<span class="o">{</span>project_id<span class="o">}</span>/keys/<span class="o">{</span>key_id<span class="o">}</span>/webhooks/<span class="o">{</span>webhook_id<span class="o">}</span>/subscriptions/<span class="o">{</span>event_type<span class="o">}</span>
+</code></pre></div>
+
+<h3 id="list-event-types">List Event Types</h3>
+<div class="codehilite"><pre><span></span><code>GET<span class="w"> </span>/akm/v1/webhooks/events/types
+</code></pre></div>
+
+<p>Response:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;event_types&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;api_key.created&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;category&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;api_keys&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;New API key created&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;rate_limit.exceeded&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;category&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;rate_limits&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Rate limit exceeded&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3 id="bulk-subscribe">Bulk Subscribe</h3>
+<p>Subscribe to multiple events at once:</p>
+<div class="codehilite"><pre><span></span><code>POST<span class="w"> </span>/akm/v1/projects/<span class="o">{</span>project_id<span class="o">}</span>/keys/<span class="o">{</span>key_id<span class="o">}</span>/webhooks/<span class="o">{</span>webhook_id<span class="o">}</span>/subscriptions/bulk
+Content-Type:<span class="w"> </span>application/json
+
+<span class="o">{</span>
+<span class="w">  </span><span class="s2">&quot;event_types&quot;</span>:<span class="w"> </span><span class="o">[</span>
+<span class="w">    </span><span class="s2">&quot;api_key.created&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;api_key.revoked&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;rate_limit.exceeded&quot;</span>
+<span class="w">  </span><span class="o">]</span>
+<span class="o">}</span>
+</code></pre></div>
+
+<hr />
+<h2 id="event-types">Event Types</h2>
+<h3 id="api-key-events">API Key Events</h3>
+<table>
+<thead>
+<tr>
+<th>Event Type</th>
+<th>Description</th>
+<th>Payload Includes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>api_key.created</code></td>
+<td>New API key created</td>
+<td>Key ID, scopes, project</td>
+</tr>
+<tr>
+<td><code>api_key.updated</code></td>
+<td>API key modified</td>
+<td>Key ID, changed fields</td>
+</tr>
+<tr>
+<td><code>api_key.revoked</code></td>
+<td>API key revoked</td>
+<td>Key ID, reason</td>
+</tr>
+<tr>
+<td><code>api_key.expired</code></td>
+<td>API key expired</td>
+<td>Key ID, expiration date</td>
+</tr>
+<tr>
+<td><code>api_key.rotated</code></td>
+<td>API key rotated</td>
+<td>Old key ID, new key ID</td>
+</tr>
+</tbody>
+</table>
+<h3 id="rate-limit-events">Rate Limit Events</h3>
+<table>
+<thead>
+<tr>
+<th>Event Type</th>
+<th>Description</th>
+<th>Payload Includes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>rate_limit.exceeded</code></td>
+<td>Rate limit hit</td>
+<td>Key ID, limit type, count</td>
+</tr>
+<tr>
+<td><code>rate_limit.warning</code></td>
+<td>Approaching limit (80%)</td>
+<td>Key ID, percentage</td>
+</tr>
+<tr>
+<td><code>rate_limit.reset</code></td>
+<td>Rate limit window reset</td>
+<td>Key ID, new window</td>
+</tr>
+</tbody>
+</table>
+<h3 id="security-events">Security Events</h3>
+<table>
+<thead>
+<tr>
+<th>Event Type</th>
+<th>Description</th>
+<th>Payload Includes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ip_restriction.violated</code></td>
+<td>Unauthorized IP access</td>
+<td>Key ID, IP, CIDR rules</td>
+</tr>
+<tr>
+<td><code>scope.violation</code></td>
+<td>Insufficient permissions</td>
+<td>Key ID, required scope</td>
+</tr>
+<tr>
+<td><code>auth.failed</code></td>
+<td>Authentication failed</td>
+<td>IP, reason, attempts</td>
+</tr>
+<tr>
+<td><code>suspicious.activity</code></td>
+<td>Unusual pattern detected</td>
+<td>Key ID, pattern type</td>
+</tr>
+</tbody>
+</table>
+<h3 id="alert-events">Alert Events</h3>
+<table>
+<thead>
+<tr>
+<th>Event Type</th>
+<th>Description</th>
+<th>Payload Includes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>alert.triggered</code></td>
+<td>Alert rule triggered</td>
+<td>Alert ID, type, details</td>
+</tr>
+<tr>
+<td><code>alert.resolved</code></td>
+<td>Alert resolved</td>
+<td>Alert ID, duration</td>
+</tr>
+</tbody>
+</table>
+<h3 id="system-events">System Events</h3>
+<table>
+<thead>
+<tr>
+<th>Event Type</th>
+<th>Description</th>
+<th>Payload Includes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>webhook.delivery.failed</code></td>
+<td>Webhook delivery failed</td>
+<td>Webhook ID, error, retry</td>
+</tr>
+<tr>
+<td><code>audit.integrity.violation</code></td>
+<td>Audit log tampered</td>
+<td>Log ID, hash mismatch</td>
+</tr>
+<tr>
+<td><code>config.updated</code></td>
+<td>Configuration changed</td>
+<td>Config type, old/new</td>
+</tr>
+</tbody>
+</table>
+<h3 id="project-events">Project Events</h3>
+<table>
+<thead>
+<tr>
+<th>Event Type</th>
+<th>Description</th>
+<th>Payload Includes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>project.created</code></td>
+<td>New project created</td>
+<td>Project ID, name</td>
+</tr>
+<tr>
+<td><code>project.updated</code></td>
+<td>Project modified</td>
+<td>Project ID, changes</td>
+</tr>
+<tr>
+<td><code>project.deleted</code></td>
+<td>Project deleted</td>
+<td>Project ID</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="payload-format">Payload Format</h2>
+<p>All webhooks follow a consistent JSON format:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;event_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;evt_1a2b3c4d5e6f&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;event_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;api_key.created&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;timestamp&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-11-23T21:00:00Z&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;api_key_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">42</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;project_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;data&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;key_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">42</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;key_prefix&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;akm_abc123&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;scopes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;akm:users:read&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;akm:users:write&quot;</span><span class="p">],</span>
+<span class="w">    </span><span class="nt">&quot;created_by&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;admin@example.com&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;expires_at&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2026-11-23T21:00:00Z&quot;</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;correlation_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;req_xyz789&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;metadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;user_agent&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Mozilla/5.0...&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;ip_address&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;203.0.113.42&quot;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3 id="common-fields">Common Fields</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>event_id</code></td>
+<td>string</td>
+<td>Unique event identifier (for deduplication)</td>
+</tr>
+<tr>
+<td><code>event_type</code></td>
+<td>string</td>
+<td>Type of event (see Event Types)</td>
+</tr>
+<tr>
+<td><code>timestamp</code></td>
+<td>string</td>
+<td>ISO 8601 timestamp (UTC)</td>
+</tr>
+<tr>
+<td><code>api_key_id</code></td>
+<td>integer</td>
+<td>Related API key ID</td>
+</tr>
+<tr>
+<td><code>project_id</code></td>
+<td>integer</td>
+<td>Related project ID</td>
+</tr>
+<tr>
+<td><code>data</code></td>
+<td>object</td>
+<td>Event-specific data</td>
+</tr>
+<tr>
+<td><code>correlation_id</code></td>
+<td>string</td>
+<td>Request correlation ID (for tracing)</td>
+</tr>
+<tr>
+<td><code>metadata</code></td>
+<td>object</td>
+<td>Additional context</td>
+</tr>
+</tbody>
+</table>
+<h3 id="example-payloads">Example Payloads</h3>
+<h4 id="api-key-created">API Key Created</h4>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;event_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;evt_001&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;event_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;api_key.created&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;timestamp&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-11-23T21:00:00Z&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;api_key_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">42</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;project_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;data&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;key_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">42</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;key_prefix&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;akm_abc123&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;scopes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;akm:users:read&quot;</span><span class="p">],</span>
+<span class="w">    </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Mobile app key&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;created_by&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;admin@example.com&quot;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h4 id="rate-limit-exceeded">Rate Limit Exceeded</h4>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;event_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;evt_002&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;event_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;rate_limit.exceeded&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;timestamp&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-11-23T21:05:00Z&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;api_key_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">42</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;project_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;data&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;limit_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;per_minute&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;limit&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1000</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;current_count&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1001</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;reset_at&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-11-23T21:06:00Z&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;endpoint&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/api/users&quot;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h4 id="ip-restriction-violated">IP Restriction Violated</h4>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;event_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;evt_003&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;event_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ip_restriction.violated&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;timestamp&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-11-23T21:10:00Z&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;api_key_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">42</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;project_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;data&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;ip_address&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;198.51.100.50&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;allowed_cidrs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;203.0.113.0/24&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;192.0.2.0/24&quot;</span><span class="p">],</span>
+<span class="w">    </span><span class="nt">&quot;endpoint&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/api/users&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;method&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;GET&quot;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<hr />
+<h2 id="security">Security</h2>
+<h3 id="hmac-signature-verification">HMAC Signature Verification</h3>
+<p>Every webhook includes an HMAC-SHA256 signature in the <code>X-Webhook-Signature</code> header.</p>
+<h4 id="how-it-works_1">How It Works</h4>
+<ol>
+<li>AKM computes HMAC using your webhook secret</li>
+<li>Signature is sent in <code>X-Webhook-Signature</code> header</li>
+<li>Your app recomputes HMAC with same secret</li>
+<li>Compare signatures using constant-time comparison</li>
+</ol>
+<h4 id="python-example">Python Example</h4>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">hmac</span>
+<span class="kn">import</span> <span class="nn">hashlib</span>
+
+<span class="k">def</span> <span class="nf">verify_webhook_signature</span><span class="p">(</span><span class="n">payload_body</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">signature</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">secret</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verify webhook HMAC signature&quot;&quot;&quot;</span>
+    <span class="n">expected</span> <span class="o">=</span> <span class="n">hmac</span><span class="o">.</span><span class="n">new</span><span class="p">(</span>
+        <span class="n">secret</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">),</span>
+        <span class="n">payload_body</span><span class="p">,</span>
+        <span class="n">hashlib</span><span class="o">.</span><span class="n">sha256</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
+
+    <span class="c1"># Use constant-time comparison to prevent timing attacks</span>
+    <span class="k">return</span> <span class="n">hmac</span><span class="o">.</span><span class="n">compare_digest</span><span class="p">(</span><span class="n">signature</span><span class="p">,</span> <span class="n">expected</span><span class="p">)</span>
+
+<span class="c1"># In your webhook handler</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/webhooks/akm&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">handle_webhook</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">):</span>
+    <span class="n">body</span> <span class="o">=</span> <span class="k">await</span> <span class="n">request</span><span class="o">.</span><span class="n">body</span><span class="p">()</span>
+    <span class="n">signature</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;X-Webhook-Signature&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">verify_webhook_signature</span><span class="p">(</span><span class="n">body</span><span class="p">,</span> <span class="n">signature</span><span class="p">,</span> <span class="n">WEBHOOK_SECRET</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span><span class="n">status_code</span><span class="o">=</span><span class="mi">401</span><span class="p">,</span> <span class="n">detail</span><span class="o">=</span><span class="s2">&quot;Invalid signature&quot;</span><span class="p">)</span>
+
+    <span class="n">payload</span> <span class="o">=</span> <span class="k">await</span> <span class="n">request</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+    <span class="c1"># Process webhook...</span>
+</code></pre></div>
+
+<h4 id="nodejs-example">Node.js Example</h4>
+<div class="codehilite"><pre><span></span><code><span class="kd">const</span><span class="w"> </span><span class="nx">crypto</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">require</span><span class="p">(</span><span class="s1">&#39;crypto&#39;</span><span class="p">);</span>
+
+<span class="kd">function</span><span class="w"> </span><span class="nx">verifyWebhookSignature</span><span class="p">(</span><span class="nx">body</span><span class="p">,</span><span class="w"> </span><span class="nx">signature</span><span class="p">,</span><span class="w"> </span><span class="nx">secret</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">expected</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">crypto</span>
+<span class="w">    </span><span class="p">.</span><span class="nx">createHmac</span><span class="p">(</span><span class="s1">&#39;sha256&#39;</span><span class="p">,</span><span class="w"> </span><span class="nx">secret</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="nx">update</span><span class="p">(</span><span class="nx">body</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="nx">digest</span><span class="p">(</span><span class="s1">&#39;hex&#39;</span><span class="p">);</span>
+
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">crypto</span><span class="p">.</span><span class="nx">timingSafeEqual</span><span class="p">(</span>
+<span class="w">    </span><span class="nx">Buffer</span><span class="p">.</span><span class="kr">from</span><span class="p">(</span><span class="nx">signature</span><span class="p">),</span>
+<span class="w">    </span><span class="nx">Buffer</span><span class="p">.</span><span class="kr">from</span><span class="p">(</span><span class="nx">expected</span><span class="p">)</span>
+<span class="w">  </span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="c1">// Express.js handler</span>
+<span class="nx">app</span><span class="p">.</span><span class="nx">post</span><span class="p">(</span><span class="s1">&#39;/webhooks/akm&#39;</span><span class="p">,</span><span class="w"> </span><span class="nx">express</span><span class="p">.</span><span class="nx">raw</span><span class="p">({</span><span class="nx">type</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;application/json&#39;</span><span class="p">}),</span><span class="w"> </span><span class="p">(</span><span class="nx">req</span><span class="p">,</span><span class="w"> </span><span class="nx">res</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">signature</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">req</span><span class="p">.</span><span class="nx">headers</span><span class="p">[</span><span class="s1">&#39;x-webhook-signature&#39;</span><span class="p">];</span>
+
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nx">verifyWebhookSignature</span><span class="p">(</span><span class="nx">req</span><span class="p">.</span><span class="nx">body</span><span class="p">,</span><span class="w"> </span><span class="nx">signature</span><span class="p">,</span><span class="w"> </span><span class="nx">WEBHOOK_SECRET</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">res</span><span class="p">.</span><span class="nx">status</span><span class="p">(</span><span class="mf">401</span><span class="p">).</span><span class="nx">send</span><span class="p">(</span><span class="s1">&#39;Invalid signature&#39;</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">payload</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">req</span><span class="p">.</span><span class="nx">body</span><span class="p">);</span>
+<span class="w">  </span><span class="c1">// Process webhook...</span>
+
+<span class="w">  </span><span class="nx">res</span><span class="p">.</span><span class="nx">status</span><span class="p">(</span><span class="mf">200</span><span class="p">).</span><span class="nx">send</span><span class="p">(</span><span class="s1">&#39;OK&#39;</span><span class="p">);</span>
+<span class="p">});</span>
+</code></pre></div>
+
+<h4 id="go-example">Go Example</h4>
+<div class="codehilite"><pre><span></span><code><span class="kn">package</span><span class="w"> </span><span class="nx">main</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="s">&quot;crypto/hmac&quot;</span>
+<span class="w">    </span><span class="s">&quot;crypto/sha256&quot;</span>
+<span class="w">    </span><span class="s">&quot;encoding/hex&quot;</span>
+<span class="w">    </span><span class="s">&quot;io/ioutil&quot;</span>
+<span class="w">    </span><span class="s">&quot;net/http&quot;</span>
+<span class="p">)</span>
+
+<span class="kd">func</span><span class="w"> </span><span class="nx">verifyWebhookSignature</span><span class="p">(</span><span class="nx">body</span><span class="w"> </span><span class="p">[]</span><span class="kt">byte</span><span class="p">,</span><span class="w"> </span><span class="nx">signature</span><span class="w"> </span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="nx">secret</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">mac</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">hmac</span><span class="p">.</span><span class="nx">New</span><span class="p">(</span><span class="nx">sha256</span><span class="p">.</span><span class="nx">New</span><span class="p">,</span><span class="w"> </span><span class="p">[]</span><span class="nb">byte</span><span class="p">(</span><span class="nx">secret</span><span class="p">))</span>
+<span class="w">    </span><span class="nx">mac</span><span class="p">.</span><span class="nx">Write</span><span class="p">(</span><span class="nx">body</span><span class="p">)</span>
+<span class="w">    </span><span class="nx">expected</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">hex</span><span class="p">.</span><span class="nx">EncodeToString</span><span class="p">(</span><span class="nx">mac</span><span class="p">.</span><span class="nx">Sum</span><span class="p">(</span><span class="kc">nil</span><span class="p">))</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">hmac</span><span class="p">.</span><span class="nx">Equal</span><span class="p">([]</span><span class="nb">byte</span><span class="p">(</span><span class="nx">signature</span><span class="p">),</span><span class="w"> </span><span class="p">[]</span><span class="nb">byte</span><span class="p">(</span><span class="nx">expected</span><span class="p">))</span>
+<span class="p">}</span>
+
+<span class="kd">func</span><span class="w"> </span><span class="nx">webhookHandler</span><span class="p">(</span><span class="nx">w</span><span class="w"> </span><span class="nx">http</span><span class="p">.</span><span class="nx">ResponseWriter</span><span class="p">,</span><span class="w"> </span><span class="nx">r</span><span class="w"> </span><span class="o">*</span><span class="nx">http</span><span class="p">.</span><span class="nx">Request</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">body</span><span class="p">,</span><span class="w"> </span><span class="nx">_</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">ioutil</span><span class="p">.</span><span class="nx">ReadAll</span><span class="p">(</span><span class="nx">r</span><span class="p">.</span><span class="nx">Body</span><span class="p">)</span>
+<span class="w">    </span><span class="nx">signature</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">r</span><span class="p">.</span><span class="nx">Header</span><span class="p">.</span><span class="nx">Get</span><span class="p">(</span><span class="s">&quot;X-Webhook-Signature&quot;</span><span class="p">)</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">!</span><span class="nx">verifyWebhookSignature</span><span class="p">(</span><span class="nx">body</span><span class="p">,</span><span class="w"> </span><span class="nx">signature</span><span class="p">,</span><span class="w"> </span><span class="nx">WEBHOOK_SECRET</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">http</span><span class="p">.</span><span class="nx">Error</span><span class="p">(</span><span class="nx">w</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Invalid signature&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">http</span><span class="p">.</span><span class="nx">StatusUnauthorized</span><span class="p">)</span>
+<span class="w">        </span><span class="k">return</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="c1">// Process webhook...</span>
+<span class="w">    </span><span class="nx">w</span><span class="p">.</span><span class="nx">WriteHeader</span><span class="p">(</span><span class="nx">http</span><span class="p">.</span><span class="nx">StatusOK</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3 id="best-practices">Best Practices</h3>
+<ol>
+<li><strong>Always verify signatures</strong> - Never trust incoming webhooks without verification</li>
+<li><strong>Use HTTPS</strong> - Webhook URLs must use HTTPS</li>
+<li><strong>Rotate secrets regularly</strong> - Update webhook secrets periodically</li>
+<li><strong>Validate payload structure</strong> - Check for required fields</li>
+<li><strong>Handle duplicates</strong> - Use <code>event_id</code> for idempotency</li>
+<li><strong>Log webhook events</strong> - Keep audit trail of received webhooks</li>
+</ol>
+<hr />
+<h2 id="delivery-retries">Delivery &amp; Retries</h2>
+<h3 id="delivery-process">Delivery Process</h3>
+<ol>
+<li><strong>HTTP POST</strong> to your webhook URL</li>
+<li><strong>30-second timeout</strong> (configurable)</li>
+<li><strong>2xx response required</strong> for success</li>
+<li><strong>Automatic retry</strong> on failure</li>
+</ol>
+<h3 id="retry-policy">Retry Policy</h3>
+<table>
+<thead>
+<tr>
+<th>Attempt</th>
+<th>Delay</th>
+<th>Total Elapsed</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Immediate</td>
+<td>0s</td>
+</tr>
+<tr>
+<td>2</td>
+<td>1 second</td>
+<td>1s</td>
+</tr>
+<tr>
+<td>3</td>
+<td>2 seconds</td>
+<td>3s</td>
+</tr>
+<tr>
+<td>4</td>
+<td>4 seconds</td>
+<td>7s</td>
+</tr>
+<tr>
+<td>5</td>
+<td>8 seconds</td>
+<td>15s</td>
+</tr>
+<tr>
+<td>6</td>
+<td>16 seconds</td>
+<td>31s</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Exponential backoff</strong> with max 5 retries by default.</p>
+<h3 id="failure-handling">Failure Handling</h3>
+<p>After all retries fail:
+- Webhook delivery marked as failed
+- <code>webhook.delivery.failed</code> event fired (if subscribed)
+- Manual retry available via API</p>
+<h3 id="manual-retry">Manual Retry</h3>
+<div class="codehilite"><pre><span></span><code>POST<span class="w"> </span>/akm/v1/webhooks/deliveries/<span class="o">{</span>delivery_id<span class="o">}</span>/retry
+</code></pre></div>
+
+<h3 id="delivery-history">Delivery History</h3>
+<div class="codehilite"><pre><span></span><code>GET<span class="w"> </span>/akm/v1/projects/<span class="o">{</span>project_id<span class="o">}</span>/keys/<span class="o">{</span>key_id<span class="o">}</span>/webhooks/<span class="o">{</span>webhook_id<span class="o">}</span>/deliveries
+</code></pre></div>
+
+<p>Response:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;deliveries&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;del_123&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;event_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;api_key.created&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;success&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;attempts&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;delivered_at&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-11-23T21:00:01Z&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;response_code&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">200</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;response_time_ms&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">145</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;del_124&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;event_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;rate_limit.exceeded&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;failed&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;attempts&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;last_attempt_at&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-11-23T21:05:31Z&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;response_code&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">500</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;error&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Connection timeout&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<hr />
+<h2 id="testing">Testing</h2>
+<h3 id="test-endpoint">Test Endpoint</h3>
+<p>Send a test event to your webhook:</p>
+<div class="codehilite"><pre><span></span><code>POST<span class="w"> </span>/akm/v1/projects/<span class="o">{</span>project_id<span class="o">}</span>/keys/<span class="o">{</span>key_id<span class="o">}</span>/webhooks/<span class="o">{</span>webhook_id<span class="o">}</span>/test
+</code></pre></div>
+
+<p>Test payload:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;event_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;evt_test_123&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;event_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;webhook.test&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;timestamp&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-11-23T21:00:00Z&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;api_key_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">42</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;project_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;data&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;message&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;This is a test webhook from AKM&quot;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3 id="local-development">Local Development</h3>
+<p>Use tools like <strong>ngrok</strong> or <strong>localtunnel</strong> to expose your local server:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Install ngrok</span>
+ngrok<span class="w"> </span>http<span class="w"> </span><span class="m">8000</span>
+
+<span class="c1"># Your webhook URL</span>
+https://abc123.ngrok.io/webhooks/akm
+</code></pre></div>
+
+<h3 id="mock-webhooks">Mock Webhooks</h3>
+<p>Create a simple webhook receiver for testing:</p>
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">FastAPI</span><span class="p">,</span> <span class="n">Request</span>
+<span class="kn">import</span> <span class="nn">uvicorn</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">()</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/webhooks/akm&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">webhook_receiver</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">):</span>
+    <span class="n">payload</span> <span class="o">=</span> <span class="k">await</span> <span class="n">request</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Received: </span><span class="si">{</span><span class="n">payload</span><span class="p">[</span><span class="s1">&#39;event_type&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Data: </span><span class="si">{</span><span class="n">payload</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;received&quot;</span><span class="p">}</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">uvicorn</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="s2">&quot;0.0.0.0&quot;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">8000</span><span class="p">)</span>
+</code></pre></div>
+
+<hr />
+<h2 id="best-practices_1">Best Practices</h2>
+<h3 id="1-respond-quickly">1. Respond Quickly</h3>
+<p>Return <code>200 OK</code> immediately, then process asynchronously:</p>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">BackgroundTasks</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/webhooks/akm&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">handle_webhook</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">background_tasks</span><span class="p">:</span> <span class="n">BackgroundTasks</span><span class="p">):</span>
+    <span class="c1"># Verify signature</span>
+    <span class="c1"># ...</span>
+
+    <span class="n">payload</span> <span class="o">=</span> <span class="k">await</span> <span class="n">request</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+    <span class="c1"># Return immediately</span>
+    <span class="n">background_tasks</span><span class="o">.</span><span class="n">add_task</span><span class="p">(</span><span class="n">process_webhook</span><span class="p">,</span> <span class="n">payload</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;received&quot;</span><span class="p">}</span>
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">process_webhook</span><span class="p">(</span><span class="n">payload</span><span class="p">):</span>
+    <span class="c1"># Long-running processing here</span>
+    <span class="k">await</span> <span class="n">save_to_database</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span>
+    <span class="k">await</span> <span class="n">trigger_notifications</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span>
+</code></pre></div>
+
+<h3 id="2-handle-duplicates">2. Handle Duplicates</h3>
+<p>Use <code>event_id</code> for idempotency:</p>
+<div class="codehilite"><pre><span></span><code><span class="n">processed_events</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>  <span class="c1"># Or use Redis/database</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/webhooks/akm&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">handle_webhook</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">):</span>
+    <span class="n">payload</span> <span class="o">=</span> <span class="k">await</span> <span class="n">request</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+    <span class="n">event_id</span> <span class="o">=</span> <span class="n">payload</span><span class="p">[</span><span class="s2">&quot;event_id&quot;</span><span class="p">]</span>
+
+    <span class="c1"># Check if already processed</span>
+    <span class="k">if</span> <span class="n">event_id</span> <span class="ow">in</span> <span class="n">processed_events</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;duplicate&quot;</span><span class="p">}</span>
+
+    <span class="c1"># Process webhook</span>
+    <span class="c1"># ...</span>
+
+    <span class="c1"># Mark as processed</span>
+    <span class="n">processed_events</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">event_id</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;received&quot;</span><span class="p">}</span>
+</code></pre></div>
+
+<h3 id="3-implement-retry-logic">3. Implement Retry Logic</h3>
+<p>Your endpoint should be idempotent and handle retries:</p>
+<div class="codehilite"><pre><span></span><code><span class="nd">@app</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/webhooks/akm&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">handle_webhook</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">payload</span> <span class="o">=</span> <span class="k">await</span> <span class="n">request</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="c1"># Process with idempotent operations</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">process_event</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;success&quot;</span><span class="p">,</span> <span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="n">result</span><span class="p">}</span>
+
+    <span class="k">except</span> <span class="n">TemporaryError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="c1"># Return 5xx to trigger retry</span>
+        <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span><span class="n">status_code</span><span class="o">=</span><span class="mi">503</span><span class="p">,</span> <span class="n">detail</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+
+    <span class="k">except</span> <span class="n">PermanentError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="c1"># Return 4xx to not retry</span>
+        <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span><span class="n">status_code</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span> <span class="n">detail</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+</code></pre></div>
+
+<h3 id="4-monitor-webhook-health">4. Monitor Webhook Health</h3>
+<p>Track webhook delivery metrics:</p>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">time</span>
+
+<span class="n">webhook_metrics</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;total_received&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s2">&quot;successful&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s2">&quot;failed&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s2">&quot;avg_processing_time&quot;</span><span class="p">:</span> <span class="mi">0</span>
+<span class="p">}</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/webhooks/akm&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">handle_webhook</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">):</span>
+    <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="n">webhook_metrics</span><span class="p">[</span><span class="s2">&quot;total_received&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># Process webhook</span>
+        <span class="n">payload</span> <span class="o">=</span> <span class="k">await</span> <span class="n">request</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="k">await</span> <span class="n">process_event</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span>
+
+        <span class="n">webhook_metrics</span><span class="p">[</span><span class="s2">&quot;successful&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;success&quot;</span><span class="p">}</span>
+
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">webhook_metrics</span><span class="p">[</span><span class="s2">&quot;failed&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">raise</span>
+
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">duration</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span>
+        <span class="n">webhook_metrics</span><span class="p">[</span><span class="s2">&quot;avg_processing_time&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="p">(</span><span class="n">webhook_metrics</span><span class="p">[</span><span class="s2">&quot;avg_processing_time&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">webhook_metrics</span><span class="p">[</span><span class="s2">&quot;total_received&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">duration</span><span class="p">)</span>
+            <span class="o">/</span> <span class="n">webhook_metrics</span><span class="p">[</span><span class="s2">&quot;total_received&quot;</span><span class="p">]</span>
+        <span class="p">)</span>
+</code></pre></div>
+
+<hr />
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="common-issues">Common Issues</h3>
+<h4 id="1-signature-verification-fails">1. Signature Verification Fails</h4>
+<p><strong>Symptoms:</strong>
+- 401 errors in webhook logs
+- "Invalid signature" errors</p>
+<p><strong>Solutions:</strong>
+- Verify you're using the correct webhook secret
+- Check you're computing HMAC on raw request body (before parsing JSON)
+- Ensure using <code>utf-8</code> encoding
+- Use constant-time comparison (<code>hmac.compare_digest</code>)</p>
+<h4 id="2-timeouts">2. Timeouts</h4>
+<p><strong>Symptoms:</strong>
+- Webhook deliveries marked as failed
+- Timeout errors in logs</p>
+<p><strong>Solutions:</strong>
+- Respond within 30 seconds
+- Move long processing to background tasks
+- Increase timeout in webhook configuration (max 60s)</p>
+<h4 id="3-high-retry-rate">3. High Retry Rate</h4>
+<p><strong>Symptoms:</strong>
+- Same event delivered multiple times
+- High retry count in delivery history</p>
+<p><strong>Solutions:</strong>
+- Check your endpoint is returning 2xx status codes
+- Verify endpoint is accessible (not behind firewall)
+- Implement idempotency to handle retries gracefully</p>
+<h4 id="4-missing-events">4. Missing Events</h4>
+<p><strong>Symptoms:</strong>
+- Expected webhooks not received
+- Gaps in event stream</p>
+<p><strong>Solutions:</strong>
+- Verify webhook is enabled
+- Check event subscriptions are active
+- Review webhook delivery history for failures
+- Ensure no firewall blocking requests from AKM IPs</p>
+<h3 id="debug-mode">Debug Mode</h3>
+<p>Enable verbose logging:</p>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/webhooks/akm&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">handle_webhook</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">):</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Headers: </span><span class="si">{</span><span class="n">request</span><span class="o">.</span><span class="n">headers</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">body</span> <span class="o">=</span> <span class="k">await</span> <span class="n">request</span><span class="o">.</span><span class="n">body</span><span class="p">()</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Body: </span><span class="si">{</span><span class="n">body</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">signature</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;X-Webhook-Signature&quot;</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Signature: </span><span class="si">{</span><span class="n">signature</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Verify and process...</span>
+</code></pre></div>
+
+<h3 id="webhook-inspector">Webhook Inspector</h3>
+<p>Get detailed delivery information:</p>
+<div class="codehilite"><pre><span></span><code>GET<span class="w"> </span>/akm/v1/webhooks/deliveries/<span class="o">{</span>delivery_id<span class="o">}</span>
+</code></pre></div>
+
+<p>Response includes:
+- Request headers sent
+- Response headers received
+- Response body
+- Timing information
+- Error details</p>
+<hr />
+<h2 id="next-steps">Next Steps</h2>
+<ul>
+<li>📖 <a href="./DEVELOPER_GUIDE.md">Developer Guide</a></li>
+<li>🔔 <a href="./ALERTS.md">Alerts Documentation</a></li>
+<li>🔑 <a href="./AUTHENTICATION.md">API Keys Guide</a></li>
+</ul>
+<hr />
+<h2 id="support">Support</h2>
+<p>Need help with webhooks? <a href="https://github.com/ideiasfactory/akm/issues">Open an issue</a> with:
+- Webhook configuration (redact secret)
+- Event type subscribed to
+- Error messages from logs
+- Sample payload (if applicable)</p>
+        </div>
+
+        <div class="footer">
+            <p>Built with ❤️ using FastAPI, PostgreSQL, and SQLAlchemy</p>
+            <p style="margin-top: 10px;">© 2025 API Key Management Service by <a href="https://github.com/ideiasfactory" target="_blank">Ideias Factory</a></p>
+        </div>
+    </div>
+
+    <a href="#" class="back-to-top">↑</a>
+
+    <script>
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        // Back to top button
+        const backToTop = document.querySelector('.back-to-top');
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTop.style.display = 'flex';
+            } else {
+                backToTop.style.display = 'none';
+            }
+        });
+
+        backToTop.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    </script>
+</body>
+</html>

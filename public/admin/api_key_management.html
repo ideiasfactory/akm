@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Key Management - API Key Management Service</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --accent: #f093fb;
+            --dark: #1a1a2e;
+            --light: #f8f9fa;
+            --code-bg: #282c34;
+            --border: #e0e0e0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .nav {
+            background: var(--dark);
+            padding: 15px 40px;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .nav a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .nav a:hover {
+            background: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--dark);
+            margin: 30px 0 15px 0;
+            line-height: 1.3;
+        }
+
+        h1 { font-size: 2.5em; border-bottom: 3px solid var(--primary); padding-bottom: 10px; }
+        h2 { font-size: 2em; border-bottom: 2px solid var(--border); padding-bottom: 8px; margin-top: 40px; }
+        h3 { font-size: 1.5em; color: var(--primary); }
+        h4 { font-size: 1.3em; }
+
+        p {
+            margin: 15px 0;
+            line-height: 1.8;
+        }
+
+        a {
+            color: var(--primary);
+            text-decoration: none;
+            border-bottom: 1px dotted var(--primary);
+        }
+
+        a:hover {
+            color: var(--secondary);
+            border-bottom: 1px solid var(--secondary);
+        }
+
+        code {
+            background: #f4f4f4;
+            padding: 3px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #e83e8c;
+        }
+
+        pre {
+            background: var(--code-bg);
+            color: #abb2bf;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+            border-left: 4px solid var(--primary);
+        }
+
+        pre code {
+            background: none;
+            color: inherit;
+            padding: 0;
+            font-size: 0.95em;
+        }
+
+        blockquote {
+            border-left: 4px solid var(--primary);
+            padding: 15px 20px;
+            margin: 20px 0;
+            background: #f8f9fa;
+            font-style: italic;
+        }
+
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+
+        li {
+            margin: 8px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .success {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .info {
+            background: #d1ecf1;
+            border-left: 4px solid #17a2b8;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .footer {
+            background: var(--dark);
+            color: white;
+            padding: 30px 40px;
+            text-align: center;
+        }
+
+        .footer a {
+            color: var(--accent);
+            border-bottom: 1px dotted var(--accent);
+        }
+
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--primary);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            font-size: 24px;
+        }
+
+        .back-to-top:hover {
+            background: var(--secondary);
+            transform: translateY(-5px);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                border-radius: 0;
+            }
+
+            .header {
+                padding: 30px 20px;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .nav {
+                padding: 15px 20px;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            pre {
+                padding: 15px;
+                font-size: 0.85em;
+            }
+        }
+
+        /* Syntax highlighting for code blocks */
+        .codehilite .k { color: #c678dd; } /* keyword */
+        .codehilite .s { color: #98c379; } /* string */
+        .codehilite .n { color: #e06c75; } /* name */
+        .codehilite .c { color: #5c6370; font-style: italic; } /* comment */
+        .codehilite .m { color: #d19a66; } /* number */
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔐 API Key Management</h1>
+            <p>API Key Management Service</p>
+        </div>
+
+        <div class="nav">
+            <a href="/">🏠 Home</a>
+            <a href="/quickstart">🚀 Quick Start</a>
+            <a href="/public/guides/admnistration.html">🔐 Administration</a>
+            <a href="/docs">📚 API Docs</a>
+            <a href="/redoc">📖 ReDoc</a>
+        </div>
+
+        <div class="content">
+<h1 id="api-key-management-guide">API Key Management Guide</h1>
+<h2 id="overview">Overview</h2>
+<p>This comprehensive guide covers how to manage API keys in the API Key Management (AKM) Service. Learn about creating, securing, rotating, and monitoring API keys for your projects.</p>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ul>
+<li><a href="#key-concepts">Key Concepts</a></li>
+<li><a href="#key-lifecycle">Key Lifecycle</a></li>
+<li><a href="#creating-api-keys">Creating API Keys</a></li>
+<li><a href="#managing-scopes">Managing Scopes</a></li>
+<li><a href="#security-best-practices">Security Best Practices</a></li>
+<li><a href="#key-rotation">Key Rotation</a></li>
+<li><a href="#monitoring-and-usage">Monitoring and Usage</a></li>
+<li><a href="#incident-response">Incident Response</a></li>
+<li><a href="#faq">FAQ</a></li>
+</ul>
+<hr />
+<h2 id="key-concepts">Key Concepts</h2>
+<h3 id="what-is-an-api-key">What is an API Key?</h3>
+<p>An API key is a unique identifier used to authenticate requests to the AKM service. Each key:</p>
+<ul>
+<li><strong>Belongs to a project</strong>: Keys are scoped to specific projects</li>
+<li><strong>Has permissions</strong>: Controlled by assigned scopes</li>
+<li><strong>Is hashed</strong>: Only SHA-256 hashes are stored</li>
+<li><strong>Can expire</strong>: Optional expiration dates</li>
+<li><strong>Has rate limits</strong>: Requests per hour limits</li>
+<li><strong>Tracks usage</strong>: Monitors request count and last usage</li>
+</ul>
+<h3 id="key-types">Key Types</h3>
+<p>AKM supports two key environments:</p>
+<ol>
+<li><strong>Live Keys</strong> (<code>akm_live_*</code>): For production use</li>
+<li><strong>Test Keys</strong> (<code>akm_test_*</code>): For development and testing</li>
+</ol>
+<hr />
+<h2 id="key-lifecycle">Key Lifecycle</h2>
+<div class="codehilite"><pre><span></span><code>┌─────────────┐
+│<span class="w">   </span><span class="nv">CREATE</span><span class="w">    </span>│<span class="w"> </span>→<span class="w"> </span><span class="nv">Generate</span><span class="w"> </span><span class="nv">new</span><span class="w"> </span><span class="nv">key</span><span class="w"> </span><span class="nv">with</span><span class="w"> </span><span class="nv">scopes</span><span class="w"> </span><span class="nv">and</span><span class="w"> </span><span class="nv">metadata</span>
+└──────┬──────┘
+<span class="w">       </span>↓
+┌─────────────┐
+│<span class="w">   </span><span class="nv">ACTIVE</span><span class="w">    </span>│<span class="w"> </span>→<span class="w"> </span><span class="nv">Key</span><span class="w"> </span><span class="nv">is</span><span class="w"> </span><span class="nv">usable</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="nv">API</span><span class="w"> </span><span class="nv">requests</span>
+└──────┬──────┘
+<span class="w">       </span>↓
+┌─────────────┐
+│<span class="w">  </span><span class="nv">REVOKED</span><span class="w">    </span>│<span class="w"> </span>→<span class="w"> </span><span class="nv">Key</span><span class="w"> </span><span class="nv">is</span><span class="w"> </span><span class="nv">disabled</span><span class="w"> </span><span class="ss">(</span><span class="nv">reversible</span><span class="ss">)</span>
+└──────┬──────┘
+<span class="w">       </span>↓
+┌─────────────┐
+│<span class="w">  </span><span class="nv">DELETED</span><span class="w">    </span>│<span class="w"> </span>→<span class="w"> </span><span class="nv">Key</span><span class="w"> </span><span class="nv">is</span><span class="w"> </span><span class="nv">permanently</span><span class="w"> </span><span class="nv">removed</span><span class="w"> </span><span class="ss">(</span><span class="nv">irreversible</span><span class="ss">)</span>
+└─────────────┘
+</code></pre></div>
+
+<hr />
+<h2 id="creating-api-keys">Creating API Keys</h2>
+<h3 id="step-1-identify-requirements">Step 1: Identify Requirements</h3>
+<p>Before creating a key, determine:</p>
+<ul>
+<li><strong>Project</strong>: Which project needs access?</li>
+<li><strong>Scopes</strong>: What permissions are required?</li>
+<li><strong>Environment</strong>: Production (live) or development (test)?</li>
+<li><strong>Rate Limit</strong>: How many requests per hour?</li>
+<li><strong>Expiration</strong>: Should the key expire automatically?</li>
+</ul>
+<h3 id="step-2-create-the-key">Step 2: Create the Key</h3>
+<p><strong>API Request:</strong></p>
+<div class="codehilite"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="s2">&quot;https://api-service.com/akm/v1/keys&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: akm_live_your_admin_key&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;&#39;</span><span class="o">{</span>
+<span class="w">    </span><span class="s2">&quot;project_id&quot;</span>:<span class="w"> </span><span class="s2">&quot;proj_123&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;name&quot;</span>:<span class="w"> </span><span class="s2">&quot;Production Frontend&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;scopes&quot;</span>:<span class="w"> </span><span class="o">[</span><span class="s2">&quot;users:read&quot;</span>,<span class="w"> </span><span class="s2">&quot;orders:read&quot;</span><span class="o">]</span>,
+<span class="w">    </span><span class="s2">&quot;rate_limit_per_hour&quot;</span>:<span class="w"> </span><span class="m">10000</span>,
+<span class="w">    </span><span class="s2">&quot;environment&quot;</span>:<span class="w"> </span><span class="s2">&quot;production&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;expires_at&quot;</span>:<span class="w"> </span><span class="s2">&quot;2026-12-31T23:59:59Z&quot;</span>
+<span class="w">  </span><span class="o">}</span><span class="s1">&#39;&#39;</span>
+</code></pre></div>
+
+<p><strong>Response:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;key_789&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;key&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;akm_live_a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;project_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;proj_123&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Production Frontend&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;scopes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;users:read&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;orders:read&quot;</span><span class="p">],</span>
+<span class="w">  </span><span class="nt">&quot;rate_limit_per_hour&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">10000</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;environment&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;production&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;created_at&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-11-23T10:00:00Z&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;expires_at&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2026-12-31T23:59:59Z&quot;</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>⚠️ <strong>IMPORTANT</strong>: Save the <code>key</code> value immediately. It will never be shown again.</p>
+<hr />
+<h2 id="managing-scopes">Managing Scopes</h2>
+<h3 id="understanding-scopes">Understanding Scopes</h3>
+<p>Scopes define what actions an API key can perform. They follow the format:</p>
+<div class="codehilite"><pre><span></span><code>&lt;resource&gt;:&lt;action&gt;
+</code></pre></div>
+
+<p><strong>Common Scopes:</strong></p>
+<ul>
+<li><code>users:read</code> - Read user data</li>
+<li><code>users:write</code> - Create/update users</li>
+<li><code>users:delete</code> - Delete users</li>
+<li><code>orders:read</code> - Read order data</li>
+<li><code>orders:write</code> - Create/update orders</li>
+<li><code>admin:full</code> - Full administrative access</li>
+</ul>
+<h3 id="adding-scopes-to-a-key">Adding Scopes to a Key</h3>
+<div class="codehilite"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="s2">&quot;https://api-service.com/akm/v1/keys/key_789/scopes&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: akm_live_your_admin_key&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;&#39;</span><span class="o">{</span>
+<span class="w">    </span><span class="s2">&quot;scopes&quot;</span>:<span class="w"> </span><span class="o">[</span><span class="s2">&quot;products:read&quot;</span><span class="o">]</span>
+<span class="w">  </span><span class="o">}</span><span class="s1">&#39;&#39;</span>
+</code></pre></div>
+
+<h3 id="removing-scopes">Removing Scopes</h3>
+<div class="codehilite"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>DELETE<span class="w"> </span><span class="s2">&quot;https://api-service.com/akm/v1/keys/key_789/scopes&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: akm_live_your_admin_key&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;&#39;</span><span class="o">{</span>
+<span class="w">    </span><span class="s2">&quot;scopes&quot;</span>:<span class="w"> </span><span class="o">[</span><span class="s2">&quot;users:delete&quot;</span><span class="o">]</span>
+<span class="w">  </span><span class="o">}</span><span class="s1">&#39;&#39;</span>
+</code></pre></div>
+
+<hr />
+<h2 id="security-best-practices">Security Best Practices</h2>
+<h3 id="1-key-storage">1. Key Storage</h3>
+<p><strong>✅ DO:</strong></p>
+<ul>
+<li>Store keys in environment variables</li>
+<li>Use secret management systems (AWS Secrets Manager, Azure Key Vault, HashiCorp Vault)</li>
+<li>Use <code>.env</code> files for local development (never commit them)</li>
+<li>Encrypt keys at rest in your applications</li>
+</ul>
+<p><strong>❌ DON''T:</strong></p>
+<ul>
+<li>Hard-code keys in source code</li>
+<li>Commit keys to version control</li>
+<li>Share keys via email or chat</li>
+<li>Store keys in plain text files</li>
+<li>Log keys in application logs</li>
+</ul>
+<h3 id="2-key-naming">2. Key Naming</h3>
+<p>Use descriptive names to identify key purpose:</p>
+<p><strong>Good Examples:</strong></p>
+<div class="codehilite"><pre><span></span><code>&quot;Production Frontend - User Dashboard&quot;
+&quot;Development - API Testing&quot;
+&quot;CI/CD Pipeline - GitHub Actions&quot;
+&quot;Partner Integration - CompanyX&quot;
+</code></pre></div>
+
+<p><strong>Bad Examples:</strong></p>
+<div class="codehilite"><pre><span></span><code>&quot;key1&quot;
+&quot;test&quot;
+&quot;my_key&quot;
+</code></pre></div>
+
+<h3 id="3-principle-of-least-privilege">3. Principle of Least Privilege</h3>
+<p>Only grant the minimum required scopes:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Read-Only Dashboard&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;scopes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;users:read&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;orders:read&quot;</span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3 id="4-environment-separation">4. Environment Separation</h3>
+<p>Create separate keys for each environment:</p>
+<ul>
+<li><strong>Development</strong>: <code>akm_test_*</code> keys with relaxed limits</li>
+<li><strong>Staging</strong>: <code>akm_test_*</code> or <code>akm_live_*</code> keys mimicking production</li>
+<li><strong>Production</strong>: <code>akm_live_*</code> keys with strict controls</li>
+</ul>
+<hr />
+<h2 id="key-rotation">Key Rotation</h2>
+<h3 id="why-rotate-keys">Why Rotate Keys?</h3>
+<p>Regular key rotation enhances security by:</p>
+<ul>
+<li>Limiting exposure time if a key is compromised</li>
+<li>Following compliance requirements</li>
+<li>Maintaining security hygiene</li>
+</ul>
+<h3 id="rotation-schedule">Rotation Schedule</h3>
+<ul>
+<li><strong>Production keys</strong>: Every 90 days</li>
+<li><strong>Development keys</strong>: Every 180 days</li>
+<li><strong>Immediately</strong>: If compromised or suspected breach</li>
+</ul>
+<h3 id="rotation-process">Rotation Process</h3>
+<p><strong>Step 1: Create new key</strong></p>
+<div class="codehilite"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="s2">&quot;https://api-service.com/akm/v1/keys&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: akm_live_your_admin_key&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;&#39;</span><span class="o">{</span>
+<span class="w">    </span><span class="s2">&quot;project_id&quot;</span>:<span class="w"> </span><span class="s2">&quot;proj_123&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;name&quot;</span>:<span class="w"> </span><span class="s2">&quot;Production Frontend (Rotated)&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;scopes&quot;</span>:<span class="w"> </span><span class="o">[</span><span class="s2">&quot;users:read&quot;</span>,<span class="w"> </span><span class="s2">&quot;orders:read&quot;</span><span class="o">]</span>,
+<span class="w">    </span><span class="s2">&quot;rate_limit_per_hour&quot;</span>:<span class="w"> </span><span class="m">10000</span>
+<span class="w">  </span><span class="o">}</span><span class="s1">&#39;&#39;</span>
+</code></pre></div>
+
+<p><strong>Step 2: Update applications</strong></p>
+<p>Deploy the new key to your applications using your secret management system.</p>
+<p><strong>Step 3: Grace period</strong></p>
+<p>Keep both keys active for 24-48 hours to ensure smooth transition.</p>
+<p><strong>Step 4: Revoke old key</strong></p>
+<div class="codehilite"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="s2">&quot;https://api-service.com/akm/v1/keys/key_789/revoke&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: akm_live_your_admin_key&quot;</span>
+</code></pre></div>
+
+<p><strong>Step 5: Monitor</strong></p>
+<p>Check logs for any 401 errors indicating applications still using the old key.</p>
+<hr />
+<h2 id="monitoring-and-usage">Monitoring and Usage</h2>
+<h3 id="view-key-details">View Key Details</h3>
+<div class="codehilite"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>GET<span class="w"> </span><span class="s2">&quot;https://api-service.com/akm/v1/keys/key_789&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: akm_live_your_admin_key&quot;</span>
+</code></pre></div>
+
+<p><strong>Response:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;key_789&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Production Frontend&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;project_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;proj_123&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;scopes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;users:read&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;orders:read&quot;</span><span class="p">],</span>
+<span class="w">  </span><span class="nt">&quot;rate_limit_per_hour&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">10000</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;request_count&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">45678</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;last_used_at&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-11-23T09:45:00Z&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;created_at&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-11-23T10:00:00Z&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;expires_at&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2026-12-31T23:59:59Z&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;is_revoked&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3 id="list-all-keys">List All Keys</h3>
+<div class="codehilite"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>GET<span class="w"> </span><span class="s2">&quot;https://api-service.com/akm/v1/projects/proj_123/keys&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: akm_live_your_admin_key&quot;</span>
+</code></pre></div>
+
+<h3 id="usage-metrics">Usage Metrics</h3>
+<p>Monitor these key metrics:</p>
+<ul>
+<li><strong>request_count</strong>: Total requests made</li>
+<li><strong>last_used_at</strong>: Last successful authentication</li>
+<li><strong>Rate limit consumption</strong>: Check <code>X-RateLimit-Remaining</code> headers</li>
+<li><strong>Error rates</strong>: Track 401/403 responses</li>
+</ul>
+<hr />
+<h2 id="incident-response">Incident Response</h2>
+<h3 id="if-a-key-is-compromised">If a Key is Compromised</h3>
+<p><strong>Immediate Actions (within 5 minutes):</strong></p>
+<ol>
+<li>
+<p><strong>Revoke the key:</strong>
+   <code>bash
+   curl -X POST "https://api-service.com/akm/v1/keys/key_789/revoke" \
+     -H "X-API-Key: akm_live_your_admin_key"</code></p>
+</li>
+<li>
+<p><strong>Create replacement key:</strong>
+   <code>bash
+   curl -X POST "https://api-service.com/akm/v1/keys" \
+     -H "X-API-Key: akm_live_your_admin_key" \
+     -H "Content-Type: application/json" \
+     -d ''{"project_id": "proj_123", "name": "Emergency Replacement", ...}''</code></p>
+</li>
+<li>
+<p><strong>Update all services</strong> using the compromised key</p>
+</li>
+</ol>
+<p><strong>Follow-up Actions (within 24 hours):</strong></p>
+<ol>
+<li><strong>Audit access logs</strong> to check for unauthorized usage</li>
+<li><strong>Review how the compromise occurred</strong></li>
+<li><strong>Document the incident</strong> and lessons learned</li>
+<li><strong>Update security procedures</strong> if needed</li>
+</ol>
+<h3 id="if-you-lose-a-key">If You Lose a Key</h3>
+<p>Keys cannot be recovered. You must:</p>
+<ol>
+<li>Create a new key with the same permissions</li>
+<li>Update your application configuration</li>
+<li>Revoke the old key (or let it expire)</li>
+</ol>
+<hr />
+<h2 id="faq">FAQ</h2>
+<h3 id="q-can-i-recover-a-lost-api-key">Q: Can I recover a lost API key?</h3>
+<p><strong>A:</strong> No. Keys are hashed using SHA-256, which is irreversible. If you lose a key, create a new one.</p>
+<h3 id="q-how-many-keys-can-i-create">Q: How many keys can I create?</h3>
+<p><strong>A:</strong> There''s no hard limit, but we recommend:
+- 1-2 keys per application
+- Separate keys for each environment
+- Separate keys for each integration partner</p>
+<h3 id="q-can-i-temporarily-disable-a-key">Q: Can I temporarily disable a key?</h3>
+<p><strong>A:</strong> Yes, use the revoke endpoint. You can later re-enable it by updating the <code>is_revoked</code> field.</p>
+<h3 id="q-what-happens-when-rate-limit-is-exceeded">Q: What happens when rate limit is exceeded?</h3>
+<p><strong>A:</strong> The API returns <code>429 Too Many Requests</code> with headers indicating when the limit resets.</p>
+<h3 id="q-how-do-i-increase-my-rate-limit">Q: How do I increase my rate limit?</h3>
+<p><strong>A:</strong> Update the key:</p>
+<div class="codehilite"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>PATCH<span class="w"> </span><span class="s2">&quot;https://api-service.com/akm/v1/keys/key_789&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: akm_live_your_admin_key&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;&#39;</span><span class="o">{</span><span class="s2">&quot;rate_limit_per_hour&quot;</span>:<span class="w"> </span><span class="m">50000</span><span class="o">}</span><span class="s1">&#39;&#39;</span>
+</code></pre></div>
+
+<h3 id="q-can-i-use-the-same-key-for-multiple-applications">Q: Can I use the same key for multiple applications?</h3>
+<p><strong>A:</strong> While possible, we recommend creating separate keys for:
+- Better monitoring and debugging
+- Easier key rotation
+- Granular access control
+- Independent rate limiting</p>
+<h3 id="q-whats-the-difference-between-revoked-and-deleted-keys">Q: What''s the difference between revoked and deleted keys?</h3>
+<p><strong>A:</strong>
+- <strong>Revoked</strong>: Disabled but preserved in database for audit trails
+- <strong>Deleted</strong>: Permanently removed from database</p>
+<h3 id="q-how-do-i-test-if-my-key-is-working">Q: How do I test if my key is working?</h3>
+<p><strong>A:</strong> Make a test request:</p>
+<div class="codehilite"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>GET<span class="w"> </span><span class="s2">&quot;https://api-service.com/akm/v1/health&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: akm_live_your_key&quot;</span>
+</code></pre></div>
+
+<hr />
+<h2 id="additional-resources">Additional Resources</h2>
+<ul>
+<li><a href="/quickstart">Quick Start Guide</a> - Getting started with AKM</li>
+<li><a href="/public/guides/admnistration.html">Administration Guide</a> - Managing the AKM service</li>
+<li><a href="/authentication">Authentication Guide</a> - Authentication patterns</li>
+<li><a href="/api-versioning">API Versioning</a> - API version management</li>
+</ul>
+<hr />
+<p><strong>Need Help?</strong> Check the <a href="https://github.com/ideiasfactory/akm/issues">GitHub Issues</a>.</p>
+        </div>
+
+        <div class="footer">
+            <p>Built with ❤️ using FastAPI, PostgreSQL, and SQLAlchemy</p>
+            <p style="margin-top: 10px;">© 2025 API Key Management Service by <a href="https://github.com/ideiasfactory" target="_blank">Ideias Factory</a></p>
+        </div>
+    </div>
+
+    <a href="#" class="back-to-top">↑</a>
+
+    <script>
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        // Back to top button
+        const backToTop = document.querySelector('.back-to-top');
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTop.style.display = 'flex';
+            } else {
+                backToTop.style.display = 'none';
+            }
+        });
+
+        backToTop.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    </script>
+</body>
+</html>

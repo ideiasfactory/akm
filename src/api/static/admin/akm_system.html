@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AKM System Overview - API Key Management Service</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --accent: #f093fb;
+            --dark: #1a1a2e;
+            --light: #f8f9fa;
+            --code-bg: #282c34;
+            --border: #e0e0e0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .nav {
+            background: var(--dark);
+            padding: 15px 40px;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .nav a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .nav a:hover {
+            background: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--dark);
+            margin: 30px 0 15px 0;
+            line-height: 1.3;
+        }
+
+        h1 { font-size: 2.5em; border-bottom: 3px solid var(--primary); padding-bottom: 10px; }
+        h2 { font-size: 2em; border-bottom: 2px solid var(--border); padding-bottom: 8px; margin-top: 40px; }
+        h3 { font-size: 1.5em; color: var(--primary); }
+        h4 { font-size: 1.3em; }
+
+        p {
+            margin: 15px 0;
+            line-height: 1.8;
+        }
+
+        a {
+            color: var(--primary);
+            text-decoration: none;
+            border-bottom: 1px dotted var(--primary);
+        }
+
+        a:hover {
+            color: var(--secondary);
+            border-bottom: 1px solid var(--secondary);
+        }
+
+        code {
+            background: #f4f4f4;
+            padding: 3px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #e83e8c;
+        }
+
+        pre {
+            background: var(--code-bg);
+            color: #abb2bf;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+            border-left: 4px solid var(--primary);
+        }
+
+        pre code {
+            background: none;
+            color: inherit;
+            padding: 0;
+            font-size: 0.95em;
+        }
+
+        blockquote {
+            border-left: 4px solid var(--primary);
+            padding: 15px 20px;
+            margin: 20px 0;
+            background: #f8f9fa;
+            font-style: italic;
+        }
+
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+
+        li {
+            margin: 8px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .success {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .info {
+            background: #d1ecf1;
+            border-left: 4px solid #17a2b8;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .footer {
+            background: var(--dark);
+            color: white;
+            padding: 30px 40px;
+            text-align: center;
+        }
+
+        .footer a {
+            color: var(--accent);
+            border-bottom: 1px dotted var(--accent);
+        }
+
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--primary);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            font-size: 24px;
+        }
+
+        .back-to-top:hover {
+            background: var(--secondary);
+            transform: translateY(-5px);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                border-radius: 0;
+            }
+
+            .header {
+                padding: 30px 20px;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .nav {
+                padding: 15px 20px;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            pre {
+                padding: 15px;
+                font-size: 0.85em;
+            }
+        }
+
+        /* Syntax highlighting for code blocks */
+        .codehilite .k { color: #c678dd; } /* keyword */
+        .codehilite .s { color: #98c379; } /* string */
+        .codehilite .n { color: #e06c75; } /* name */
+        .codehilite .c { color: #5c6370; font-style: italic; } /* comment */
+        .codehilite .m { color: #d19a66; } /* number */
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔐 AKM System Overview</h1>
+            <p>API Key Management Service</p>
+        </div>
+
+        <div class="nav">
+            <a href="/">🏠 Home</a>
+            <a href="/quickstart">🚀 Quick Start</a>
+            <a href="/public/guides/admnistration.html">🔐 Administration</a>
+            <a href="/docs">📚 API Docs</a>
+            <a href="/redoc">📖 ReDoc</a>
+        </div>
+
+        <div class="content">
+<h1 id="api-key-management-system-akm">API Key Management System (AKM)</h1>
+<p>Sistema completo de gerenciamento multi-tenant de API Keys com escopos, rate limiting, webhooks e alertas.</p>
+<h2 id="recursos">🚀 Recursos</h2>
+<h3 id="multi-tenant-com-projetos">Multi-tenant com Projetos</h3>
+<ul>
+<li>Isolamento completo entre projetos</li>
+<li>Múltiplas API keys por projeto</li>
+<li>Estatísticas por projeto</li>
+</ul>
+<h3 id="sistema-de-escopos-rbac">Sistema de Escopos (RBAC)</h3>
+<ul>
+<li>Permissões granulares baseadas em escopos</li>
+<li>Wildcard support (<code>akm:projects:*</code> concede read/write/delete)</li>
+<li>27 escopos padrão para todas as operações</li>
+</ul>
+<h3 id="rate-limiting-avancado">Rate Limiting Avançado</h3>
+<ul>
+<li>Múltiplos níveis: por minuto, hora, dia e mês</li>
+<li>Configuração individual por API key</li>
+<li>Tracking automático de uso</li>
+<li>Headers X-RateLimit-* nas respostas</li>
+</ul>
+<h3 id="webhooks">Webhooks</h3>
+<ul>
+<li>15 tipos de eventos predefinidos</li>
+<li>Assinaturas por webhook</li>
+<li>Delivery com retry automático e backoff exponencial</li>
+<li>HMAC-SHA256 signatures para segurança</li>
+<li>Histórico completo de entregas</li>
+</ul>
+<h3 id="sistema-de-alertas">Sistema de Alertas</h3>
+<ul>
+<li>Regras customizáveis por projeto ou API key</li>
+<li>Múltiplos tipos de alerta (rate limit, uso, segurança)</li>
+<li>Operadores: gt, gte, lt, lte, eq</li>
+<li>Cooldown period para evitar spam</li>
+<li>Disparo via webhooks</li>
+</ul>
+<h3 id="restricoes-de-configuracao">Restrições de Configuração</h3>
+<ul>
+<li>IP Whitelist com suporte a CIDR notation</li>
+<li>Time windows (horários permitidos)</li>
+<li>Rate limits customizados por key</li>
+</ul>
+<h3 id="auditoria-e-seguranca">Auditoria e Segurança</h3>
+<ul>
+<li>Audit logs de todas as operações</li>
+<li>Tracking de uso com métricas horárias</li>
+<li>Correlation IDs para rastreamento</li>
+<li>API keys hasheadas com bcrypt</li>
+</ul>
+<h2 id="estrutura-de-tabelas">📋 Estrutura de Tabelas</h2>
+<div class="codehilite"><pre><span></span><code><span class="n">akm_projects</span><span class="w">                    </span><span class="p">#</span><span class="w"> </span><span class="n">Projetos</span><span class="w"> </span><span class="n">multi</span><span class="o">-</span><span class="n">tenant</span>
+<span class="n">akm_scopes</span><span class="w">                      </span><span class="p">#</span><span class="w"> </span><span class="n">Escopos</span><span class="w"> </span><span class="n">de</span><span class="w"> </span><span class="n">permissão</span>
+<span class="n">akm_api_keys</span><span class="w">                    </span><span class="p">#</span><span class="w"> </span><span class="n">API</span><span class="w"> </span><span class="n">keys</span>
+<span class="n">akm_api_key_scopes</span><span class="w">              </span><span class="p">#</span><span class="w"> </span><span class="n">Associação</span><span class="w"> </span><span class="n">key</span><span class="o">-</span><span class="n">scope</span><span class="w"> </span><span class="p">(</span><span class="nl">N:</span><span class="n">N</span><span class="p">)</span>
+<span class="n">akm_api_key_configs</span><span class="w">             </span><span class="p">#</span><span class="w"> </span><span class="n">Configurações</span><span class="w"> </span><span class="n">por</span><span class="w"> </span><span class="n">key</span>
+<span class="n">akm_rate_limit_buckets</span><span class="w">          </span><span class="p">#</span><span class="w"> </span><span class="n">Buckets</span><span class="w"> </span><span class="n">para</span><span class="w"> </span><span class="n">rate</span><span class="w"> </span><span class="n">limiting</span>
+<span class="n">akm_usage_metrics</span><span class="w">               </span><span class="p">#</span><span class="w"> </span><span class="n">Métricas</span><span class="w"> </span><span class="n">agregadas</span><span class="w"> </span><span class="n">por</span><span class="w"> </span><span class="n">hora</span>
+<span class="n">akm_webhooks</span><span class="w">                    </span><span class="p">#</span><span class="w"> </span><span class="n">Webhooks</span>
+<span class="n">akm_webhook_events</span><span class="w">              </span><span class="p">#</span><span class="w"> </span><span class="n">Tipos</span><span class="w"> </span><span class="n">de</span><span class="w"> </span><span class="n">eventos</span>
+<span class="n">akm_webhook_subscriptions</span><span class="w">       </span><span class="p">#</span><span class="w"> </span><span class="n">Assinaturas</span><span class="w"> </span><span class="n">de</span><span class="w"> </span><span class="n">webhooks</span>
+<span class="n">akm_webhook_deliveries</span><span class="w">          </span><span class="p">#</span><span class="w"> </span><span class="n">Histórico</span><span class="w"> </span><span class="n">de</span><span class="w"> </span><span class="n">entregas</span>
+<span class="n">akm_alert_rules</span><span class="w">                 </span><span class="p">#</span><span class="w"> </span><span class="n">Regras</span><span class="w"> </span><span class="n">de</span><span class="w"> </span><span class="n">alerta</span>
+<span class="n">akm_alert_history</span><span class="w">               </span><span class="p">#</span><span class="w"> </span><span class="n">Histórico</span><span class="w"> </span><span class="n">de</span><span class="w"> </span><span class="n">alertas</span>
+<span class="n">akm_audit_logs</span><span class="w">                  </span><span class="p">#</span><span class="w"> </span><span class="n">Logs</span><span class="w"> </span><span class="n">de</span><span class="w"> </span><span class="n">auditoria</span>
+</code></pre></div>
+
+<h2 id="setup">🛠️ Setup</h2>
+<h3 id="1-executar-setup-completo">1. Executar Setup Completo</h3>
+<div class="codehilite"><pre><span></span><code>python<span class="w"> </span>scripts/setup_akm.py
+</code></pre></div>
+
+<p>Este script:
+- ✅ Roda migrations do Alembic (cria todas as tabelas)
+- ✅ Seeda 15 tipos de webhook events
+- ✅ Seeda 27 escopos padrão
+- ✅ Cria projeto admin
+- ✅ Cria API key admin com escopo <code>akm:*</code></p>
+<p><strong>IMPORTANTE:</strong> Salve a API key admin exibida - ela não será mostrada novamente!</p>
+<h3 id="2-adicionar-ao-env">2. Adicionar ao .env</h3>
+<div class="codehilite"><pre><span></span><code>ADMIN_API_KEY=akm_xxxxxxxxxxxxxxxxxxxxx
+</code></pre></div>
+
+<h3 id="3-iniciar-aplicacao">3. Iniciar Aplicação</h3>
+<div class="codehilite"><pre><span></span><code>uvicorn<span class="w"> </span>main:app<span class="w"> </span>--reload
+</code></pre></div>
+
+<h2 id="api-endpoints">📚 API Endpoints</h2>
+<p>Todos os endpoints AKM estão sob o prefixo <code>/akm</code>:</p>
+<h3 id="projects-akmprojects">Projects (<code>/akm/projects</code>)</h3>
+<div class="codehilite"><pre><span></span><code><span class="err">POST   /akm/projects              # Criar projeto (scope: akm:projects:write)</span>
+<span class="err">GET    /akm/projects              # Listar projetos (scope: akm:projects:read)</span>
+<span class="err">GET    /akm/projects/{id}         # Obter projeto com stats (scope: akm:projects:read)</span>
+<span class="err">PUT    /akm/projects/{id}         # Atualizar projeto (scope: akm:projects:write)</span>
+<span class="err">DELETE /akm/projects/{id}         # Deletar projeto (scope: akm:projects:delete)</span>
+</code></pre></div>
+
+<h3 id="api-keys-akmkeys">API Keys (<code>/akm/keys</code>)</h3>
+<div class="codehilite"><pre><span></span><code><span class="err">POST   /akm/keys                  # Criar key (scope: akm:keys:write)</span>
+<span class="err">GET    /akm/keys                  # Listar keys (scope: akm:keys:read)</span>
+<span class="err">GET    /akm/keys/{id}             # Obter key detalhada (scope: akm:keys:read)</span>
+<span class="err">PUT    /akm/keys/{id}             # Atualizar metadata (scope: akm:keys:write)</span>
+<span class="err">PUT    /akm/keys/{id}/scopes      # Atualizar escopos (scope: akm:keys:write)</span>
+<span class="err">DELETE /akm/keys/{id}             # Deletar permanentemente (scope: akm:keys:delete)</span>
+<span class="err">POST   /akm/keys/{id}/revoke      # Revogar/desativar (scope: akm:keys:write)</span>
+</code></pre></div>
+
+<h3 id="scopes-akmscopes">Scopes (<code>/akm/scopes</code>)</h3>
+<div class="codehilite"><pre><span></span><code><span class="err">POST   /akm/scopes                # Criar escopo (scope: akm:scopes:write)</span>
+<span class="err">GET    /akm/scopes                # Listar escopos (scope: akm:scopes:read)</span>
+<span class="err">GET    /akm/scopes/{name}         # Obter escopo (scope: akm:scopes:read)</span>
+<span class="err">PUT    /akm/scopes/{name}         # Atualizar escopo (scope: akm:scopes:write)</span>
+<span class="err">DELETE /akm/scopes/{name}         # Deletar escopo (scope: akm:scopes:delete)</span>
+</code></pre></div>
+
+<h3 id="webhooks-akmwebhooks">Webhooks (<code>/akm/webhooks</code>)</h3>
+<div class="codehilite"><pre><span></span><code><span class="err">POST   /akm/webhooks                           # Criar webhook (scope: akm:webhooks:write)</span>
+<span class="err">GET    /akm/webhooks                           # Listar webhooks (scope: akm:webhooks:read)</span>
+<span class="err">GET    /akm/webhooks/{id}                      # Obter webhook (scope: akm:webhooks:read)</span>
+<span class="err">PUT    /akm/webhooks/{id}                      # Atualizar webhook (scope: akm:webhooks:write)</span>
+<span class="err">DELETE /akm/webhooks/{id}                      # Deletar webhook (scope: akm:webhooks:delete)</span>
+<span class="err">POST   /akm/webhooks/{id}/subscriptions/{type} # Inscrever em evento (scope: akm:webhooks:write)</span>
+<span class="err">DELETE /akm/webhooks/{id}/subscriptions/{type} # Desinscrever (scope: akm:webhooks:write)</span>
+<span class="err">GET    /akm/webhooks/events/types              # Listar tipos de eventos (scope: akm:webhooks:read)</span>
+<span class="err">GET    /akm/webhooks/{id}/deliveries           # Listar entregas (scope: akm:webhooks:read)</span>
+<span class="err">GET    /akm/webhooks/deliveries/{id}           # Obter entrega (scope: akm:webhooks:read)</span>
+<span class="err">POST   /akm/webhooks/deliveries/{id}/retry     # Retentar entrega (scope: akm:webhooks:write)</span>
+</code></pre></div>
+
+<h3 id="configs-akmkeysid">Configs (<code>/akm/keys/{id}/...</code>)</h3>
+<div class="codehilite"><pre><span></span><code><span class="err">GET    /akm/keys/{id}/config      # Obter configuração (scope: akm:keys:read)</span>
+<span class="err">PUT    /akm/keys/{id}/config      # Atualizar configuração (scope: akm:keys:write)</span>
+<span class="err">DELETE /akm/keys/{id}/config      # Resetar configuração (scope: akm:keys:write)</span>
+<span class="err">GET    /akm/keys/{id}/usage       # Obter estatísticas de uso (scope: akm:keys:read)</span>
+</code></pre></div>
+
+<h3 id="alerts-akmalerts">Alerts (<code>/akm/alerts</code>)</h3>
+<div class="codehilite"><pre><span></span><code><span class="err">POST   /akm/alerts/rules          # Criar regra (scope: akm:alerts:write)</span>
+<span class="err">GET    /akm/alerts/rules          # Listar regras (scope: akm:alerts:read)</span>
+<span class="err">GET    /akm/alerts/rules/{id}     # Obter regra (scope: akm:alerts:read)</span>
+<span class="err">PUT    /akm/alerts/rules/{id}     # Atualizar regra (scope: akm:alerts:write)</span>
+<span class="err">DELETE /akm/alerts/rules/{id}     # Deletar regra (scope: akm:alerts:delete)</span>
+<span class="err">GET    /akm/alerts/history        # Listar histórico (scope: akm:alerts:read)</span>
+<span class="err">GET    /akm/alerts/history/{id}   # Obter item do histórico (scope: akm:alerts:read)</span>
+<span class="err">GET    /akm/alerts/stats          # Obter estatísticas (scope: akm:alerts:read)</span>
+</code></pre></div>
+
+<h2 id="autenticacao">🔐 Autenticação</h2>
+<p>Todas as rotas AKM requerem autenticação via header:</p>
+<div class="codehilite"><pre><span></span><code><span class="err">X-API-Key: akm_xxxxxxxxxxxxxxxxxxxxx</span>
+</code></pre></div>
+
+<p>A API key deve ter os escopos necessários para a operação desejada.</p>
+<h2 id="exemplos-de-uso">📝 Exemplos de Uso</h2>
+<h3 id="1-criar-um-projeto">1. Criar um Projeto</h3>
+<div class="codehilite"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8000/akm/projects<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: </span><span class="nv">$ADMIN_API_KEY</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{</span>
+<span class="s1">    &quot;name&quot;: &quot;My Application&quot;,</span>
+<span class="s1">    &quot;description&quot;: &quot;Production application API keys&quot;</span>
+<span class="s1">  }&#39;</span>
+</code></pre></div>
+
+<h3 id="2-criar-api-key-com-escopos">2. Criar API Key com Escopos</h3>
+<div class="codehilite"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8000/akm/keys<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: </span><span class="nv">$ADMIN_API_KEY</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{</span>
+<span class="s1">    &quot;project_id&quot;: 1,</span>
+<span class="s1">    &quot;name&quot;: &quot;Frontend App Key&quot;,</span>
+<span class="s1">    &quot;description&quot;: &quot;Key for React frontend&quot;,</span>
+<span class="s1">    &quot;scope_names&quot;: [&quot;akm:projects:read&quot;, &quot;akm:keys:read&quot;],</span>
+<span class="s1">    &quot;expires_at&quot;: &quot;2025-12-31T23:59:59Z&quot;</span>
+<span class="s1">  }&#39;</span>
+</code></pre></div>
+
+<p><strong>IMPORTANTE:</strong> A resposta contém o campo <code>key</code> com a chave em plain text. Este é o único momento em que a chave é mostrada!</p>
+<h3 id="3-configurar-rate-limits">3. Configurar Rate Limits</h3>
+<div class="codehilite"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>PUT<span class="w"> </span>http://localhost:8000/akm/keys/2/config<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: </span><span class="nv">$ADMIN_API_KEY</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{</span>
+<span class="s1">    &quot;rate_limit_per_minute&quot;: 60,</span>
+<span class="s1">    &quot;rate_limit_per_hour&quot;: 1000,</span>
+<span class="s1">    &quot;rate_limit_per_day&quot;: 10000,</span>
+<span class="s1">    &quot;rate_limit_per_month&quot;: 300000</span>
+<span class="s1">  }&#39;</span>
+</code></pre></div>
+
+<h3 id="4-adicionar-ip-whitelist">4. Adicionar IP Whitelist</h3>
+<div class="codehilite"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>PUT<span class="w"> </span>http://localhost:8000/akm/keys/2/config<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: </span><span class="nv">$ADMIN_API_KEY</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{</span>
+<span class="s1">    &quot;allowed_ips&quot;: [&quot;192.168.1.0/24&quot;, &quot;10.0.0.5&quot;]</span>
+<span class="s1">  }&#39;</span>
+</code></pre></div>
+
+<h3 id="5-criar-webhook">5. Criar Webhook</h3>
+<div class="codehilite"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8000/akm/webhooks<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: </span><span class="nv">$ADMIN_API_KEY</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{</span>
+<span class="s1">    &quot;project_id&quot;: 1,</span>
+<span class="s1">    &quot;url&quot;: &quot;https://myapp.com/webhooks/akm&quot;,</span>
+<span class="s1">    &quot;secret&quot;: &quot;your-webhook-secret&quot;,</span>
+<span class="s1">    &quot;is_active&quot;: true</span>
+<span class="s1">  }&#39;</span>
+</code></pre></div>
+
+<h3 id="6-inscrever-webhook-em-eventos">6. Inscrever Webhook em Eventos</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Inscrever em rate limit reached</span>
+curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8000/akm/webhooks/1/subscriptions/rate_limit_reached<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: </span><span class="nv">$ADMIN_API_KEY</span><span class="s2">&quot;</span>
+
+<span class="c1"># Inscrever em daily limit warning</span>
+curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8000/akm/webhooks/1/subscriptions/daily_limit_warning<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: </span><span class="nv">$ADMIN_API_KEY</span><span class="s2">&quot;</span>
+</code></pre></div>
+
+<h3 id="7-criar-regra-de-alerta">7. Criar Regra de Alerta</h3>
+<div class="codehilite"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8000/akm/alerts/rules<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: </span><span class="nv">$ADMIN_API_KEY</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{</span>
+<span class="s1">    &quot;project_id&quot;: 1,</span>
+<span class="s1">    &quot;alert_type&quot;: &quot;usage_threshold&quot;,</span>
+<span class="s1">    &quot;condition_metric&quot;: &quot;daily_usage_percent&quot;,</span>
+<span class="s1">    &quot;condition_operator&quot;: &quot;gte&quot;,</span>
+<span class="s1">    &quot;condition_threshold&quot;: 80.0,</span>
+<span class="s1">    &quot;webhook_event_type&quot;: &quot;daily_limit_warning&quot;,</span>
+<span class="s1">    &quot;cooldown_minutes&quot;: 60,</span>
+<span class="s1">    &quot;is_active&quot;: true</span>
+<span class="s1">  }&#39;</span>
+</code></pre></div>
+
+<h3 id="8-verificar-uso-da-api-key">8. Verificar Uso da API Key</h3>
+<div class="codehilite"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>GET<span class="w"> </span><span class="s2">&quot;http://localhost:8000/akm/keys/2/usage?start_date=2025-11-01T00:00:00Z&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: </span><span class="nv">$ADMIN_API_KEY</span><span class="s2">&quot;</span>
+</code></pre></div>
+
+<h2 id="tipos-de-webhook-events">🎯 Tipos de Webhook Events</h2>
+<div class="codehilite"><pre><span></span><code><span class="n">rate_limit_reached</span><span class="w">          </span><span class="p">#</span><span class="w"> </span><span class="n">Rate</span><span class="w"> </span><span class="n">limit</span><span class="w"> </span><span class="n">per</span><span class="w"> </span><span class="n">minute</span><span class="o">/</span><span class="n">hour</span><span class="w"> </span><span class="n">atingido</span>
+<span class="n">daily_limit_reached</span><span class="w">         </span><span class="p">#</span><span class="w"> </span><span class="n">Limite</span><span class="w"> </span><span class="n">diário</span><span class="w"> </span><span class="n">atingido</span>
+<span class="n">monthly_limit_reached</span><span class="w">       </span><span class="p">#</span><span class="w"> </span><span class="n">Limite</span><span class="w"> </span><span class="n">mensal</span><span class="w"> </span><span class="n">atingido</span>
+<span class="n">daily_limit_warning</span><span class="w">         </span><span class="p">#</span><span class="w"> </span><span class="mh">80</span><span class="o">%</span><span class="w"> </span><span class="k">do</span><span class="w"> </span><span class="n">limite</span><span class="w"> </span><span class="n">diário</span><span class="w"> </span><span class="n">atingido</span>
+<span class="n">monthly_limit_warning</span><span class="w">       </span><span class="p">#</span><span class="w"> </span><span class="mh">80</span><span class="o">%</span><span class="w"> </span><span class="k">do</span><span class="w"> </span><span class="n">limite</span><span class="w"> </span><span class="n">mensal</span><span class="w"> </span><span class="n">atingido</span>
+<span class="n">api_key_created</span><span class="w">             </span><span class="p">#</span><span class="w"> </span><span class="n">Nova</span><span class="w"> </span><span class="n">API</span><span class="w"> </span><span class="n">key</span><span class="w"> </span><span class="n">criada</span>
+<span class="n">api_key_revoked</span><span class="w">             </span><span class="p">#</span><span class="w"> </span><span class="n">API</span><span class="w"> </span><span class="n">key</span><span class="w"> </span><span class="n">revogada</span>
+<span class="n">api_key_deleted</span><span class="w">             </span><span class="p">#</span><span class="w"> </span><span class="n">API</span><span class="w"> </span><span class="n">key</span><span class="w"> </span><span class="n">deletada</span>
+<span class="n">api_key_config_changed</span><span class="w">      </span><span class="p">#</span><span class="w"> </span><span class="n">Configuração</span><span class="w"> </span><span class="n">de</span><span class="w"> </span><span class="n">key</span><span class="w"> </span><span class="n">alterada</span>
+<span class="n">suspicious_activity</span><span class="w">         </span><span class="p">#</span><span class="w"> </span><span class="n">Atividade</span><span class="w"> </span><span class="n">suspeita</span><span class="w"> </span><span class="p">(</span><span class="n">IP</span><span class="o">/</span><span class="kt">time</span><span class="w"> </span><span class="n">violation</span><span class="p">)</span>
+<span class="n">project_created</span><span class="w">             </span><span class="p">#</span><span class="w"> </span><span class="n">Novo</span><span class="w"> </span><span class="n">projeto</span><span class="w"> </span><span class="n">criado</span>
+<span class="n">project_deleted</span><span class="w">             </span><span class="p">#</span><span class="w"> </span><span class="n">Projeto</span><span class="w"> </span><span class="n">deletado</span>
+<span class="n">alert_triggered</span><span class="w">             </span><span class="p">#</span><span class="w"> </span><span class="n">Regra</span><span class="w"> </span><span class="n">de</span><span class="w"> </span><span class="n">alerta</span><span class="w"> </span><span class="n">disparada</span>
+<span class="n">webhook_delivery_failed</span><span class="w">     </span><span class="p">#</span><span class="w"> </span><span class="n">Entrega</span><span class="w"> </span><span class="n">de</span><span class="w"> </span><span class="n">webhook</span><span class="w"> </span><span class="n">falhou</span>
+<span class="n">scope_violation</span><span class="w">             </span><span class="p">#</span><span class="w"> </span><span class="n">Tentativa</span><span class="w"> </span><span class="n">de</span><span class="w"> </span><span class="n">acesso</span><span class="w"> </span><span class="n">sem</span><span class="w"> </span><span class="n">escopo</span>
+</code></pre></div>
+
+<h2 id="wildcard-scopes">🔍 Wildcard Scopes</h2>
+<p>O sistema suporta wildcards para escopos hierárquicos:</p>
+<div class="codehilite"><pre><span></span><code>akm:*                    # Acesso total ao sistema
+akm:projects:*           # Todos os escopos de projects (read/write/delete)
+akm:keys:*               # Todos os escopos de keys
+akm:webhooks:*           # Todos os escopos de webhooks
+akm:alerts:*             # Todos os escopos de alerts
+akm:admin:*              # Todos os escopos de admin
+</code></pre></div>
+
+<h2 id="seguranca">🛡️ Segurança</h2>
+<ul>
+<li><strong>API Keys hasheadas:</strong> Bcrypt com salt</li>
+<li><strong>Webhook signatures:</strong> HMAC-SHA256 com secret</li>
+<li><strong>IP Whitelist:</strong> Suporte a CIDR notation</li>
+<li><strong>Time restrictions:</strong> Janelas de horário permitido</li>
+<li><strong>Scope-based RBAC:</strong> Controle granular de permissões</li>
+<li><strong>Audit logs:</strong> Tracking completo de operações</li>
+</ul>
+<h2 id="rate-limiting-headers">📊 Rate Limiting Headers</h2>
+<p>Toda resposta de endpoints protegidos inclui headers de rate limiting:</p>
+<div class="codehilite"><pre><span></span><code><span class="err">X-RateLimit-Limit: 1000</span>
+<span class="err">X-RateLimit-Remaining: 873</span>
+<span class="err">X-RateLimit-Reset: 1732137600</span>
+</code></pre></div>
+
+<h2 id="testing">🧪 Testing</h2>
+<p>Após o setup, teste os endpoints:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Health check</span>
+curl<span class="w"> </span>http://localhost:8000/health
+
+<span class="c1"># Listar projetos (com admin key)</span>
+curl<span class="w"> </span>http://localhost:8000/akm/projects<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: </span><span class="nv">$ADMIN_API_KEY</span><span class="s2">&quot;</span>
+
+<span class="c1"># Ver documentação interativa</span>
+open<span class="w"> </span>http://localhost:8000/docs
+</code></pre></div>
+
+<h2 id="documentacao-api">📖 Documentação API</h2>
+<ul>
+<li><strong>Swagger UI:</strong> http://localhost:8000/docs</li>
+<li><strong>ReDoc:</strong> http://localhost:8000/redoc</li>
+</ul>
+<h2 id="workflow-tipico">🔄 Workflow Típico</h2>
+<ol>
+<li><strong>Criar Projeto</strong> para seu aplicativo</li>
+<li><strong>Criar API Keys</strong> para diferentes ambientes (dev/prod)</li>
+<li><strong>Configurar Escopos</strong> específicos para cada key</li>
+<li><strong>Definir Rate Limits</strong> apropriados</li>
+<li><strong>Configurar Webhooks</strong> para notificações</li>
+<li><strong>Criar Alertas</strong> para monitoramento proativo</li>
+<li><strong>Monitorar Uso</strong> via endpoints de stats</li>
+</ol>
+<h2 id="troubleshooting">🚨 Troubleshooting</h2>
+<h3 id="api-key-nao-funciona">API Key não funciona</h3>
+<ul>
+<li>Verifique se a key está ativa (<code>is_active=True</code>)</li>
+<li>Verifique se não expirou (<code>expires_at</code>)</li>
+<li>Verifique se tem os escopos necessários</li>
+<li>Verifique IP whitelist e time restrictions</li>
+</ul>
+<h3 id="rate-limit-atingido">Rate limit atingido</h3>
+<ul>
+<li>Verifique configuração em <code>/keys/{id}/config</code></li>
+<li>Verifique uso atual em <code>/keys/{id}/usage</code></li>
+<li>Aguarde o reset (veja header <code>X-RateLimit-Reset</code>)</li>
+</ul>
+<h3 id="webhook-nao-entrega">Webhook não entrega</h3>
+<ul>
+<li>Verifique se webhook está ativo</li>
+<li>Verifique se está inscrito no evento</li>
+<li>Verifique logs em <code>/webhooks/{id}/deliveries</code></li>
+<li>Verifique URL e secret</li>
+</ul>
+<h2 id="license">📝 License</h2>
+<p>MIT License</p>
+        </div>
+
+        <div class="footer">
+            <p>Built with ❤️ using FastAPI, PostgreSQL, and SQLAlchemy</p>
+            <p style="margin-top: 10px;">© 2025 API Key Management Service by <a href="https://github.com/ideiasfactory" target="_blank">Ideias Factory</a></p>
+        </div>
+    </div>
+
+    <a href="#" class="back-to-top">↑</a>
+
+    <script>
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        // Back to top button
+        const backToTop = document.querySelector('.back-to-top');
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTop.style.display = 'flex';
+            } else {
+                backToTop.style.display = 'none';
+            }
+        });
+
+        backToTop.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    </script>
+</body>
+</html>

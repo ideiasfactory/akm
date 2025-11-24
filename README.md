@@ -190,7 +190,7 @@ Once the server is running, access:
 ### User Guides (Web Interface)
 
 - **[Quick Start Guide](https://your-domain.com/quickstart)** - Get started with AKM in minutes
-- **[Administration Guide](https://your-domain.com/administration)** - Admin deployment and management
+- **[Administration Guide](https://your-domain.com/public/guides/admnistration.html)** - Admin deployment and management
 - **[Authentication Guide](https://your-domain.com/authentication)** - Authentication patterns and security
 - **[API Key Management](https://your-domain.com/api-key-management)** - Managing API keys and scopes
 - **[API Versioning](https://your-domain.com/api-versioning)** - Version management strategies
@@ -352,49 +352,62 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 > **Note**: Interactive HTML versions of key guides are available through the web interface at `https://your-domain.com/` when the service is running.
 
-### Core System Guides
+### 🚀 Quick Start & Guides
 
-- **[AKM_SYSTEM.md](docs/AKM_SYSTEM.md)** - Complete AKM system overview with multi-tenancy, scopes, rate limiting, webhooks, and alerts
+- **[DEVELOPER_GUIDE.md](docs/DEVELOPER_GUIDE.md)** ⭐ - **Complete developer guide** with authentication, scopes, webhooks, configuration, alerts, and sensitive data
 - **[AUTHENTICATION.md](docs/AUTHENTICATION.md)** - API authentication guide with security features and usage examples
 - **[API_KEY_MANAGEMENT.md](docs/API_KEY_MANAGEMENT.md)** - Security best practices, key rotation, and incident response
 
-### Architecture & Design
+### 📖 Feature Documentation
 
+#### Scopes & Permissions
+
+- **[SCOPES_BULK_INSERT.md](docs/SCOPES_BULK_INSERT.md)** - Bulk scope import with JSON/file upload and OpenAPI generation
+- **[OPENAPI_SCOPE_GENERATION.md](docs/OPENAPI_SCOPE_GENERATION.md)** - Automatic scope generation from OpenAPI specifications
+- **[BULK_SCOPES.md](docs/BULK_SCOPES.md)** - Bulk scope import system with JSON validation
+- **[BULK_SCOPES_EXAMPLES.md](docs/BULK_SCOPES_EXAMPLES.md)** - Practical examples for bulk scope import
+
+#### Webhooks & Events
+
+- **[WEBHOOKS.md](docs/WEBHOOKS.md)** - Complete webhooks guide: registration, events, security, and delivery
+- **[ALERTS.md](docs/ALERTS.md)** - Automated alerts for rate limits, security violations, and system events
+
+#### Configuration Management
+
+- **[CONFIGURATION_GUIDE.md](docs/CONFIGURATION_GUIDE.md)** - Project vs API Key configuration with priority hierarchy
+- **[ENVIRONMENT.md](docs/ENVIRONMENT.md)** - Environment variables and configuration management
+
+#### Data Protection & Audit
+
+- **[SENSITIVE_FIELDS.md](docs/SENSITIVE_FIELDS.md)** - Dynamic sensitive field sanitization system with database configuration
+- **[SENSITIVE_FIELDS_USAGE.md](docs/SENSITIVE_FIELDS_USAGE.md)** - Global vs project-specific sensitive fields usage guide
+- **[SENSITIVE_FIELDS_IMPLEMENTATION_SUMMARY.md](docs/SENSITIVE_FIELDS_IMPLEMENTATION_SUMMARY.md)** - Sensitive fields implementation details
+- **[AUDIT_SYSTEM.md](docs/AUDIT_SYSTEM.md)** - Complete audit logging with cryptographic integrity and correlation tracking
+- **[AUDIT_IMPLEMENTATION_SUMMARY.md](docs/AUDIT_IMPLEMENTATION_SUMMARY.md)** - Audit system implementation details
+- **[AUDIT_QUICK_START.md](docs/AUDIT_QUICK_START.md)** - Quick start guide for audit logging
+
+### 🏗️ Architecture & Design
+
+- **[AKM_SYSTEM.md](docs/AKM_SYSTEM.md)** - Complete AKM system overview with multi-tenancy, scopes, rate limiting, webhooks, and alerts
 - **[ARCHITECTURE_ISSUES_AND_IMPROVEMENTS.md](docs/ARCHITECTURE_ISSUES_AND_IMPROVEMENTS.md)** - Multi-tenant architecture analysis and migration strategy
 - **[MIGRATION.md](docs/MIGRATION.md)** - Database migration management with Alembic
 
-### Features & Modules
-
-- **[AUDIT_SYSTEM.md](docs/AUDIT_SYSTEM.md)** - Complete audit logging with cryptographic integrity and correlation tracking
-- **[SENSITIVE_FIELDS.md](docs/SENSITIVE_FIELDS.md)** - Dynamic sensitive field sanitization system with database configuration
-- **[SENSITIVE_FIELDS_USAGE.md](docs/SENSITIVE_FIELDS_USAGE.md)** - Global vs project-specific sensitive fields usage guide
-- **[BULK_SCOPES.md](docs/BULK_SCOPES.md)** - Bulk scope import system with JSON validation
-- **[OPENAPI_SCOPE_GENERATION.md](docs/OPENAPI_SCOPE_GENERATION.md)** - Automatic scope generation from OpenAPI specifications
-
-### Operations & Deployment
+### 🔧 Operations & Deployment
 
 - **[DEPLOYMENT.md](docs/DEPLOYMENT.md)** - Vercel deployment guide with CI/CD configuration
-- **[ENVIRONMENT.md](docs/ENVIRONMENT.md)** - Environment variables and configuration management
 - **[LOGGING.md](docs/LOGGING.md)** - Structured logging with BetterStack integration
 - **[LOGGING_INSTRUMENTATION.md](docs/LOGGING_INSTRUMENTATION.md)** - Advanced logging instrumentation patterns
 - **[TESTING.md](docs/TESTING.md)** - Testing guide with pytest, coverage, and CI/CD
 
-### GitHub Integration
+### 🔐 GitHub Integration & CI/CD
 
 - **[GITHUB_SECRETS_SETUP.md](docs/GITHUB_SECRETS_SETUP.md)** - GitHub secrets configuration for CI/CD
 - **[GIT_ACTIONS_SECRETS_BESTPRACTICES.md](docs/GIT_ACTIONS_SECRETS_BESTPRACTICES.md)** - Security best practices for GitHub Actions
 
-### Implementation Summaries
+### 📝 Summaries & Examples
 
-- **[AUDIT_IMPLEMENTATION_SUMMARY.md](docs/AUDIT_IMPLEMENTATION_SUMMARY.md)** - Audit system implementation details
-- **[AUDIT_QUICK_START.md](docs/AUDIT_QUICK_START.md)** - Quick start guide for audit logging
 - **[AUTHENTICATION_SUMMARY.md](docs/AUTHENTICATION_SUMMARY.md)** - Authentication implementation summary
-- **[SENSITIVE_FIELDS_IMPLEMENTATION_SUMMARY.md](docs/SENSITIVE_FIELDS_IMPLEMENTATION_SUMMARY.md)** - Sensitive fields implementation details
 - **[REFACTORING_SUMMARY.md](docs/REFACTORING_SUMMARY.md)** - Project refactoring history and changes
-
-### Examples & Tutorials
-
-- **[BULK_SCOPES_EXAMPLES.md](docs/BULK_SCOPES_EXAMPLES.md)** - Practical examples for bulk scope import
 - **[OPENAPI_EXAMPLES.md](docs/OPENAPI_EXAMPLES.md)** - Real-world OpenAPI scope generation examples
 
 ## 💡 Use Cases
@@ -447,4 +460,4 @@ For issues and questions:
 
 ---
 
-Built with ❤️ using FastAPI and Python
+Built with ❤️ by Ideias Factory using FastAPI and Python

@@ -177,10 +177,32 @@ async def bulk_upsert_scopes(
     api_key: AKMAPIKey = Depends(PermissionChecker(["akm:scopes:write"])),
     session: AsyncSession = Depends(get_session)
 ):
-    """Bulk upsert scopes from JSON data for a project
+    """📦 Bulk upsert scopes from JSON data for a project
     
     Creates new scopes or updates existing ones based on scope_name.
     Validates against JSON schema before processing.
+    
+    **Features:**
+    - Create or update multiple scopes in a single request
+    - Automatic validation against schema
+    - Detailed result with created/updated/skipped counts
+    - Error reporting per scope
+    
+    **Example JSON:**
+    ```json
+    {
+      "scopes": [
+        {
+          "scope_name": "akm:users:read",
+          "description": "Read user data",
+          "resource_type": "users",
+          "action": "read"
+        }
+      ]
+    }
+    ```
+    
+    📚 **[Full Documentation & Examples](https://github.com/ideiasfactory/akm/blob/main/docs/SCOPES_BULK_INSERT.md)**
     """
     # Verify project exists
     project = await project_repository.get_by_id(session, project_id)
@@ -214,9 +236,14 @@ async def bulk_upsert_scopes_from_file(
     api_key: AKMAPIKey = Depends(PermissionChecker(["akm:scopes:write"])),
     session: AsyncSession = Depends(get_session)
 ):
-    """Bulk upsert scopes from uploaded JSON file for a project
+    """📄 Bulk upsert scopes from uploaded JSON file for a project
     
-    Uploads a JSON file with scopes structure and validates against schema.
+    Upload a JSON file with scopes structure and validate against schema.
+    Useful for importing large scope configurations.
+    
+    **File Format:** Same JSON structure as the bulk endpoint
+    
+    📚 **[Full Documentation & Examples](https://github.com/ideiasfactory/akm/blob/main/docs/SCOPES_BULK_INSERT.md)**
     """
     # Verify project exists
     project = await project_repository.get_by_id(session, project_id)

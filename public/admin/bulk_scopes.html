@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bulk Scopes - API Key Management Service</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --accent: #f093fb;
+            --dark: #1a1a2e;
+            --light: #f8f9fa;
+            --code-bg: #282c34;
+            --border: #e0e0e0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .nav {
+            background: var(--dark);
+            padding: 15px 40px;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .nav a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .nav a:hover {
+            background: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--dark);
+            margin: 30px 0 15px 0;
+            line-height: 1.3;
+        }
+
+        h1 { font-size: 2.5em; border-bottom: 3px solid var(--primary); padding-bottom: 10px; }
+        h2 { font-size: 2em; border-bottom: 2px solid var(--border); padding-bottom: 8px; margin-top: 40px; }
+        h3 { font-size: 1.5em; color: var(--primary); }
+        h4 { font-size: 1.3em; }
+
+        p {
+            margin: 15px 0;
+            line-height: 1.8;
+        }
+
+        a {
+            color: var(--primary);
+            text-decoration: none;
+            border-bottom: 1px dotted var(--primary);
+        }
+
+        a:hover {
+            color: var(--secondary);
+            border-bottom: 1px solid var(--secondary);
+        }
+
+        code {
+            background: #f4f4f4;
+            padding: 3px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #e83e8c;
+        }
+
+        pre {
+            background: var(--code-bg);
+            color: #abb2bf;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+            border-left: 4px solid var(--primary);
+        }
+
+        pre code {
+            background: none;
+            color: inherit;
+            padding: 0;
+            font-size: 0.95em;
+        }
+
+        blockquote {
+            border-left: 4px solid var(--primary);
+            padding: 15px 20px;
+            margin: 20px 0;
+            background: #f8f9fa;
+            font-style: italic;
+        }
+
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+
+        li {
+            margin: 8px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .success {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .info {
+            background: #d1ecf1;
+            border-left: 4px solid #17a2b8;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .footer {
+            background: var(--dark);
+            color: white;
+            padding: 30px 40px;
+            text-align: center;
+        }
+
+        .footer a {
+            color: var(--accent);
+            border-bottom: 1px dotted var(--accent);
+        }
+
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--primary);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            font-size: 24px;
+        }
+
+        .back-to-top:hover {
+            background: var(--secondary);
+            transform: translateY(-5px);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                border-radius: 0;
+            }
+
+            .header {
+                padding: 30px 20px;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .nav {
+                padding: 15px 20px;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            pre {
+                padding: 15px;
+                font-size: 0.85em;
+            }
+        }
+
+        /* Syntax highlighting for code blocks */
+        .codehilite .k { color: #c678dd; } /* keyword */
+        .codehilite .s { color: #98c379; } /* string */
+        .codehilite .n { color: #e06c75; } /* name */
+        .codehilite .c { color: #5c6370; font-style: italic; } /* comment */
+        .codehilite .m { color: #d19a66; } /* number */
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔐 Bulk Scopes</h1>
+            <p>API Key Management Service</p>
+        </div>
+
+        <div class="nav">
+            <a href="/">🏠 Home</a>
+            <a href="/quickstart">🚀 Quick Start</a>
+            <a href="/public/guides/admnistration.html">🔐 Administration</a>
+            <a href="/docs">📚 API Docs</a>
+            <a href="/redoc">📖 ReDoc</a>
+        </div>
+
+        <div class="content">
+<h1 id="bulk-scopes-management">Bulk Scopes Management</h1>
+<p>Sistema de gerenciamento em lote (bulk) de escopos com validação via JSON Schema.</p>
+<h2 id="estrutura-de-arquivos">📋 Estrutura de Arquivos</h2>
+<div class="codehilite"><pre><span></span><code><span class="n">data</span><span class="o">/</span>
+<span class="w">  </span><span class="err">├──</span><span class="w"> </span><span class="n">scopes</span><span class="o">.</span><span class="n">json</span><span class="w">          </span><span class="c1"># Definição completa dos escopos do sistema</span>
+<span class="w">  </span><span class="err">└──</span><span class="w"> </span><span class="n">scopes_schema</span><span class="o">.</span><span class="n">json</span><span class="w">   </span><span class="c1"># JSON Schema para validação</span>
+
+<span class="n">scripts</span><span class="o">/</span>
+<span class="w">  </span><span class="err">└──</span><span class="w"> </span><span class="n">import_scopes</span><span class="o">.</span><span class="n">py</span><span class="w">     </span><span class="c1"># Script CLI para importação em lote</span>
+
+<span class="n">src</span><span class="o">/</span><span class="n">api</span><span class="o">/</span>
+<span class="w">  </span><span class="err">├──</span><span class="w"> </span><span class="n">models</span><span class="o">/</span><span class="n">bulk_scopes</span><span class="o">.</span><span class="n">py</span><span class="w">    </span><span class="c1"># Modelos Pydantic para validação</span>
+<span class="w">  </span><span class="err">└──</span><span class="w"> </span><span class="n">routes</span><span class="o">/</span><span class="n">scopes</span><span class="o">.</span><span class="n">py</span><span class="w">         </span><span class="c1"># Endpoints de bulk import/export</span>
+</code></pre></div>
+
+<h2 id="json-schema">🔧 JSON Schema</h2>
+<p>O arquivo <code>data/scopes_schema.json</code> define a estrutura válida para arquivos de escopos:</p>
+<h3 id="propriedades-obrigatorias">Propriedades Obrigatórias:</h3>
+<ul>
+<li><strong>version</strong>: Versão do schema (formato: <code>X.Y.Z</code>)</li>
+<li><strong>scopes</strong>: Array de objetos scope</li>
+</ul>
+<h3 id="estrutura-de-cada-scope">Estrutura de cada Scope:</h3>
+<ul>
+<li><strong>scope_name</strong> (obrigatório): Nome único no formato <code>namespace:resource:action</code></li>
+<li>Padrão regex: <code>^[a-z0-9]+:[a-z0-9_]+:[a-z0-9_*]+$</code></li>
+<li>
+<p>Exemplo: <code>akm:projects:read</code>, <code>akm:keys:*</code></p>
+</li>
+<li>
+<p><strong>description</strong> (obrigatório): Descrição legível</p>
+</li>
+<li>
+<p>Min: 1 caractere, Max: 500 caracteres</p>
+</li>
+<li>
+<p><strong>category</strong> (obrigatório): Categoria do escopo</p>
+</li>
+<li>
+<p>Valores permitidos: <code>projects</code>, <code>keys</code>, <code>scopes</code>, <code>webhooks</code>, <code>alerts</code>, <code>usage</code>, <code>admin</code>, <code>system</code></p>
+</li>
+<li>
+<p><strong>is_active</strong> (opcional): Status do escopo</p>
+</li>
+<li>Padrão: <code>true</code></li>
+</ul>
+<h2 id="arquivo-de-escopos-scopesjson">📝 Arquivo de Escopos (scopes.json)</h2>
+<p>Exemplo de estrutura:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1.0.0&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;scopes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;scope_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;akm:projects:read&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;View projects and their details&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;category&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;projects&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;is_active&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;scope_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;akm:projects:write&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Create and update projects&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;category&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;projects&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;is_active&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h2 id="formas-de-importacao">🚀 Formas de Importação</h2>
+<h3 id="1-via-script-cli-recomendado">1. Via Script CLI (Recomendado)</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Importar scopes do arquivo</span>
+python<span class="w"> </span>scripts/import_scopes.py<span class="w"> </span>data/scopes.json
+
+<span class="c1"># Dry run (validar sem importar)</span>
+python<span class="w"> </span>scripts/import_scopes.py<span class="w"> </span>data/scopes.json<span class="w"> </span>--dry-run
+</code></pre></div>
+
+<p><strong>Saída exemplo:</strong></p>
+<div class="codehilite"><pre><span></span><code>================================================================================
+Scopes Bulk Import
+================================================================================
+
+📄 Reading file: data\scopes.json
+✅ JSON file parsed successfully
+✅ Schema validation passed: 28 scopes found
+
+📥 Importing scopes...
+
+================================================================================
+Import Results
+================================================================================
+✅ Total Processed: 28
+✅ Created: 15
+✅ Updated: 10
+⏭️  Skipped: 3 (no changes)
+
+📝 Processed scopes:
+  <span class="k">-</span> akm:projects:read
+  <span class="k">-</span> akm:projects:write
+  <span class="k">-</span> akm:keys:*
+  ...
+================================================================================
+</code></pre></div>
+
+<h3 id="2-via-api-json-direto">2. Via API - JSON Direto</h3>
+<div class="codehilite"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8000/akm/scopes/bulk<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: </span><span class="nv">$ADMIN_API_KEY</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span>@data/scopes.json
+</code></pre></div>
+
+<h3 id="3-via-api-upload-de-arquivo">3. Via API - Upload de Arquivo</h3>
+<div class="codehilite"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8000/akm/scopes/bulk/file<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: </span><span class="nv">$ADMIN_API_KEY</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-F<span class="w"> </span><span class="s2">&quot;file=@data/scopes.json&quot;</span>
+</code></pre></div>
+
+<h2 id="exportacao">📤 Exportação</h2>
+<h3 id="via-api">Via API</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Exportar todos os escopos ativos</span>
+curl<span class="w"> </span>-X<span class="w"> </span>GET<span class="w"> </span>http://localhost:8000/akm/scopes/export/json<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: </span><span class="nv">$ADMIN_API_KEY</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>&gt;<span class="w"> </span>scopes_backup.json
+
+<span class="c1"># Exportar incluindo inativos</span>
+curl<span class="w"> </span>-X<span class="w"> </span>GET<span class="w"> </span><span class="s2">&quot;http://localhost:8000/akm/scopes/export/json?active_only=false&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: </span><span class="nv">$ADMIN_API_KEY</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>&gt;<span class="w"> </span>scopes_all.json
+</code></pre></div>
+
+<h2 id="operacao-de-upsert">🔄 Operação de Upsert</h2>
+<p>O bulk import usa a estratégia <strong>upsert</strong> (update or insert):</p>
+<ol>
+<li><strong>Scope NÃO existe</strong> → Cria novo scope</li>
+<li><strong>Scope existe + dados diferentes</strong> → Atualiza scope</li>
+<li><strong>Scope existe + dados iguais</strong> → Skipped (sem mudanças)</li>
+</ol>
+<h3 id="criterio-de-identificacao">Critério de Identificação:</h3>
+<ul>
+<li><strong>scope_name</strong> é usado como chave única</li>
+<li>Case-sensitive</li>
+</ul>
+<h3 id="campos-atualizados">Campos Atualizados:</h3>
+<ul>
+<li><code>description</code></li>
+<li><code>is_active</code></li>
+</ul>
+<p><strong>Nota:</strong> A categoria não é armazenada no banco, serve apenas para organização no arquivo JSON.</p>
+<h2 id="validacao">✅ Validação</h2>
+<p>A validação ocorre em múltiplas camadas:</p>
+<h3 id="1-json-schema-estrutura">1. JSON Schema (estrutura)</h3>
+<ul>
+<li>Formato do arquivo</li>
+<li>Tipos de dados</li>
+<li>Campos obrigatórios</li>
+</ul>
+<h3 id="2-pydantic-validators-regras-de-negocio">2. Pydantic Validators (regras de negócio)</h3>
+<ul>
+<li>Formato do scope_name (regex)</li>
+<li>Categorias permitidas</li>
+<li>Versão semântica</li>
+</ul>
+<h3 id="3-database-constraints">3. Database Constraints</h3>
+<ul>
+<li>Unique constraint em scope_name</li>
+<li>Foreign key validations</li>
+</ul>
+<h2 id="casos-de-uso">🔍 Casos de Uso</h2>
+<h3 id="1-setup-inicial">1. Setup Inicial</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Importar todos os escopos padrão</span>
+python<span class="w"> </span>scripts/import_scopes.py<span class="w"> </span>data/scopes.json
+</code></pre></div>
+
+<h3 id="2-adicionar-novos-escopos">2. Adicionar Novos Escopos</h3>
+<p>Edite <code>data/scopes.json</code> e adicione:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;scope_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;akm:billing:read&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;View billing information&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;category&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;admin&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;is_active&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>Execute novamente:</p>
+<div class="codehilite"><pre><span></span><code>python<span class="w"> </span>scripts/import_scopes.py<span class="w"> </span>data/scopes.json
+</code></pre></div>
+
+<h3 id="3-atualizar-descricoes">3. Atualizar Descrições</h3>
+<p>Modifique descrições no JSON e reimporte - apenas os modificados serão atualizados.</p>
+<h3 id="4-desativar-escopos">4. Desativar Escopos</h3>
+<p>Mude <code>is_active</code> para <code>false</code> e reimporte:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;scope_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;akm:deprecated:action&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Deprecated scope&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;category&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;system&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;is_active&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3 id="5-backup-e-restore">5. Backup e Restore</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Backup</span>
+curl<span class="w"> </span>-X<span class="w"> </span>GET<span class="w"> </span>http://localhost:8000/akm/scopes/export/json<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: </span><span class="nv">$ADMIN_API_KEY</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>&gt;<span class="w"> </span>backup_<span class="k">$(</span>date<span class="w"> </span>+%Y%m%d<span class="k">)</span>.json
+
+<span class="c1"># Restore</span>
+python<span class="w"> </span>scripts/import_scopes.py<span class="w"> </span>backup_20251120.json
+</code></pre></div>
+
+<h2 id="response-format">📊 Response Format</h2>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;total_processed&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">28</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;created&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">15</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;updated&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;skipped&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;errors&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
+<span class="w">  </span><span class="nt">&quot;scope_names&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="s2">&quot;akm:projects:read&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;akm:projects:write&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;akm:keys:*&quot;</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h2 id="erros-comuns">⚠️ Erros Comuns</h2>
+<h3 id="1-formato-de-scope_name-invalido">1. Formato de scope_name inválido</h3>
+<div class="codehilite"><pre><span></span><code><span class="n">Error</span><span class="o">:</span><span class="w"> </span><span class="n">Invalid</span><span class="w"> </span><span class="n">scope</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="n">format</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;invalid-scope&#39;</span><span class="o">.</span><span class="w"> </span>
+<span class="n">Expected</span><span class="w"> </span><span class="n">format</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;namespace:resource:action&#39;</span>
+</code></pre></div>
+
+<p><strong>Solução:</strong> Use o formato correto: <code>akm:resource:action</code></p>
+<h3 id="2-categoria-invalida">2. Categoria inválida</h3>
+<div class="codehilite"><pre><span></span><code><span class="n">Error</span><span class="o">:</span><span class="w"> </span><span class="n">Invalid</span><span class="w"> </span><span class="n">category</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;invalid&#39;</span><span class="o">.</span><span class="w"> </span>
+<span class="n">Allowed</span><span class="w"> </span><span class="n">values</span><span class="o">:</span><span class="w"> </span><span class="n">projects</span><span class="o">,</span><span class="w"> </span><span class="n">keys</span><span class="o">,</span><span class="w"> </span><span class="n">scopes</span><span class="o">,</span><span class="w"> </span><span class="n">webhooks</span><span class="o">,</span><span class="w"> </span><span class="n">alerts</span><span class="o">,</span><span class="w"> </span><span class="n">usage</span><span class="o">,</span><span class="w"> </span><span class="n">admin</span><span class="o">,</span><span class="w"> </span><span class="n">system</span>
+</code></pre></div>
+
+<p><strong>Solução:</strong> Use uma das categorias permitidas.</p>
+<h3 id="3-versao-invalida">3. Versão inválida</h3>
+<div class="codehilite"><pre><span></span><code><span class="n">Error</span><span class="o">:</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">should</span><span class="w"> </span><span class="n">match</span><span class="w"> </span><span class="n">pattern</span><span class="w"> </span><span class="s1">&#39;^\d+\.\d+\.\d+$&#39;</span>
+</code></pre></div>
+
+<p><strong>Solução:</strong> Use formato semântico: <code>1.0.0</code></p>
+<h3 id="4-json-invalido">4. JSON inválido</h3>
+<div class="codehilite"><pre><span></span><code><span class="n">Error</span><span class="o">:</span><span class="w"> </span><span class="n">Invalid</span><span class="w"> </span><span class="n">JSON</span><span class="w"> </span><span class="n">format</span><span class="o">:</span><span class="w"> </span><span class="n">Expecting</span><span class="w"> </span><span class="s1">&#39;,&#39;</span><span class="w"> </span><span class="n">delimiter</span>
+</code></pre></div>
+
+<p><strong>Solução:</strong> Valide o JSON com um linter ou use <code>jq</code>:</p>
+<div class="codehilite"><pre><span></span><code>cat<span class="w"> </span>data/scopes.json<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span>.
+</code></pre></div>
+
+<h2 id="desenvolvimento">🛠️ Desenvolvimento</h2>
+<h3 id="adicionar-nova-categoria">Adicionar Nova Categoria</h3>
+<ol>
+<li>Atualizar <code>data/scopes_schema.json</code>:</li>
+</ol>
+<div class="codehilite"><pre><span></span><code><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">  </span><span class="s2">&quot;projects&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;keys&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;scopes&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;webhooks&quot;</span><span class="p">,</span><span class="w"> </span>
+<span class="w">  </span><span class="s2">&quot;alerts&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;usage&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;admin&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;system&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="s2">&quot;nova_categoria&quot;</span><span class="w">  </span><span class="c1">// Adicionar aqui</span>
+<span class="p">]</span>
+</code></pre></div>
+
+<ol>
+<li>Atualizar validador em <code>src/api/models/bulk_scopes.py</code>:</li>
+</ol>
+<div class="codehilite"><pre><span></span><code><span class="n">allowed</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;projects&#39;</span><span class="p">,</span> <span class="s1">&#39;keys&#39;</span><span class="p">,</span> <span class="s1">&#39;scopes&#39;</span><span class="p">,</span> <span class="s1">&#39;webhooks&#39;</span><span class="p">,</span> 
+           <span class="s1">&#39;alerts&#39;</span><span class="p">,</span> <span class="s1">&#39;usage&#39;</span><span class="p">,</span> <span class="s1">&#39;admin&#39;</span><span class="p">,</span> <span class="s1">&#39;system&#39;</span><span class="p">,</span> <span class="s1">&#39;nova_categoria&#39;</span><span class="p">]</span>
+</code></pre></div>
+
+<h3 id="adicionar-novo-campo">Adicionar Novo Campo</h3>
+<ol>
+<li>Adicionar no schema JSON</li>
+<li>Atualizar <code>BulkScopeItem</code> Pydantic model</li>
+<li>Atualizar <code>bulk_upsert</code> no repository</li>
+<li>Atualizar migration se necessário</li>
+</ol>
+<h2 id="referencias">📖 Referências</h2>
+<ul>
+<li><strong>JSON Schema Spec:</strong> https://json-schema.org/</li>
+<li><strong>Pydantic Validation:</strong> https://docs.pydantic.dev/</li>
+<li><strong>FastAPI File Uploads:</strong> https://fastapi.tiangolo.com/tutorial/request-files/</li>
+</ul>
+<h2 id="permissoes-necessarias">🔐 Permissões Necessárias</h2>
+<p>Todos os endpoints de bulk operations requerem:
+- <strong>Escopo:</strong> <code>akm:scopes:write</code>
+- <strong>Alternativamente:</strong> <code>akm:scopes:*</code> ou <code>akm:*</code></p>
+<h2 id="dicas">💡 Dicas</h2>
+<ol>
+<li><strong>Use dry-run</strong> antes de importar em produção</li>
+<li><strong>Faça backup</strong> antes de bulk updates</li>
+<li><strong>Valide JSON</strong> localmente antes de enviar</li>
+<li><strong>Use versioning</strong> no arquivo JSON</li>
+<li><strong>Documente mudanças</strong> nos commits</li>
+</ol>
+<h2 id="exemplo-completo">📝 Exemplo Completo</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># 1. Validar arquivo</span>
+python<span class="w"> </span>scripts/import_scopes.py<span class="w"> </span>data/scopes.json<span class="w"> </span>--dry-run
+
+<span class="c1"># 2. Fazer backup atual</span>
+curl<span class="w"> </span>-X<span class="w"> </span>GET<span class="w"> </span>http://localhost:8000/akm/scopes/export/json<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: </span><span class="nv">$ADMIN_API_KEY</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>&gt;<span class="w"> </span>backup_before_import.json
+
+<span class="c1"># 3. Importar</span>
+python<span class="w"> </span>scripts/import_scopes.py<span class="w"> </span>data/scopes.json
+
+<span class="c1"># 4. Verificar no banco</span>
+curl<span class="w"> </span>-X<span class="w"> </span>GET<span class="w"> </span>http://localhost:8000/akm/scopes<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: </span><span class="nv">$ADMIN_API_KEY</span><span class="s2">&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span>.
+</code></pre></div>
+        </div>
+
+        <div class="footer">
+            <p>Built with ❤️ using FastAPI, PostgreSQL, and SQLAlchemy</p>
+            <p style="margin-top: 10px;">© 2025 API Key Management Service by <a href="https://github.com/ideiasfactory" target="_blank">Ideias Factory</a></p>
+        </div>
+    </div>
+
+    <a href="#" class="back-to-top">↑</a>
+
+    <script>
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        // Back to top button
+        const backToTop = document.querySelector('.back-to-top');
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTop.style.display = 'flex';
+            } else {
+                backToTop.style.display = 'none';
+            }
+        });
+
+        backToTop.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    </script>
+</body>
+</html>

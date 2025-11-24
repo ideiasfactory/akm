@@ -233,6 +233,7 @@ async def home_page(request: Request) -> HTMLResponse:
     Returns:
         HTMLResponse: Rendered home page
     """
+    
     try:
         log_with_context(
             logger,
@@ -284,7 +285,7 @@ async def get_home_data() -> HomePageData:
         data = get_home_page_data(
             version=settings.api_version, environment=settings.environment
         )
-
+            
         log_with_context(
             logger,
             "info",
@@ -315,6 +316,7 @@ async def favicon():
     Returns:
         FileResponse: Favicon file
     """
+    
     # Try multiple paths to locate the favicon
     possible_paths = [
         # Static folder inside src/api (BEST for Vercel)
@@ -346,6 +348,7 @@ async def favicon():
     raise HTTPException(status_code=404, detail="Favicon not found")
 
 
+
 @router.get("/quickstart", response_class=HTMLResponse, include_in_schema=False, summary="Quick Start Guide")
 async def quickstart_guide():
     """
@@ -354,6 +357,14 @@ async def quickstart_guide():
     Returns:
         HTMLResponse: Quick Start documentation
     """
+    
+    # Log application ready
+    log_with_context(
+        logger,
+        'debug',
+        'Quick Start guide requested'        
+    )
+
     # Try multiple paths to locate the quickstart HTML
     possible_paths = [
         Path(__file__).parent.parent / "static" / "quickstart.html",
@@ -370,6 +381,7 @@ async def quickstart_guide():
     for path in possible_paths:
         if path.exists():
             log_with_context(logger, "info", "Quick Start guide found and served", path=str(path))
+            
             with open(path, "r", encoding="utf-8") as f:
                 return HTMLResponse(content=f.read())
 
@@ -383,8 +395,7 @@ async def quickstart_guide():
 
     raise HTTPException(status_code=404, detail="Quick Start guide not found")
 
-
-@router.get("/administration", response_class=HTMLResponse, include_in_schema=False, summary="Administration Guide")
+@router.get("/public/guides/admnistration.html", response_class=HTMLResponse, include_in_schema=False, summary="Administration Guide")
 async def administration_guide():
     """
     Serve the Administration Guide HTML page.
@@ -395,8 +406,8 @@ async def administration_guide():
     # Try multiple paths to locate the administration HTML
     possible_paths = [
         Path(__file__).parent.parent / "static" / "administration.html",
-        Path("/var/task/src/api/static/administration.html"),
-        Path("/var/task/public/administration.html"),
+        Path("/var/task/src/api/static/public/guides/admnistration.html.html"),
+        Path("/var/task/public/public/guides/admnistration.html.html"),
         Path(__file__).parent.parent.parent.parent / "public" / "administration.html",
         Path.cwd() / "public" / "administration.html",
     ]

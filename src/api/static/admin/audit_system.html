@@ -1,0 +1,1176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audit System - API Key Management Service</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --accent: #f093fb;
+            --dark: #1a1a2e;
+            --light: #f8f9fa;
+            --code-bg: #282c34;
+            --border: #e0e0e0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .nav {
+            background: var(--dark);
+            padding: 15px 40px;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .nav a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .nav a:hover {
+            background: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--dark);
+            margin: 30px 0 15px 0;
+            line-height: 1.3;
+        }
+
+        h1 { font-size: 2.5em; border-bottom: 3px solid var(--primary); padding-bottom: 10px; }
+        h2 { font-size: 2em; border-bottom: 2px solid var(--border); padding-bottom: 8px; margin-top: 40px; }
+        h3 { font-size: 1.5em; color: var(--primary); }
+        h4 { font-size: 1.3em; }
+
+        p {
+            margin: 15px 0;
+            line-height: 1.8;
+        }
+
+        a {
+            color: var(--primary);
+            text-decoration: none;
+            border-bottom: 1px dotted var(--primary);
+        }
+
+        a:hover {
+            color: var(--secondary);
+            border-bottom: 1px solid var(--secondary);
+        }
+
+        code {
+            background: #f4f4f4;
+            padding: 3px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #e83e8c;
+        }
+
+        pre {
+            background: var(--code-bg);
+            color: #abb2bf;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+            border-left: 4px solid var(--primary);
+        }
+
+        pre code {
+            background: none;
+            color: inherit;
+            padding: 0;
+            font-size: 0.95em;
+        }
+
+        blockquote {
+            border-left: 4px solid var(--primary);
+            padding: 15px 20px;
+            margin: 20px 0;
+            background: #f8f9fa;
+            font-style: italic;
+        }
+
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+
+        li {
+            margin: 8px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .success {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .info {
+            background: #d1ecf1;
+            border-left: 4px solid #17a2b8;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .footer {
+            background: var(--dark);
+            color: white;
+            padding: 30px 40px;
+            text-align: center;
+        }
+
+        .footer a {
+            color: var(--accent);
+            border-bottom: 1px dotted var(--accent);
+        }
+
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--primary);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            font-size: 24px;
+        }
+
+        .back-to-top:hover {
+            background: var(--secondary);
+            transform: translateY(-5px);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                border-radius: 0;
+            }
+
+            .header {
+                padding: 30px 20px;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .nav {
+                padding: 15px 20px;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            pre {
+                padding: 15px;
+                font-size: 0.85em;
+            }
+        }
+
+        /* Syntax highlighting for code blocks */
+        .codehilite .k { color: #c678dd; } /* keyword */
+        .codehilite .s { color: #98c379; } /* string */
+        .codehilite .n { color: #e06c75; } /* name */
+        .codehilite .c { color: #5c6370; font-style: italic; } /* comment */
+        .codehilite .m { color: #d19a66; } /* number */
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔐 Audit System</h1>
+            <p>API Key Management Service</p>
+        </div>
+
+        <div class="nav">
+            <a href="/">🏠 Home</a>
+            <a href="/quickstart">🚀 Quick Start</a>
+            <a href="/public/guides/admnistration.html">🔐 Administration</a>
+            <a href="/docs">📚 API Docs</a>
+            <a href="/redoc">📖 ReDoc</a>
+        </div>
+
+        <div class="content">
+<h1 id="sistema-de-auditoria-e-logging">🔐 Sistema de Auditoria e Logging</h1>
+<p>Documentação completa do sistema de auditoria com integridade criptográfica e rastreamento de operações.</p>
+<h2 id="indice">📋 Índice</h2>
+<ul>
+<li><a href="#visão-geral">Visão Geral</a></li>
+<li><a href="#características">Características</a></li>
+<li><a href="#arquitetura">Arquitetura</a></li>
+<li><a href="#modelo-de-dados">Modelo de Dados</a></li>
+<li><a href="#logging-automático">Logging Automático</a></li>
+<li><a href="#api-de-consulta">API de Consulta</a></li>
+<li><a href="#verificação-de-integridade">Verificação de Integridade</a></li>
+<li><a href="#exemplos-de-uso">Exemplos de Uso</a></li>
+<li><a href="#segurança">Segurança</a></li>
+<li><a href="#melhores-práticas">Melhores Práticas</a></li>
+</ul>
+<h2 id="visao-geral">🎯 Visão Geral</h2>
+<p>O sistema de auditoria do AKM fornece um <strong>trail de auditoria imutável</strong> com proteção de integridade criptográfica para todas as operações sensíveis.</p>
+<h3 id="principais-recursos">Principais Recursos</h3>
+<p>✅ <strong>Logging Automático</strong>: Middleware captura todas as requisições automaticamente<br />
+✅ <strong>Correlation IDs</strong>: Rastreamento de operações relacionadas<br />
+✅ <strong>Integridade Criptográfica</strong>: Hash SHA-256 para detectar adulterações<br />
+✅ <strong>Precisão de Microsegundos</strong>: Timestamps com precisão de microsegundos<br />
+✅ <strong>Sanitização Automática</strong>: Remove dados sensíveis (senhas, tokens, etc.)<br />
+✅ <strong>Multi-Tenancy</strong>: Filtragem por projeto para isolamento<br />
+✅ <strong>Read-Only API</strong>: Endpoints apenas leitura para preservar integridade<br />
+✅ <strong>Console + Database</strong>: Logs em console (JSON) e banco de dados PostgreSQL  </p>
+<h2 id="caracteristicas">🏗️ Características</h2>
+<h3 id="1-auditoria-automatica">1. Auditoria Automática</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Middleware captura automaticamente todas as requisições</span>
+<span class="c1"># Nenhum código adicional necessário nas rotas!</span>
+
+<span class="nd">@router</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/projects&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">create_project</span><span class="p">(</span><span class="o">...</span><span class="p">):</span>
+    <span class="c1"># Auditoria acontece automaticamente</span>
+    <span class="c1"># correlation_id disponível em request.state.correlation_id</span>
+    <span class="k">return</span> <span class="n">project</span>
+</code></pre></div>
+
+<h3 id="2-correlation-ids">2. Correlation IDs</h3>
+<p>Agrupa operações relacionadas:</p>
+<div class="codehilite"><pre><span></span><code><span class="n">correlation_id</span><span class="o">:</span><span class="w"> </span><span class="mi">550</span><span class="n">e8400</span><span class="o">-</span><span class="n">e29b</span><span class="o">-</span><span class="mi">41</span><span class="n">d4</span><span class="o">-</span><span class="n">a716</span><span class="o">-</span><span class="mi">446655440000</span>
+<span class="w">  </span><span class="err">├─</span><span class="w"> </span><span class="n">Operation</span><span class="w"> </span><span class="mi">1</span><span class="o">:</span><span class="w"> </span><span class="n">authenticate</span><span class="w"> </span><span class="o">(</span><span class="mi">2024</span><span class="o">-</span><span class="mi">11</span><span class="o">-</span><span class="mi">20</span><span class="w"> </span><span class="mi">10</span><span class="o">:</span><span class="mi">00</span><span class="o">:</span><span class="mf">00.123456</span><span class="o">)</span>
+<span class="w">  </span><span class="err">├─</span><span class="w"> </span><span class="n">Operation</span><span class="w"> </span><span class="mi">2</span><span class="o">:</span><span class="w"> </span><span class="n">authorize</span><span class="w"> </span><span class="o">(</span><span class="mi">2024</span><span class="o">-</span><span class="mi">11</span><span class="o">-</span><span class="mi">20</span><span class="w"> </span><span class="mi">10</span><span class="o">:</span><span class="mi">00</span><span class="o">:</span><span class="mf">00.234567</span><span class="o">)</span>
+<span class="w">  </span><span class="err">└─</span><span class="w"> </span><span class="n">Operation</span><span class="w"> </span><span class="mi">3</span><span class="o">:</span><span class="w"> </span><span class="n">create_project</span><span class="w"> </span><span class="o">(</span><span class="mi">2024</span><span class="o">-</span><span class="mi">11</span><span class="o">-</span><span class="mi">20</span><span class="w"> </span><span class="mi">10</span><span class="o">:</span><span class="mi">00</span><span class="o">:</span><span class="mf">00.345678</span><span class="o">)</span>
+</code></pre></div>
+
+<h3 id="3-protecao-de-integridade">3. Proteção de Integridade</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Cada audit log tem um hash SHA-256</span>
+<span class="n">entry_hash</span> <span class="o">=</span> <span class="n">sha256</span><span class="p">(</span>
+    <span class="n">correlation_id</span> <span class="o">+</span> <span class="n">timestamp</span> <span class="o">+</span> <span class="n">operation</span> <span class="o">+</span> 
+    <span class="n">resource_type</span> <span class="o">+</span> <span class="n">resource_id</span> <span class="o">+</span> <span class="n">api_key_id</span> <span class="o">+</span> 
+    <span class="n">request_payload</span> <span class="o">+</span> <span class="n">response_status</span> <span class="o">+</span> <span class="o">...</span>
+<span class="p">)</span>
+
+<span class="c1"># Verificação</span>
+<span class="k">if</span> <span class="n">entry</span><span class="o">.</span><span class="n">entry_hash</span> <span class="o">==</span> <span class="n">entry</span><span class="o">.</span><span class="n">calculate_hash</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;✓ Integridade verificada&quot;</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;⚠️ VIOLAÇÃO: Log foi adulterado!&quot;</span><span class="p">)</span>
+</code></pre></div>
+
+<h2 id="modelo-de-dados">🗄️ Modelo de Dados</h2>
+<h3 id="tabela-akm_audit_logs">Tabela: <code>akm_audit_logs</code></h3>
+<div class="codehilite"><pre><span></span><code><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">akm_audit_logs</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="c1">-- Identity</span>
+<span class="w">    </span><span class="n">id</span><span class="w"> </span><span class="nb">SERIAL</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="p">,</span>
+<span class="w">    </span><span class="n">correlation_id</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">36</span><span class="p">)</span><span class="w"> </span><span class="k">UNIQUE</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span><span class="w">  </span><span class="c1">-- UUID</span>
+<span class="w">    </span><span class="n">entry_hash</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">64</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span><span class="w">              </span><span class="c1">-- SHA-256</span>
+
+<span class="w">    </span><span class="c1">-- Authentication Context</span>
+<span class="w">    </span><span class="n">api_key_id</span><span class="w"> </span><span class="nb">INTEGER</span><span class="w"> </span><span class="k">REFERENCES</span><span class="w"> </span><span class="n">akm_api_keys</span><span class="p">(</span><span class="n">id</span><span class="p">),</span>
+<span class="w">    </span><span class="n">project_id</span><span class="w"> </span><span class="nb">INTEGER</span><span class="w"> </span><span class="k">REFERENCES</span><span class="w"> </span><span class="n">akm_projects</span><span class="p">(</span><span class="n">id</span><span class="p">),</span>
+
+<span class="w">    </span><span class="c1">-- Operation Details</span>
+<span class="w">    </span><span class="k">operation</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span><span class="w">              </span><span class="c1">-- create_api_key, delete_project</span>
+<span class="w">    </span><span class="n">action</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span><span class="w">                  </span><span class="c1">-- POST, DELETE, AUTH</span>
+<span class="w">    </span><span class="n">resource_type</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span><span class="w">           </span><span class="c1">-- api_key, project, scope</span>
+<span class="w">    </span><span class="n">resource_id</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">100</span><span class="p">),</span><span class="w">                     </span><span class="c1">-- Resource identifier</span>
+
+<span class="w">    </span><span class="c1">-- Request Context</span>
+<span class="w">    </span><span class="n">endpoint</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">255</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span><span class="w">               </span><span class="c1">-- /akm/projects</span>
+<span class="w">    </span><span class="n">http_method</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span><span class="w">             </span><span class="c1">-- GET, POST, PUT, DELETE</span>
+<span class="w">    </span><span class="n">ip_address</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">45</span><span class="p">),</span><span class="w">                       </span><span class="c1">-- IPv6 support</span>
+<span class="w">    </span><span class="n">user_agent</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">500</span><span class="p">),</span>
+
+<span class="w">    </span><span class="c1">-- Request/Response Data (sanitized)</span>
+<span class="w">    </span><span class="n">request_payload</span><span class="w"> </span><span class="n">JSONB</span><span class="p">,</span>
+<span class="w">    </span><span class="n">response_status</span><span class="w"> </span><span class="nb">INTEGER</span><span class="p">,</span><span class="w">                      </span><span class="c1">-- HTTP status code</span>
+<span class="w">    </span><span class="n">response_payload</span><span class="w"> </span><span class="n">JSONB</span><span class="p">,</span>
+<span class="w">    </span><span class="n">error_message</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span>
+
+<span class="w">    </span><span class="c1">-- Metadata</span>
+<span class="w">    </span><span class="n">metadata</span><span class="w"> </span><span class="n">JSONB</span><span class="p">,</span><span class="w">                               </span><span class="c1">-- Extra context</span>
+
+<span class="w">    </span><span class="c1">-- Timestamps</span>
+<span class="w">    </span><span class="k">timestamp</span><span class="w"> </span><span class="k">TIMESTAMP</span><span class="w"> </span><span class="k">WITH</span><span class="w"> </span><span class="k">TIME</span><span class="w"> </span><span class="k">ZONE</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span><span class="w">  </span><span class="c1">-- Microsecond precision</span>
+<span class="w">    </span><span class="n">created_at</span><span class="w"> </span><span class="k">TIMESTAMP</span><span class="w"> </span><span class="k">WITH</span><span class="w"> </span><span class="k">TIME</span><span class="w"> </span><span class="k">ZONE</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="n">NOW</span><span class="p">(),</span>
+
+<span class="w">    </span><span class="c1">-- Status</span>
+<span class="w">    </span><span class="n">status</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="s1">&#39;success&#39;</span><span class="w"> </span><span class="c1">-- success, failure, denied</span>
+<span class="p">);</span>
+
+<span class="c1">-- Indexes for efficient querying</span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">idx_audit_timestamp</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">akm_audit_logs</span><span class="p">(</span><span class="k">timestamp</span><span class="w"> </span><span class="k">DESC</span><span class="p">);</span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">idx_audit_project_time</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">akm_audit_logs</span><span class="p">(</span><span class="n">project_id</span><span class="p">,</span><span class="w"> </span><span class="k">timestamp</span><span class="w"> </span><span class="k">DESC</span><span class="p">);</span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">idx_audit_correlation</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">akm_audit_logs</span><span class="p">(</span><span class="n">correlation_id</span><span class="p">);</span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">idx_audit_hash</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">akm_audit_logs</span><span class="p">(</span><span class="n">entry_hash</span><span class="p">);</span>
+</code></pre></div>
+
+<h3 id="campos-principais">Campos Principais</h3>
+<table>
+<thead>
+<tr>
+<th>Campo</th>
+<th>Tipo</th>
+<th>Descrição</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>correlation_id</code></td>
+<td>UUID</td>
+<td>Agrupa operações relacionadas</td>
+</tr>
+<tr>
+<td><code>entry_hash</code></td>
+<td>SHA-256</td>
+<td>Hash para verificação de integridade</td>
+</tr>
+<tr>
+<td><code>operation</code></td>
+<td>String</td>
+<td>Nome da operação (ex: <code>create_api_key</code>)</td>
+</tr>
+<tr>
+<td><code>action</code></td>
+<td>String</td>
+<td>Método HTTP ou tipo de ação</td>
+</tr>
+<tr>
+<td><code>resource_type</code></td>
+<td>String</td>
+<td>Tipo do recurso afetado</td>
+</tr>
+<tr>
+<td><code>resource_id</code></td>
+<td>String</td>
+<td>ID do recurso</td>
+</tr>
+<tr>
+<td><code>status</code></td>
+<td>Enum</td>
+<td><code>success</code>, <code>failure</code>, <code>denied</code></td>
+</tr>
+<tr>
+<td><code>timestamp</code></td>
+<td>DateTime</td>
+<td>Timestamp com microsegundos</td>
+</tr>
+<tr>
+<td><code>ip_address</code></td>
+<td>String</td>
+<td>IP do cliente (IPv4/IPv6)</td>
+</tr>
+<tr>
+<td><code>request_payload</code></td>
+<td>JSON</td>
+<td>Corpo da requisição (sanitizado)</td>
+</tr>
+<tr>
+<td><code>response_status</code></td>
+<td>Integer</td>
+<td>HTTP status code</td>
+</tr>
+<tr>
+<td><code>metadata</code></td>
+<td>JSON</td>
+<td>Contexto adicional</td>
+</tr>
+</tbody>
+</table>
+<h2 id="logging-automatico">🤖 Logging Automático</h2>
+<h3 id="middleware-de-auditoria">Middleware de Auditoria</h3>
+<p>O <code>AuditMiddleware</code> captura automaticamente todas as requisições:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># src/middleware/audit.py</span>
+
+<span class="k">class</span> <span class="nc">AuditMiddleware</span><span class="p">(</span><span class="n">BaseHTTPMiddleware</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Audita automaticamente todas as requisições.&quot;&quot;&quot;</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">dispatch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">call_next</span><span class="p">):</span>
+        <span class="c1"># 1. Gera correlation_id</span>
+        <span class="n">correlation_id</span> <span class="o">=</span> <span class="n">generate_correlation_id</span><span class="p">()</span>
+        <span class="n">request</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">correlation_id</span> <span class="o">=</span> <span class="n">correlation_id</span>
+
+        <span class="c1"># 2. Captura request body (sanitizado)</span>
+        <span class="n">request_payload</span> <span class="o">=</span> <span class="k">await</span> <span class="n">capture_request</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+
+        <span class="c1"># 3. Processa request</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">call_next</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+
+        <span class="c1"># 4. Registra no audit log</span>
+        <span class="k">await</span> <span class="n">log_to_database</span><span class="p">(</span>
+            <span class="n">correlation_id</span><span class="o">=</span><span class="n">correlation_id</span><span class="p">,</span>
+            <span class="n">operation</span><span class="o">=</span><span class="n">infer_operation</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span><span class="p">),</span>
+            <span class="n">request</span><span class="o">=</span><span class="n">request</span><span class="p">,</span>
+            <span class="n">response</span><span class="o">=</span><span class="n">response</span><span class="p">,</span>
+            <span class="n">request_payload</span><span class="o">=</span><span class="n">sanitize</span><span class="p">(</span><span class="n">request_payload</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="c1"># 5. Adiciona correlation_id ao response</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s2">&quot;X-Correlation-ID&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">correlation_id</span>
+
+        <span class="k">return</span> <span class="n">response</span>
+</code></pre></div>
+
+<h3 id="paths-excluidos">Paths Excluídos</h3>
+<p>Alguns paths não são auditados (por performance):</p>
+<div class="codehilite"><pre><span></span><code><span class="n">EXCLUDED_PATHS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;/health&quot;</span><span class="p">,</span> <span class="s2">&quot;/healthz&quot;</span><span class="p">,</span> <span class="s2">&quot;/ready&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;/docs&quot;</span><span class="p">,</span> <span class="s2">&quot;/redoc&quot;</span><span class="p">,</span> <span class="s2">&quot;/openapi.json&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;/favicon.ico&quot;</span>
+<span class="p">}</span>
+
+<span class="n">EXCLUDED_METHODS</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;OPTIONS&quot;</span><span class="p">,</span> <span class="s2">&quot;HEAD&quot;</span><span class="p">}</span>
+</code></pre></div>
+
+<h3 id="sanitizacao-automatica">Sanitização Automática</h3>
+<p>Campos sensíveis são automaticamente removidos:</p>
+<div class="codehilite"><pre><span></span><code><span class="n">SENSITIVE_FIELDS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;password&quot;</span><span class="p">,</span> <span class="s2">&quot;token&quot;</span><span class="p">,</span> <span class="s2">&quot;secret&quot;</span><span class="p">,</span> <span class="s2">&quot;api_key&quot;</span><span class="p">,</span> 
+    <span class="s2">&quot;key_hash&quot;</span><span class="p">,</span> <span class="s2">&quot;authorization&quot;</span><span class="p">,</span> <span class="s2">&quot;x-api-key&quot;</span><span class="p">,</span> 
+    <span class="s2">&quot;bearer&quot;</span><span class="p">,</span> <span class="s2">&quot;credential&quot;</span><span class="p">,</span> <span class="s2">&quot;private_key&quot;</span><span class="p">,</span> 
+    <span class="s2">&quot;client_secret&quot;</span>
+<span class="p">}</span>
+
+<span class="c1"># Antes da sanitização</span>
+<span class="p">{</span>
+    <span class="s2">&quot;username&quot;</span><span class="p">:</span> <span class="s2">&quot;admin&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;password&quot;</span><span class="p">:</span> <span class="s2">&quot;secret123&quot;</span><span class="p">,</span>  <span class="c1"># ← sensível</span>
+    <span class="s2">&quot;api_key&quot;</span><span class="p">:</span> <span class="s2">&quot;sk_prod_xyz&quot;</span>  <span class="c1"># ← sensível</span>
+<span class="p">}</span>
+
+<span class="c1"># Depois da sanitização</span>
+<span class="p">{</span>
+    <span class="s2">&quot;username&quot;</span><span class="p">:</span> <span class="s2">&quot;admin&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;password&quot;</span><span class="p">:</span> <span class="s2">&quot;[REDACTED]&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;api_key&quot;</span><span class="p">:</span> <span class="s2">&quot;[REDACTED]&quot;</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h2 id="api-de-consulta">📡 API de Consulta</h2>
+<h3 id="scope-necessario">Scope Necessário</h3>
+<p>Todos os endpoints de auditoria requerem o scope especial:</p>
+<div class="codehilite"><pre><span></span><code><span class="n">akm</span><span class="o">:</span><span class="n">audit</span><span class="o">:</span><span class="n">read</span>
+</code></pre></div>
+
+<h3 id="endpoints-disponiveis">Endpoints Disponíveis</h3>
+<h4 id="1-listar-audit-logs">1. Listar Audit Logs</h4>
+<div class="codehilite"><pre><span></span><code><span class="err">GET /akm/audit/logs?project_id=1&amp;limit=100&amp;offset=0</span>
+<span class="err">X-API-Key: your_admin_key</span>
+</code></pre></div>
+
+<p><strong>Filtros disponíveis:</strong>
+- <code>project_id</code>: Filtrar por projeto
+- <code>api_key_id</code>: Filtrar por API key
+- <code>operation</code>: Filtrar por operação (ex: <code>create_api_key</code>)
+- <code>resource_type</code>: Filtrar por tipo de recurso
+- <code>resource_id</code>: Filtrar por ID do recurso
+- <code>status</code>: Filtrar por status (<code>success</code>, <code>failure</code>, <code>denied</code>)
+- <code>ip_address</code>: Filtrar por IP
+- <code>start_date</code>: Data inicial (ISO 8601)
+- <code>end_date</code>: Data final (ISO 8601)
+- <code>limit</code>: Máximo de resultados (1-1000)
+- <code>offset</code>: Paginação</p>
+<p><strong>Response:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;total&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1523</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;limit&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">100</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;offset&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;logs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1523</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;correlation_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;550e8400-e29b-41d4-a716-446655440000&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;operation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;create_api_key&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;resource_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;api_key&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;resource_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;123&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;success&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;timestamp&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2024-11-20T10:00:00.123456Z&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;ip_address&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;192.168.1.100&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;api_key_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;project_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;response_status&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">201</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h4 id="2-obter-audit-log-especifico">2. Obter Audit Log Específico</h4>
+<div class="codehilite"><pre><span></span><code><span class="err">GET /akm/audit/logs/1523</span>
+<span class="err">X-API-Key: your_admin_key</span>
+</code></pre></div>
+
+<p><strong>Response:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1523</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;correlation_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;550e8400-e29b-41d4-a716-446655440000&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;entry_hash&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;a3f5d8c9...&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;operation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;create_api_key&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;action&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;POST&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;resource_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;api_key&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;resource_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;123&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;endpoint&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/akm/keys&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;http_method&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;POST&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;ip_address&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;192.168.1.100&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;user_agent&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Mozilla/5.0...&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;request_payload&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;project_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Production API Key&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;scope_names&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;akm:keys:read&quot;</span><span class="p">]</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;response_status&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">201</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;response_payload&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">123</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;key&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;[REDACTED]&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Production API Key&quot;</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;metadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;duration_ms&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">45.23</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;content_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;application/json&quot;</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;timestamp&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2024-11-20T10:00:00.123456Z&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;success&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;api_key_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;project_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h4 id="3-operacoes-correlacionadas">3. Operações Correlacionadas</h4>
+<div class="codehilite"><pre><span></span><code><span class="err">GET /akm/audit/correlation/{correlation_id}</span>
+<span class="err">X-API-Key: your_admin_key</span>
+</code></pre></div>
+
+<p><strong>Response:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;correlation_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;550e8400-e29b-41d4-a716-446655440000&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;operation_count&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;operations&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1521</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;operation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;authenticate&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;timestamp&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2024-11-20T10:00:00.123456Z&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;success&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1522</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;operation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;authorize&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;timestamp&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2024-11-20T10:00:00.234567Z&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;success&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1523</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;operation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;create_api_key&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;timestamp&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2024-11-20T10:00:00.345678Z&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;success&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">],</span>
+<span class="w">  </span><span class="nt">&quot;first_timestamp&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2024-11-20T10:00:00.123456Z&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;last_timestamp&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2024-11-20T10:00:00.345678Z&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;all_successful&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h4 id="4-atividade-do-recurso">4. Atividade do Recurso</h4>
+<div class="codehilite"><pre><span></span><code><span class="err">GET /akm/audit/resource/{resource_type}/{resource_id}?limit=50</span>
+<span class="err">X-API-Key: your_admin_key</span>
+</code></pre></div>
+
+<p><strong>Exemplo:</strong></p>
+<div class="codehilite"><pre><span></span><code>GET<span class="w"> </span>/akm/audit/resource/api_key/123
+</code></pre></div>
+
+<p><strong>Response:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;resource_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;api_key&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;resource_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;123&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;activity_count&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">15</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;activities&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1523</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;operation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;create_api_key&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;timestamp&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2024-11-20T10:00:00.123456Z&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;success&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1545</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;operation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;update_api_key&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;timestamp&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2024-11-20T11:30:00.123456Z&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;success&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">],</span>
+<span class="w">  </span><span class="nt">&quot;first_activity&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2024-11-20T10:00:00.123456Z&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;last_activity&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2024-11-20T14:25:00.123456Z&quot;</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h4 id="5-estatisticas-de-auditoria">5. Estatísticas de Auditoria</h4>
+<div class="codehilite"><pre><span></span><code><span class="err">GET /akm/audit/statistics?project_id=1&amp;hours=24</span>
+<span class="err">X-API-Key: your_admin_key</span>
+</code></pre></div>
+
+<p><strong>Response:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;total_operations&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1523</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;successful_operations&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1450</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;failed_operations&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">45</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;denied_operations&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">28</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;unique_projects&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;unique_api_keys&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">12</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;unique_ip_addresses&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;operations_by_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;operation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;create_api_key&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;success&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;count&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">145</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;operation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;authenticate&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;success&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;count&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1205</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;operation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;delete_project&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;denied&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;count&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">12</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">],</span>
+<span class="w">  </span><span class="nt">&quot;start_date&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2024-11-19T10:00:00Z&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;end_date&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2024-11-20T10:00:00Z&quot;</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h4 id="6-operacoes-falhadas-recentes">6. Operações Falhadas Recentes</h4>
+<div class="codehilite"><pre><span></span><code><span class="err">GET /akm/audit/failed?hours=24&amp;limit=50</span>
+<span class="err">X-API-Key: your_admin_key</span>
+</code></pre></div>
+
+<p><strong>Response:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="p">[</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1520</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;operation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;delete_project&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;denied&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;timestamp&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2024-11-20T09:45:00.123456Z&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;error_message&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Insufficient permissions&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;ip_address&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;192.168.1.100&quot;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">]</span>
+</code></pre></div>
+
+<h2 id="verificacao-de-integridade">🔒 Verificação de Integridade</h2>
+<h3 id="verificar-log-individual">Verificar Log Individual</h3>
+<div class="codehilite"><pre><span></span><code><span class="err">GET /akm/audit/integrity/verify/1523</span>
+<span class="err">X-API-Key: your_admin_key</span>
+</code></pre></div>
+
+<p><strong>Response (Íntegro):</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;verified&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;audit_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1523</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;correlation_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;550e8400-e29b-41d4-a716-446655440000&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;stored_hash&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;a3f5d8c9b2e1...&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;calculated_hash&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;a3f5d8c9b2e1...&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;timestamp&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2024-11-20T10:00:00.123456Z&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;message&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Integrity verified&quot;</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p><strong>Response (Adulterado):</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;verified&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;audit_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1523</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;correlation_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;550e8400-e29b-41d4-a716-446655440000&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;stored_hash&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;a3f5d8c9b2e1...&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;calculated_hash&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;b4e6c7a8d3f2...&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;timestamp&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2024-11-20T10:00:00.123456Z&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;message&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;INTEGRITY VIOLATION: Hash mismatch detected&quot;</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3 id="verificacao-em-massa">Verificação em Massa</h3>
+<div class="codehilite"><pre><span></span><code><span class="err">GET /akm/audit/integrity/bulk-verify?limit=1000</span>
+<span class="err">X-API-Key: your_admin_key</span>
+</code></pre></div>
+
+<p><strong>Response:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;total_verified&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1000</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;passed&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">998</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;failed&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;integrity_score&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">99.8</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;violations&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;audit_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">523</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;correlation_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;...&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;operation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;delete_project&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;timestamp&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2024-11-19T15:30:00Z&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;stored_hash&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;abc123...&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;calculated_hash&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;def456...&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;audit_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">824</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;correlation_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;...&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;operation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;update_api_key&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;timestamp&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2024-11-20T08:15:00Z&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;stored_hash&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;xyz789...&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;calculated_hash&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;uvw012...&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h2 id="exemplos-de-uso">💻 Exemplos de Uso</h2>
+<h3 id="exemplo-1-rastrear-todas-as-acoes-de-um-usuario">Exemplo 1: Rastrear Todas as Ações de um Usuário</h3>
+<div class="codehilite"><pre><span></span><code><span class="ch">#!/bin/bash</span>
+
+<span class="nv">API_KEY</span><span class="o">=</span><span class="s2">&quot;your_admin_key&quot;</span>
+<span class="nv">PROJECT_ID</span><span class="o">=</span><span class="m">1</span>
+
+<span class="c1"># Listar todas as operações do projeto nas últimas 24h</span>
+curl<span class="w"> </span>-X<span class="w"> </span>GET<span class="w"> </span><span class="s2">&quot;http://localhost:8000/akm/audit/logs?project_id=</span><span class="nv">$PROJECT_ID</span><span class="s2">&amp;hours=24&amp;limit=500&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: </span><span class="nv">$API_KEY</span><span class="s2">&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span><span class="s1">&#39;.logs[] | {</span>
+<span class="s1">    operation,</span>
+<span class="s1">    timestamp,</span>
+<span class="s1">    ip_address,</span>
+<span class="s1">    status</span>
+<span class="s1">  }&#39;</span>
+</code></pre></div>
+
+<h3 id="exemplo-2-investigar-operacoes-falhadas">Exemplo 2: Investigar Operações Falhadas</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Buscar todas as operações falhadas ou negadas</span>
+curl<span class="w"> </span>-X<span class="w"> </span>GET<span class="w"> </span><span class="s2">&quot;http://localhost:8000/akm/audit/failed?hours=168&amp;limit=100&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: </span><span class="nv">$API_KEY</span><span class="s2">&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span><span class="s1">&#39;.[] | {</span>
+<span class="s1">    operation,</span>
+<span class="s1">    timestamp,</span>
+<span class="s1">    status,</span>
+<span class="s1">    error_message,</span>
+<span class="s1">    ip_address</span>
+<span class="s1">  }&#39;</span>
+</code></pre></div>
+
+<h3 id="exemplo-3-auditoria-de-compliance">Exemplo 3: Auditoria de Compliance</h3>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">httpx</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
+
+<span class="n">API_KEY</span> <span class="o">=</span> <span class="s2">&quot;your_admin_key&quot;</span>
+<span class="n">BASE_URL</span> <span class="o">=</span> <span class="s2">&quot;http://localhost:8000/akm&quot;</span>
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">generate_compliance_report</span><span class="p">(</span><span class="n">project_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">days</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">30</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Gera relatório de compliance para auditoria.&quot;&quot;&quot;</span>
+
+    <span class="n">end_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+    <span class="n">start_date</span> <span class="o">=</span> <span class="n">end_date</span> <span class="o">-</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="n">days</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">with</span> <span class="n">httpx</span><span class="o">.</span><span class="n">AsyncClient</span><span class="p">()</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
+        <span class="c1"># 1. Obter estatísticas</span>
+        <span class="n">stats_response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BASE_URL</span><span class="si">}</span><span class="s2">/audit/statistics&quot;</span><span class="p">,</span>
+            <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;project_id&quot;</span><span class="p">:</span> <span class="n">project_id</span><span class="p">,</span> <span class="s2">&quot;hours&quot;</span><span class="p">:</span> <span class="n">days</span> <span class="o">*</span> <span class="mi">24</span><span class="p">},</span>
+            <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;X-API-Key&quot;</span><span class="p">:</span> <span class="n">API_KEY</span><span class="p">}</span>
+        <span class="p">)</span>
+        <span class="n">stats</span> <span class="o">=</span> <span class="n">stats_response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="c1"># 2. Verificar integridade</span>
+        <span class="n">integrity_response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BASE_URL</span><span class="si">}</span><span class="s2">/audit/integrity/bulk-verify&quot;</span><span class="p">,</span>
+            <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;project_id&quot;</span><span class="p">:</span> <span class="n">project_id</span><span class="p">,</span> <span class="s2">&quot;limit&quot;</span><span class="p">:</span> <span class="mi">10000</span><span class="p">},</span>
+            <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;X-API-Key&quot;</span><span class="p">:</span> <span class="n">API_KEY</span><span class="p">}</span>
+        <span class="p">)</span>
+        <span class="n">integrity</span> <span class="o">=</span> <span class="n">integrity_response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="c1"># 3. Obter operações críticas</span>
+        <span class="n">critical_ops</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BASE_URL</span><span class="si">}</span><span class="s2">/audit/logs&quot;</span><span class="p">,</span>
+            <span class="n">params</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;project_id&quot;</span><span class="p">:</span> <span class="n">project_id</span><span class="p">,</span>
+                <span class="s2">&quot;operation&quot;</span><span class="p">:</span> <span class="s2">&quot;delete_api_key&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;start_date&quot;</span><span class="p">:</span> <span class="n">start_date</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(),</span>
+                <span class="s2">&quot;end_date&quot;</span><span class="p">:</span> <span class="n">end_date</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(),</span>
+                <span class="s2">&quot;limit&quot;</span><span class="p">:</span> <span class="mi">1000</span>
+            <span class="p">},</span>
+            <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;X-API-Key&quot;</span><span class="p">:</span> <span class="n">API_KEY</span><span class="p">}</span>
+        <span class="p">)</span>
+        <span class="n">deletes</span> <span class="o">=</span> <span class="n">critical_ops</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="c1"># 4. Gerar relatório</span>
+        <span class="n">report</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;period&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;start&quot;</span><span class="p">:</span> <span class="n">start_date</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(),</span>
+                <span class="s2">&quot;end&quot;</span><span class="p">:</span> <span class="n">end_date</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(),</span>
+                <span class="s2">&quot;days&quot;</span><span class="p">:</span> <span class="n">days</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;statistics&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;total_operations&quot;</span><span class="p">:</span> <span class="n">stats</span><span class="p">[</span><span class="s2">&quot;total_operations&quot;</span><span class="p">],</span>
+                <span class="s2">&quot;success_rate&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">stats</span><span class="p">[</span><span class="s2">&quot;successful_operations&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="n">stats</span><span class="p">[</span><span class="s2">&quot;total_operations&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)</span> <span class="k">if</span> <span class="n">stats</span><span class="p">[</span><span class="s2">&quot;total_operations&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span><span class="p">,</span>
+                <span class="s2">&quot;unique_users&quot;</span><span class="p">:</span> <span class="n">stats</span><span class="p">[</span><span class="s2">&quot;unique_api_keys&quot;</span><span class="p">],</span>
+                <span class="s2">&quot;unique_ips&quot;</span><span class="p">:</span> <span class="n">stats</span><span class="p">[</span><span class="s2">&quot;unique_ip_addresses&quot;</span><span class="p">]</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;integrity&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;score&quot;</span><span class="p">:</span> <span class="n">integrity</span><span class="p">[</span><span class="s2">&quot;integrity_score&quot;</span><span class="p">],</span>
+                <span class="s2">&quot;violations&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">integrity</span><span class="p">[</span><span class="s2">&quot;violations&quot;</span><span class="p">]),</span>
+                <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;PASS&quot;</span> <span class="k">if</span> <span class="n">integrity</span><span class="p">[</span><span class="s2">&quot;integrity_score&quot;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mf">99.9</span> <span class="k">else</span> <span class="s2">&quot;FAIL&quot;</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;critical_operations&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;deletions&quot;</span><span class="p">:</span> <span class="n">deletes</span><span class="p">[</span><span class="s2">&quot;total&quot;</span><span class="p">],</span>
+                <span class="s2">&quot;details&quot;</span><span class="p">:</span> <span class="n">deletes</span><span class="p">[</span><span class="s2">&quot;logs&quot;</span><span class="p">][:</span><span class="mi">10</span><span class="p">]</span>  <span class="c1"># Top 10</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+
+        <span class="k">return</span> <span class="n">report</span>
+
+<span class="c1"># Uso</span>
+<span class="n">report</span> <span class="o">=</span> <span class="k">await</span> <span class="n">generate_compliance_report</span><span class="p">(</span><span class="n">project_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">days</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">report</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
+</code></pre></div>
+
+<h3 id="exemplo-4-monitoramento-em-tempo-real">Exemplo 4: Monitoramento em Tempo Real</h3>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">monitor_suspicious_activity</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Monitora atividades suspeitas em tempo real.&quot;&quot;&quot;</span>
+
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="c1"># Verificar operações falhadas na última hora</span>
+        <span class="n">failed</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_failed_operations</span><span class="p">(</span><span class="n">hours</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># Alertar se muitas falhas</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">failed</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">10</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;⚠️  ALERTA: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">failed</span><span class="p">)</span><span class="si">}</span><span class="s2"> operações falhadas na última hora&quot;</span><span class="p">)</span>
+
+            <span class="c1"># Agrupar por IP</span>
+            <span class="n">ips</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">op</span> <span class="ow">in</span> <span class="n">failed</span><span class="p">:</span>
+                <span class="n">ip</span> <span class="o">=</span> <span class="n">op</span><span class="p">[</span><span class="s2">&quot;ip_address&quot;</span><span class="p">]</span>
+                <span class="n">ips</span><span class="p">[</span><span class="n">ip</span><span class="p">]</span> <span class="o">=</span> <span class="n">ips</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ip</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+
+            <span class="c1"># IPs com mais de 5 falhas</span>
+            <span class="n">suspicious_ips</span> <span class="o">=</span> <span class="p">{</span><span class="n">ip</span><span class="p">:</span> <span class="n">count</span> <span class="k">for</span> <span class="n">ip</span><span class="p">,</span> <span class="n">count</span> <span class="ow">in</span> <span class="n">ips</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">count</span> <span class="o">&gt;</span> <span class="mi">5</span><span class="p">}</span>
+
+            <span class="k">if</span> <span class="n">suspicious_ips</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;🚨 IPs suspeitos: </span><span class="si">{</span><span class="n">suspicious_ips</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="c1"># Aqui você poderia bloquear automaticamente ou enviar alerta</span>
+
+        <span class="c1"># Aguardar 5 minutos</span>
+        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">300</span><span class="p">)</span>
+</code></pre></div>
+
+<h2 id="seguranca">🛡️ Segurança</h2>
+<h3 id="1-acesso-restrito">1. Acesso Restrito</h3>
+<ul>
+<li><strong>Scope Especial</strong>: Apenas chaves com <code>akm:audit:read</code> podem acessar logs</li>
+<li><strong>Read-Only</strong>: Nenhuma operação de escrita/atualização/exclusão permitida</li>
+<li><strong>Project Isolation</strong>: Usuários só veem logs de seus projetos (a menos que seja admin)</li>
+</ul>
+<h3 id="2-protecao-de-integridade">2. Proteção de Integridade</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Cada log tem hash SHA-256 de seus dados</span>
+<span class="c1"># Qualquer alteração invalida o hash</span>
+
+<span class="k">def</span> <span class="nf">calculate_hash</span><span class="p">(</span><span class="n">audit_entry</span><span class="p">):</span>
+    <span class="n">hash_data</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;correlation_id&quot;</span><span class="p">:</span> <span class="n">audit_entry</span><span class="o">.</span><span class="n">correlation_id</span><span class="p">,</span>
+        <span class="s2">&quot;timestamp&quot;</span><span class="p">:</span> <span class="n">audit_entry</span><span class="o">.</span><span class="n">timestamp</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(),</span>
+        <span class="s2">&quot;operation&quot;</span><span class="p">:</span> <span class="n">audit_entry</span><span class="o">.</span><span class="n">operation</span><span class="p">,</span>
+        <span class="s2">&quot;resource_type&quot;</span><span class="p">:</span> <span class="n">audit_entry</span><span class="o">.</span><span class="n">resource_type</span><span class="p">,</span>
+        <span class="s2">&quot;resource_id&quot;</span><span class="p">:</span> <span class="n">audit_entry</span><span class="o">.</span><span class="n">resource_id</span><span class="p">,</span>
+        <span class="s2">&quot;api_key_id&quot;</span><span class="p">:</span> <span class="n">audit_entry</span><span class="o">.</span><span class="n">api_key_id</span><span class="p">,</span>
+        <span class="s2">&quot;request_payload&quot;</span><span class="p">:</span> <span class="n">audit_entry</span><span class="o">.</span><span class="n">request_payload</span><span class="p">,</span>
+        <span class="s2">&quot;response_status&quot;</span><span class="p">:</span> <span class="n">audit_entry</span><span class="o">.</span><span class="n">response_status</span><span class="p">,</span>
+        <span class="c1"># ... mais campos</span>
+    <span class="p">}</span>
+
+    <span class="n">hash_string</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">hash_data</span><span class="p">,</span> <span class="n">sort_keys</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">sha256</span><span class="p">(</span><span class="n">hash_string</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
+</code></pre></div>
+
+<h3 id="3-sanitizacao-de-dados">3. Sanitização de Dados</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Remove automaticamente dados sensíveis antes de salvar</span>
+<span class="n">SENSITIVE_FIELDS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;password&quot;</span><span class="p">,</span> <span class="s2">&quot;token&quot;</span><span class="p">,</span> <span class="s2">&quot;secret&quot;</span><span class="p">,</span> <span class="s2">&quot;api_key&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;key_hash&quot;</span><span class="p">,</span> <span class="s2">&quot;authorization&quot;</span><span class="p">,</span> <span class="s2">&quot;bearer&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;credential&quot;</span><span class="p">,</span> <span class="s2">&quot;private_key&quot;</span><span class="p">,</span> <span class="s2">&quot;client_secret&quot;</span>
+<span class="p">}</span>
+
+<span class="c1"># Exemplo de sanitização recursiva</span>
+<span class="k">def</span> <span class="nf">sanitize_data</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="n">sanitized</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">sensitive</span> <span class="ow">in</span> <span class="n">key</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">sensitive</span> <span class="ow">in</span> <span class="n">SENSITIVE_FIELDS</span><span class="p">):</span>
+                <span class="n">sanitized</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;[REDACTED]&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">sanitized</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">sanitize_data</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">sanitized</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">sanitize_data</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">data</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">data</span>
+</code></pre></div>
+
+<h2 id="melhores-praticas">✅ Melhores Práticas</h2>
+<h3 id="1-retencao-de-logs">1. Retenção de Logs</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Script de limpeza (executar mensalmente)</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">cleanup_old_audit_logs</span><span class="p">(</span><span class="n">retention_days</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">90</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Remove audit logs mais antigos que retention_days.&quot;&quot;&quot;</span>
+
+    <span class="n">cutoff_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="n">retention_days</span><span class="p">)</span>
+
+    <span class="c1"># IMPORTANTE: Exportar para backup antes de deletar</span>
+    <span class="k">await</span> <span class="n">export_audit_logs_to_s3</span><span class="p">(</span><span class="n">end_date</span><span class="o">=</span><span class="n">cutoff_date</span><span class="p">)</span>
+
+    <span class="c1"># Deletar logs antigos</span>
+    <span class="k">await</span> <span class="n">db</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+        <span class="s2">&quot;DELETE FROM akm_audit_logs WHERE timestamp &lt; :cutoff&quot;</span><span class="p">,</span>
+        <span class="p">{</span><span class="s2">&quot;cutoff&quot;</span><span class="p">:</span> <span class="n">cutoff_date</span><span class="p">}</span>
+    <span class="p">)</span>
+</code></pre></div>
+
+<h3 id="2-monitoramento-de-integridade">2. Monitoramento de Integridade</h3>
+<div class="codehilite"><pre><span></span><code><span class="ch">#!/bin/bash</span>
+<span class="c1"># Executar diariamente via cron</span>
+
+<span class="nv">API_KEY</span><span class="o">=</span><span class="s2">&quot;your_admin_key&quot;</span>
+
+<span class="c1"># Verificar integridade dos últimos 1000 logs</span>
+<span class="nv">RESULT</span><span class="o">=</span><span class="k">$(</span>curl<span class="w"> </span>-s<span class="w"> </span>-X<span class="w"> </span>GET<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span><span class="s2">&quot;http://localhost:8000/akm/audit/integrity/bulk-verify?limit=1000&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: </span><span class="nv">$API_KEY</span><span class="s2">&quot;</span><span class="k">)</span>
+
+<span class="nv">SCORE</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span><span class="w"> </span><span class="nv">$RESULT</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span>-r<span class="w"> </span><span class="s1">&#39;.integrity_score&#39;</span><span class="k">)</span>
+
+<span class="c1"># Alertar se score &lt; 100%</span>
+<span class="k">if</span><span class="w"> </span><span class="o">((</span><span class="w"> </span><span class="k">$(</span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$SCORE</span><span class="s2"> &lt; 100&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>bc<span class="w"> </span>-l<span class="k">)</span><span class="w"> </span><span class="o">))</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="w">  </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;⚠️  ALERTA: Integrity score: </span><span class="nv">$SCORE</span><span class="s2">%&quot;</span>
+<span class="w">  </span><span class="nb">echo</span><span class="w"> </span><span class="nv">$RESULT</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span><span class="s1">&#39;.violations&#39;</span>
+
+<span class="w">  </span><span class="c1"># Enviar para sistema de alertas</span>
+<span class="w">  </span><span class="c1"># send_alert_to_slack/pagerduty/etc</span>
+<span class="k">fi</span>
+</code></pre></div>
+
+<h3 id="3-analise-de-tendencias">3. Análise de Tendências</h3>
+<div class="codehilite"><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">analyze_security_trends</span><span class="p">(</span><span class="n">project_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Analisa tendências de segurança ao longo do tempo.&quot;&quot;&quot;</span>
+
+    <span class="c1"># Últimos 7 dias</span>
+    <span class="n">stats_7d</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_statistics</span><span class="p">(</span><span class="n">project_id</span><span class="p">,</span> <span class="n">hours</span><span class="o">=</span><span class="mi">168</span><span class="p">)</span>
+
+    <span class="c1"># Últimos 30 dias</span>
+    <span class="n">stats_30d</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_statistics</span><span class="p">(</span><span class="n">project_id</span><span class="p">,</span> <span class="n">hours</span><span class="o">=</span><span class="mi">720</span><span class="p">)</span>
+
+    <span class="c1"># Calcular tendências</span>
+    <span class="n">trends</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;authentication_failures&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;7d&quot;</span><span class="p">:</span> <span class="n">count_operations</span><span class="p">(</span><span class="n">stats_7d</span><span class="p">,</span> <span class="s2">&quot;authenticate&quot;</span><span class="p">,</span> <span class="s2">&quot;denied&quot;</span><span class="p">),</span>
+            <span class="s2">&quot;30d_avg&quot;</span><span class="p">:</span> <span class="n">count_operations</span><span class="p">(</span><span class="n">stats_30d</span><span class="p">,</span> <span class="s2">&quot;authenticate&quot;</span><span class="p">,</span> <span class="s2">&quot;denied&quot;</span><span class="p">)</span> <span class="o">/</span> <span class="mi">30</span> <span class="o">*</span> <span class="mi">7</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;unique_ips&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;7d&quot;</span><span class="p">:</span> <span class="n">stats_7d</span><span class="p">[</span><span class="s2">&quot;unique_ip_addresses&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;30d_avg&quot;</span><span class="p">:</span> <span class="n">stats_30d</span><span class="p">[</span><span class="s2">&quot;unique_ip_addresses&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="mi">30</span> <span class="o">*</span> <span class="mi">7</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="c1"># Detectar anomalias</span>
+    <span class="k">if</span> <span class="n">trends</span><span class="p">[</span><span class="s2">&quot;authentication_failures&quot;</span><span class="p">][</span><span class="s2">&quot;7d&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">trends</span><span class="p">[</span><span class="s2">&quot;authentication_failures&quot;</span><span class="p">][</span><span class="s2">&quot;30d_avg&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;⚠️  ANOMALIA: Aumento significativo em falhas de autenticação&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">trends</span>
+</code></pre></div>
+
+<h3 id="4-compliance-e-relatorios">4. Compliance e Relatórios</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Gerar relatórios mensais para compliance</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">generate_monthly_compliance_report</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Gera relatório de compliance para auditorias externas.&quot;&quot;&quot;</span>
+
+    <span class="n">report</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;period&quot;</span><span class="p">:</span> <span class="n">get_last_month</span><span class="p">(),</span>
+        <span class="s2">&quot;audit_coverage&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;total_operations&quot;</span><span class="p">:</span> <span class="k">await</span> <span class="n">count_all_operations</span><span class="p">(),</span>
+            <span class="s2">&quot;logged_operations&quot;</span><span class="p">:</span> <span class="k">await</span> <span class="n">count_logged_operations</span><span class="p">(),</span>
+            <span class="s2">&quot;coverage_percentage&quot;</span><span class="p">:</span> <span class="mf">100.0</span>  <span class="c1"># 100% de cobertura</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;integrity_verification&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;logs_verified&quot;</span><span class="p">:</span> <span class="mi">10000</span><span class="p">,</span>
+            <span class="s2">&quot;passed&quot;</span><span class="p">:</span> <span class="mi">10000</span><span class="p">,</span>
+            <span class="s2">&quot;failed&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s2">&quot;score&quot;</span><span class="p">:</span> <span class="mf">100.0</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;security_incidents&quot;</span><span class="p">:</span> <span class="k">await</span> <span class="n">get_security_incidents</span><span class="p">(),</span>
+        <span class="s2">&quot;access_patterns&quot;</span><span class="p">:</span> <span class="k">await</span> <span class="n">analyze_access_patterns</span><span class="p">(),</span>
+        <span class="s2">&quot;recommendations&quot;</span><span class="p">:</span> <span class="n">generate_recommendations</span><span class="p">()</span>
+    <span class="p">}</span>
+
+    <span class="c1"># Exportar para PDF</span>
+    <span class="n">generate_pdf_report</span><span class="p">(</span><span class="n">report</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;compliance_report_</span><span class="si">{</span><span class="n">get_last_month</span><span class="p">()</span><span class="si">}</span><span class="s2">.pdf&quot;</span><span class="p">)</span>
+</code></pre></div>
+
+<h2 id="logs-no-console">📊 Logs no Console</h2>
+<p>Além do banco de dados, todos os audit logs também são escritos no console em formato JSON estruturado:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;timestamp&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2024-11-20T10:00:00.123456Z&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;level&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;INFO&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;logger&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;audit&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;message&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;AUDIT: create_api_key&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;audit_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;operation&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;correlation_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;550e8400-e29b-41d4-a716-446655440000&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;operation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;create_api_key&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;resource_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;api_key&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;resource_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;123&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;action&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;POST&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;success&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;api_key_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;project_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;ip_address&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;192.168.1.100&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;endpoint&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/akm/keys&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;http_method&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;POST&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;response_status&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">201</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;entry_hash&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;a3f5d8c9b2e1...&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;metadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;duration_ms&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">45.23</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>Isso permite integração com sistemas como:
+- <strong>BetterStack / Logtail</strong>: Agregação e análise de logs
+- <strong>ELK Stack</strong>: Elasticsearch, Logstash, Kibana
+- <strong>Splunk</strong>: Análise de segurança
+- <strong>Datadog</strong>: Monitoramento e alertas</p>
+<h2 id="resumo">🎓 Resumo</h2>
+<p>O sistema de auditoria do AKM fornece:</p>
+<p>✅ <strong>Rastreabilidade completa</strong> de todas as operações<br />
+✅ <strong>Proteção contra adulteração</strong> com hash criptográfico<br />
+✅ <strong>Correlation IDs</strong> para rastreamento de transações<br />
+✅ <strong>API read-only</strong> para consulta segura<br />
+✅ <strong>Sanitização automática</strong> de dados sensíveis<br />
+✅ <strong>Multi-tenancy</strong> com isolamento por projeto<br />
+✅ <strong>Verificação de integridade</strong> individual e em massa<br />
+✅ <strong>Logs estruturados</strong> em console + database  </p>
+<p>Para suporte ou dúvidas, consulte a documentação adicional em <code>docs/</code>.</p>
+        </div>
+
+        <div class="footer">
+            <p>Built with ❤️ using FastAPI, PostgreSQL, and SQLAlchemy</p>
+            <p style="margin-top: 10px;">© 2025 API Key Management Service by <a href="https://github.com/ideiasfactory" target="_blank">Ideias Factory</a></p>
+        </div>
+    </div>
+
+    <a href="#" class="back-to-top">↑</a>
+
+    <script>
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        // Back to top button
+        const backToTop = document.querySelector('.back-to-top');
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTop.style.display = 'flex';
+            } else {
+                backToTop.style.display = 'none';
+            }
+        });
+
+        backToTop.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    </script>
+</body>
+</html>

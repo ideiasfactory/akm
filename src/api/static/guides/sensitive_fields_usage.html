@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sensitive Fields Usage - API Key Management Service</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --accent: #f093fb;
+            --dark: #1a1a2e;
+            --light: #f8f9fa;
+            --code-bg: #282c34;
+            --border: #e0e0e0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .nav {
+            background: var(--dark);
+            padding: 15px 40px;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .nav a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .nav a:hover {
+            background: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--dark);
+            margin: 30px 0 15px 0;
+            line-height: 1.3;
+        }
+
+        h1 { font-size: 2.5em; border-bottom: 3px solid var(--primary); padding-bottom: 10px; }
+        h2 { font-size: 2em; border-bottom: 2px solid var(--border); padding-bottom: 8px; margin-top: 40px; }
+        h3 { font-size: 1.5em; color: var(--primary); }
+        h4 { font-size: 1.3em; }
+
+        p {
+            margin: 15px 0;
+            line-height: 1.8;
+        }
+
+        a {
+            color: var(--primary);
+            text-decoration: none;
+            border-bottom: 1px dotted var(--primary);
+        }
+
+        a:hover {
+            color: var(--secondary);
+            border-bottom: 1px solid var(--secondary);
+        }
+
+        code {
+            background: #f4f4f4;
+            padding: 3px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #e83e8c;
+        }
+
+        pre {
+            background: var(--code-bg);
+            color: #abb2bf;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+            border-left: 4px solid var(--primary);
+        }
+
+        pre code {
+            background: none;
+            color: inherit;
+            padding: 0;
+            font-size: 0.95em;
+        }
+
+        blockquote {
+            border-left: 4px solid var(--primary);
+            padding: 15px 20px;
+            margin: 20px 0;
+            background: #f8f9fa;
+            font-style: italic;
+        }
+
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+
+        li {
+            margin: 8px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .success {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .info {
+            background: #d1ecf1;
+            border-left: 4px solid #17a2b8;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .footer {
+            background: var(--dark);
+            color: white;
+            padding: 30px 40px;
+            text-align: center;
+        }
+
+        .footer a {
+            color: var(--accent);
+            border-bottom: 1px dotted var(--accent);
+        }
+
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--primary);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            font-size: 24px;
+        }
+
+        .back-to-top:hover {
+            background: var(--secondary);
+            transform: translateY(-5px);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                border-radius: 0;
+            }
+
+            .header {
+                padding: 30px 20px;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .nav {
+                padding: 15px 20px;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            pre {
+                padding: 15px;
+                font-size: 0.85em;
+            }
+        }
+
+        /* Syntax highlighting for code blocks */
+        .codehilite .k { color: #c678dd; } /* keyword */
+        .codehilite .s { color: #98c379; } /* string */
+        .codehilite .n { color: #e06c75; } /* name */
+        .codehilite .c { color: #5c6370; font-style: italic; } /* comment */
+        .codehilite .m { color: #d19a66; } /* number */
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔐 Sensitive Fields Usage</h1>
+            <p>API Key Management Service</p>
+        </div>
+
+        <div class="nav">
+            <a href="/">🏠 Home</a>
+            <a href="/quickstart">🚀 Quick Start</a>
+            <a href="/public/guides/admnistration.html">🔐 Administration</a>
+            <a href="/docs">📚 API Docs</a>
+            <a href="/redoc">📖 ReDoc</a>
+        </div>
+
+        <div class="content">
+<h1 id="sensitive-fields-global-vs-project-specific">Sensitive Fields - Global vs Project-Specific</h1>
+<h2 id="arquitetura">Arquitetura</h2>
+<p>O sistema de <strong>Sensitive Fields</strong> suporta dois níveis de configuração:</p>
+<h3 id="campos-globais-global-fields">🌍 Campos Globais (Global Fields)</h3>
+<ul>
+<li><code>project_id = NULL</code></li>
+<li>Aplicam-se a <strong>TODOS os projetos</strong> por padrão</li>
+<li>Definidos no seed inicial</li>
+<li>Exemplos: <code>password</code>, <code>token</code>, <code>secret</code>, <code>api_key</code>, <code>key_hash</code>, etc.</li>
+</ul>
+<h3 id="campos-especificos-do-projeto-project-specific-fields">📁 Campos Específicos do Projeto (Project-Specific Fields)</h3>
+<ul>
+<li><code>project_id = &lt;ID do projeto&gt;</code></li>
+<li>Aplicam-se <strong>somente ao projeto específico</strong></li>
+<li>Podem <strong>sobrescrever</strong> campos globais ou <strong>adicionar novos</strong> campos</li>
+<li>Exemplos: <code>customer_ssn</code>, <code>account_number</code>, <code>internal_token</code></li>
+</ul>
+<h2 id="constraint-de-unicidade">Constraint de Unicidade</h2>
+<div class="codehilite"><pre><span></span><code><span class="k">UNIQUE</span><span class="w"> </span><span class="p">(</span><span class="n">project_id</span><span class="p">,</span><span class="w"> </span><span class="n">field_name</span><span class="p">)</span>
+</code></pre></div>
+
+<p>Isso significa:
+- ✅ Você pode ter <code>password</code> global (<code>project_id=NULL</code>)
+- ✅ Você pode ter <code>password</code> para projeto 1 (<code>project_id=1</code>)
+- ✅ Você pode ter <code>password</code> para projeto 2 (<code>project_id=2</code>)
+- ❌ Você <strong>não pode</strong> ter dois <code>password</code> para o mesmo projeto</p>
+<h2 id="logica-de-aplicacao">Lógica de Aplicação</h2>
+<p>Quando o sistema processa requisições:</p>
+<ol>
+<li><strong>Carrega campos globais</strong> (<code>project_id IS NULL</code>)</li>
+<li><strong>Carrega campos do projeto específico</strong> (<code>project_id = X</code>)</li>
+<li><strong>Merge</strong>: Se o projeto define o mesmo campo, a configuração do projeto <strong>sobrescreve</strong> a global</li>
+</ol>
+<h3 id="exemplo-de-query">Exemplo de Query</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1">-- Buscar todos os campos aplicáveis ao projeto 1</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="n">field_name</span><span class="p">,</span><span class="w"> </span><span class="n">strategy</span><span class="p">,</span><span class="w"> </span><span class="n">replacement</span><span class="p">,</span><span class="w"> </span><span class="n">mask_char</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">akm_sensitive_fields</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="p">(</span><span class="n">project_id</span><span class="w"> </span><span class="k">IS</span><span class="w"> </span><span class="k">NULL</span><span class="w"> </span><span class="k">OR</span><span class="w"> </span><span class="n">project_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span>
+<span class="w">  </span><span class="k">AND</span><span class="w"> </span><span class="n">is_active</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">true</span>
+<span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span>
+<span class="w">  </span><span class="n">project_id</span><span class="w"> </span><span class="n">NULLS</span><span class="w"> </span><span class="k">LAST</span><span class="p">,</span><span class="w">  </span><span class="c1">-- Campos do projeto têm precedência</span>
+<span class="w">  </span><span class="n">field_name</span><span class="p">;</span>
+</code></pre></div>
+
+<h2 id="casos-de-uso">Casos de Uso</h2>
+<h3 id="caso-1-usar-apenas-campos-globais">Caso 1: Usar Apenas Campos Globais</h3>
+<p><strong>Cenário:</strong> Projeto novo que usa os padrões</p>
+<div class="codehilite"><pre><span></span><code><span class="c1">-- Não precisa fazer nada! Os campos globais já se aplicam</span>
+<span class="c1">-- password, token, secret, etc. serão sanitizados automaticamente</span>
+</code></pre></div>
+
+<h3 id="caso-2-adicionar-campos-especificos">Caso 2: Adicionar Campos Específicos</h3>
+<p><strong>Cenário:</strong> Projeto tem campos adicionais sensíveis</p>
+<div class="codehilite"><pre><span></span><code><span class="c1">-- Adicionar campo específico do projeto 1</span>
+<span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">akm_sensitive_fields</span><span class="w"> </span>
+<span class="p">(</span><span class="n">project_id</span><span class="p">,</span><span class="w"> </span><span class="n">field_name</span><span class="p">,</span><span class="w"> </span><span class="n">is_active</span><span class="p">,</span><span class="w"> </span><span class="n">strategy</span><span class="p">,</span><span class="w"> </span><span class="n">replacement</span><span class="p">)</span>
+<span class="k">VALUES</span><span class="w"> </span>
+<span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;customer_ssn&#39;</span><span class="p">,</span><span class="w"> </span><span class="k">true</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;mask&#39;</span><span class="p">,</span><span class="w"> </span><span class="k">NULL</span><span class="p">),</span>
+<span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;account_number&#39;</span><span class="p">,</span><span class="w"> </span><span class="k">true</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;mask&#39;</span><span class="p">,</span><span class="w"> </span><span class="k">NULL</span><span class="p">),</span>
+<span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;internal_token&#39;</span><span class="p">,</span><span class="w"> </span><span class="k">true</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;redact&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;[INTERNAL]&#39;</span><span class="p">);</span>
+</code></pre></div>
+
+<p>Resultado para projeto 1:
+- 🌍 11 campos globais (password, token, etc.)
+- 📁 3 campos específicos (customer_ssn, account_number, internal_token)
+- <strong>Total: 14 campos sanitizados</strong></p>
+<h3 id="caso-3-sobrescrever-configuracao-global">Caso 3: Sobrescrever Configuração Global</h3>
+<p><strong>Cenário:</strong> Projeto quer mascarar <code>password</code> em vez de redact</p>
+<div class="codehilite"><pre><span></span><code><span class="c1">-- Campo global: password com strategy=&#39;redact&#39;</span>
+<span class="c1">-- Sobrescrever para projeto 1:</span>
+<span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">akm_sensitive_fields</span><span class="w"> </span>
+<span class="p">(</span><span class="n">project_id</span><span class="p">,</span><span class="w"> </span><span class="n">field_name</span><span class="p">,</span><span class="w"> </span><span class="n">is_active</span><span class="p">,</span><span class="w"> </span><span class="n">strategy</span><span class="p">,</span><span class="w"> </span><span class="n">mask_show_start</span><span class="p">,</span><span class="w"> </span><span class="n">mask_show_end</span><span class="p">,</span><span class="w"> </span><span class="n">mask_char</span><span class="p">)</span>
+<span class="k">VALUES</span><span class="w"> </span>
+<span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;password&#39;</span><span class="p">,</span><span class="w"> </span><span class="k">true</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;mask&#39;</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;*&#39;</span><span class="p">);</span>
+</code></pre></div>
+
+<p>Resultado:
+- Outros projetos: <code>password</code> → <code>[REDACTED]</code>
+- Projeto 1: <code>password</code> → <code>ab******xy</code> (masked)</p>
+<h3 id="caso-4-desabilitar-campo-global-para-um-projeto">Caso 4: Desabilitar Campo Global para um Projeto</h3>
+<p><strong>Cenário:</strong> Projeto não quer sanitizar <code>bearer</code> tokens</p>
+<div class="codehilite"><pre><span></span><code><span class="c1">-- Criar campo específico com is_active=false</span>
+<span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">akm_sensitive_fields</span><span class="w"> </span>
+<span class="p">(</span><span class="n">project_id</span><span class="p">,</span><span class="w"> </span><span class="n">field_name</span><span class="p">,</span><span class="w"> </span><span class="n">is_active</span><span class="p">,</span><span class="w"> </span><span class="n">strategy</span><span class="p">)</span>
+<span class="k">VALUES</span><span class="w"> </span>
+<span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;bearer&#39;</span><span class="p">,</span><span class="w"> </span><span class="k">false</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;redact&#39;</span><span class="p">);</span>
+</code></pre></div>
+
+<p>Resultado:
+- Outros projetos: <code>bearer</code> sanitizado
+- Projeto 1: <code>bearer</code> <strong>não sanitizado</strong> (is_active=false)</p>
+<h2 id="exemplo-de-migration">Exemplo de Migration</h2>
+<div class="codehilite"><pre><span></span><code><span class="sd">&quot;&quot;&quot;add_project_specific_sensitive_fields</span>
+
+<span class="sd">Revision ID: xxxxxxxxxxxx</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">alembic</span> <span class="kn">import</span> <span class="n">op</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">text</span>
+
+
+<span class="k">def</span> <span class="nf">upgrade</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">conn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">get_bind</span><span class="p">()</span>
+
+    <span class="c1"># Adicionar campos específicos para projeto ID 2 (exemplo: e-commerce)</span>
+    <span class="n">project_fields</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;credit_card_number&#39;</span><span class="p">,</span> <span class="s1">&#39;mask&#39;</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="s1">&#39;*&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;cvv&#39;</span><span class="p">,</span> <span class="s1">&#39;redact&#39;</span><span class="p">,</span> <span class="s1">&#39;[***]&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;customer_email&#39;</span><span class="p">,</span> <span class="s1">&#39;mask&#39;</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;*&#39;</span><span class="p">),</span>
+    <span class="p">]</span>
+
+    <span class="k">for</span> <span class="n">project_id</span><span class="p">,</span> <span class="n">field_name</span><span class="p">,</span> <span class="n">strategy</span><span class="p">,</span> <span class="o">*</span><span class="n">params</span> <span class="ow">in</span> <span class="n">project_fields</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">strategy</span> <span class="o">==</span> <span class="s1">&#39;mask&#39;</span><span class="p">:</span>
+            <span class="n">show_start</span><span class="p">,</span> <span class="n">show_end</span><span class="p">,</span> <span class="n">mask_char</span> <span class="o">=</span> <span class="n">params</span>
+            <span class="n">conn</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">text</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">                INSERT INTO akm_sensitive_fields </span>
+<span class="s2">                (project_id, field_name, is_active, strategy, mask_show_start, mask_show_end, mask_char)</span>
+<span class="s2">                VALUES (:pid, :fname, true, &#39;mask&#39;, :start, :end, :char)</span>
+<span class="s2">            &quot;&quot;&quot;</span><span class="p">),</span> <span class="p">{</span>
+                <span class="s2">&quot;pid&quot;</span><span class="p">:</span> <span class="n">project_id</span><span class="p">,</span> 
+                <span class="s2">&quot;fname&quot;</span><span class="p">:</span> <span class="n">field_name</span><span class="p">,</span>
+                <span class="s2">&quot;start&quot;</span><span class="p">:</span> <span class="n">show_start</span><span class="p">,</span>
+                <span class="s2">&quot;end&quot;</span><span class="p">:</span> <span class="n">show_end</span><span class="p">,</span>
+                <span class="s2">&quot;char&quot;</span><span class="p">:</span> <span class="n">mask_char</span>
+            <span class="p">})</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># redact</span>
+            <span class="n">replacement</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">conn</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">text</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">                INSERT INTO akm_sensitive_fields </span>
+<span class="s2">                (project_id, field_name, is_active, strategy, replacement)</span>
+<span class="s2">                VALUES (:pid, :fname, true, &#39;redact&#39;, :repl)</span>
+<span class="s2">            &quot;&quot;&quot;</span><span class="p">),</span> <span class="p">{</span>
+                <span class="s2">&quot;pid&quot;</span><span class="p">:</span> <span class="n">project_id</span><span class="p">,</span>
+                <span class="s2">&quot;fname&quot;</span><span class="p">:</span> <span class="n">field_name</span><span class="p">,</span>
+                <span class="s2">&quot;repl&quot;</span><span class="p">:</span> <span class="n">replacement</span>
+            <span class="p">})</span>
+
+
+<span class="k">def</span> <span class="nf">downgrade</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">conn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">get_bind</span><span class="p">()</span>
+    <span class="n">conn</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">text</span><span class="p">(</span><span class="s2">&quot;DELETE FROM akm_sensitive_fields WHERE project_id = 2&quot;</span><span class="p">))</span>
+</code></pre></div>
+
+<h2 id="api-para-gerenciar-campos">API para Gerenciar Campos</h2>
+<h3 id="listar-campos-global-projeto">Listar Campos (Global + Projeto)</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># GET /api/v1/sensitive-fields?project_id=1</span>
+
+<span class="c1"># Response:</span>
+<span class="p">{</span>
+  <span class="s2">&quot;global_fields&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;password&quot;</span><span class="p">,</span> <span class="s2">&quot;strategy&quot;</span><span class="p">:</span> <span class="s2">&quot;redact&quot;</span><span class="p">,</span> <span class="s2">&quot;replacement&quot;</span><span class="p">:</span> <span class="s2">&quot;[REDACTED]&quot;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;token&quot;</span><span class="p">,</span> <span class="s2">&quot;strategy&quot;</span><span class="p">:</span> <span class="s2">&quot;redact&quot;</span><span class="p">,</span> <span class="s2">&quot;replacement&quot;</span><span class="p">:</span> <span class="s2">&quot;[REDACTED]&quot;</span><span class="p">},</span>
+    <span class="o">...</span>
+  <span class="p">],</span>
+  <span class="s2">&quot;project_fields&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;customer_ssn&quot;</span><span class="p">,</span> <span class="s2">&quot;strategy&quot;</span><span class="p">:</span> <span class="s2">&quot;mask&quot;</span><span class="p">,</span> <span class="s2">&quot;mask_show_start&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;mask_show_end&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;account_number&quot;</span><span class="p">,</span> <span class="s2">&quot;strategy&quot;</span><span class="p">:</span> <span class="s2">&quot;mask&quot;</span><span class="p">,</span> <span class="s2">&quot;mask_show_start&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;mask_show_end&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">}</span>
+  <span class="p">],</span>
+  <span class="s2">&quot;effective_fields&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;password&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;strategy&quot;</span><span class="p">:</span> <span class="s2">&quot;redact&quot;</span><span class="p">,</span> <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="s2">&quot;global&quot;</span><span class="p">},</span>
+    <span class="s2">&quot;token&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;strategy&quot;</span><span class="p">:</span> <span class="s2">&quot;redact&quot;</span><span class="p">,</span> <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="s2">&quot;global&quot;</span><span class="p">},</span>
+    <span class="s2">&quot;customer_ssn&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;strategy&quot;</span><span class="p">:</span> <span class="s2">&quot;mask&quot;</span><span class="p">,</span> <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="s2">&quot;project&quot;</span><span class="p">},</span>
+    <span class="s2">&quot;account_number&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;strategy&quot;</span><span class="p">:</span> <span class="s2">&quot;mask&quot;</span><span class="p">,</span> <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="s2">&quot;project&quot;</span><span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3 id="criar-campo-especifico-do-projeto">Criar Campo Específico do Projeto</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># POST /api/v1/projects/1/sensitive-fields</span>
+<span class="p">{</span>
+  <span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;customer_ssn&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;strategy&quot;</span><span class="p">:</span> <span class="s2">&quot;mask&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;mask_show_start&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+  <span class="s2">&quot;mask_show_end&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+  <span class="s2">&quot;mask_char&quot;</span><span class="p">:</span> <span class="s2">&quot;*&quot;</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3 id="sobrescrever-campo-global">Sobrescrever Campo Global</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># POST /api/v1/projects/1/sensitive-fields</span>
+<span class="p">{</span>
+  <span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;password&quot;</span><span class="p">,</span>  <span class="c1"># Já existe globalmente</span>
+  <span class="s2">&quot;strategy&quot;</span><span class="p">:</span> <span class="s2">&quot;mask&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;mask_show_start&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+  <span class="s2">&quot;mask_show_end&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+  <span class="s2">&quot;mask_char&quot;</span><span class="p">:</span> <span class="s2">&quot;*&quot;</span>
+<span class="p">}</span>
+<span class="c1"># Resultado: projeto 1 usa mask, outros projetos usam redact</span>
+</code></pre></div>
+
+<h2 id="beneficios">Benefícios</h2>
+<p>✅ <strong>Flexibilidade:</strong> Cada projeto pode ter suas próprias regras<br />
+✅ <strong>Padrões Globais:</strong> Novos projetos já vêm com proteção básica<br />
+✅ <strong>Customização:</strong> Override fácil de campos globais<br />
+✅ <strong>Isolamento:</strong> Mudanças em um projeto não afetam outros<br />
+✅ <strong>Auditoria:</strong> Clara separação entre global vs. específico</p>
+<h2 id="verificacao">Verificação</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1">-- Ver campos globais</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">akm_sensitive_fields</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">project_id</span><span class="w"> </span><span class="k">IS</span><span class="w"> </span><span class="k">NULL</span><span class="p">;</span>
+
+<span class="c1">-- Ver campos do projeto 1</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">akm_sensitive_fields</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">project_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+
+<span class="c1">-- Ver campos efetivos para projeto 1 (global + projeto)</span>
+<span class="k">SELECT</span><span class="w"> </span>
+<span class="w">  </span><span class="n">field_name</span><span class="p">,</span>
+<span class="w">  </span><span class="k">CASE</span><span class="w"> </span><span class="k">WHEN</span><span class="w"> </span><span class="n">project_id</span><span class="w"> </span><span class="k">IS</span><span class="w"> </span><span class="k">NULL</span><span class="w"> </span><span class="k">THEN</span><span class="w"> </span><span class="s1">&#39;🌍 Global&#39;</span><span class="w"> </span><span class="k">ELSE</span><span class="w"> </span><span class="s1">&#39;📁 Project&#39;</span><span class="w"> </span><span class="k">END</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="k">source</span><span class="p">,</span>
+<span class="w">  </span><span class="n">strategy</span><span class="p">,</span>
+<span class="w">  </span><span class="n">replacement</span><span class="p">,</span>
+<span class="w">  </span><span class="n">mask_char</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">akm_sensitive_fields</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="p">(</span><span class="n">project_id</span><span class="w"> </span><span class="k">IS</span><span class="w"> </span><span class="k">NULL</span><span class="w"> </span><span class="k">OR</span><span class="w"> </span><span class="n">project_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span>
+<span class="w">  </span><span class="k">AND</span><span class="w"> </span><span class="n">is_active</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">true</span>
+<span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">project_id</span><span class="w"> </span><span class="n">NULLS</span><span class="w"> </span><span class="k">LAST</span><span class="p">,</span><span class="w"> </span><span class="n">field_name</span><span class="p">;</span>
+</code></pre></div>
+
+<h2 id="migracao-de-dados-existentes">Migração de Dados Existentes</h2>
+<p>Se você já tinha <code>akm_sensitive_fields</code> sem <code>project_id</code>:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1">-- ANTES da migration, todos os campos eram &quot;globais implicitamente&quot;</span>
+<span class="c1">-- DEPOIS da migration, definir explicitamente como globais:</span>
+
+<span class="k">UPDATE</span><span class="w"> </span><span class="n">akm_sensitive_fields</span><span class="w"> </span>
+<span class="k">SET</span><span class="w"> </span><span class="n">project_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">NULL</span><span class="w"> </span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">project_id</span><span class="w"> </span><span class="k">IS</span><span class="w"> </span><span class="k">NULL</span><span class="p">;</span><span class="w">  </span><span class="c1">-- Garantir que são NULL</span>
+
+<span class="c1">-- Ou migrar campos existentes para um projeto específico:</span>
+<span class="k">UPDATE</span><span class="w"> </span><span class="n">akm_sensitive_fields</span><span class="w"> </span>
+<span class="k">SET</span><span class="w"> </span><span class="n">project_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">field_name</span><span class="w"> </span><span class="k">IN</span><span class="w"> </span><span class="p">(</span><span class="s1">&#39;customer_ssn&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;account_number&#39;</span><span class="p">);</span>
+</code></pre></div>
+        </div>
+
+        <div class="footer">
+            <p>Built with ❤️ using FastAPI, PostgreSQL, and SQLAlchemy</p>
+            <p style="margin-top: 10px;">© 2025 API Key Management Service by <a href="https://github.com/ideiasfactory" target="_blank">Ideias Factory</a></p>
+        </div>
+    </div>
+
+    <a href="#" class="back-to-top">↑</a>
+
+    <script>
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        // Back to top button
+        const backToTop = document.querySelector('.back-to-top');
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTop.style.display = 'flex';
+            } else {
+                backToTop.style.display = 'none';
+            }
+        });
+
+        backToTop.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    </script>
+</body>
+</html>

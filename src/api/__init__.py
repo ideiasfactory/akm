@@ -10,6 +10,7 @@ from .routes import (
     openapi_scopes_router,
     audit_router,
     sensitive_fields_router,
+    project_configurations_router,
 )
 from .models import (
     HealthResponse,
@@ -31,6 +32,7 @@ __all__ = [
     "openapi_scopes_router",
     "audit_router",
     "sensitive_fields_router",
+    "project_configurations_router",
     "HealthResponse",
     "DatabaseStatus",
     "HomePageData",

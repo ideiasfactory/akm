@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sensitive Fields - API Key Management Service</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --accent: #f093fb;
+            --dark: #1a1a2e;
+            --light: #f8f9fa;
+            --code-bg: #282c34;
+            --border: #e0e0e0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .nav {
+            background: var(--dark);
+            padding: 15px 40px;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .nav a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .nav a:hover {
+            background: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--dark);
+            margin: 30px 0 15px 0;
+            line-height: 1.3;
+        }
+
+        h1 { font-size: 2.5em; border-bottom: 3px solid var(--primary); padding-bottom: 10px; }
+        h2 { font-size: 2em; border-bottom: 2px solid var(--border); padding-bottom: 8px; margin-top: 40px; }
+        h3 { font-size: 1.5em; color: var(--primary); }
+        h4 { font-size: 1.3em; }
+
+        p {
+            margin: 15px 0;
+            line-height: 1.8;
+        }
+
+        a {
+            color: var(--primary);
+            text-decoration: none;
+            border-bottom: 1px dotted var(--primary);
+        }
+
+        a:hover {
+            color: var(--secondary);
+            border-bottom: 1px solid var(--secondary);
+        }
+
+        code {
+            background: #f4f4f4;
+            padding: 3px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #e83e8c;
+        }
+
+        pre {
+            background: var(--code-bg);
+            color: #abb2bf;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+            border-left: 4px solid var(--primary);
+        }
+
+        pre code {
+            background: none;
+            color: inherit;
+            padding: 0;
+            font-size: 0.95em;
+        }
+
+        blockquote {
+            border-left: 4px solid var(--primary);
+            padding: 15px 20px;
+            margin: 20px 0;
+            background: #f8f9fa;
+            font-style: italic;
+        }
+
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+
+        li {
+            margin: 8px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .success {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .info {
+            background: #d1ecf1;
+            border-left: 4px solid #17a2b8;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .footer {
+            background: var(--dark);
+            color: white;
+            padding: 30px 40px;
+            text-align: center;
+        }
+
+        .footer a {
+            color: var(--accent);
+            border-bottom: 1px dotted var(--accent);
+        }
+
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--primary);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            font-size: 24px;
+        }
+
+        .back-to-top:hover {
+            background: var(--secondary);
+            transform: translateY(-5px);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                border-radius: 0;
+            }
+
+            .header {
+                padding: 30px 20px;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .nav {
+                padding: 15px 20px;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            pre {
+                padding: 15px;
+                font-size: 0.85em;
+            }
+        }
+
+        /* Syntax highlighting for code blocks */
+        .codehilite .k { color: #c678dd; } /* keyword */
+        .codehilite .s { color: #98c379; } /* string */
+        .codehilite .n { color: #e06c75; } /* name */
+        .codehilite .c { color: #5c6370; font-style: italic; } /* comment */
+        .codehilite .m { color: #d19a66; } /* number */
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔐 Sensitive Fields</h1>
+            <p>API Key Management Service</p>
+        </div>
+
+        <div class="nav">
+            <a href="/">🏠 Home</a>
+            <a href="/quickstart">🚀 Quick Start</a>
+            <a href="/public/guides/admnistration.html">🔐 Administration</a>
+            <a href="/docs">📚 API Docs</a>
+            <a href="/redoc">📖 ReDoc</a>
+        </div>
+
+        <div class="content">
+<h1 id="sensitive-field-management-system">Sensitive Field Management System</h1>
+<h2 id="overview">Overview</h2>
+<p>The Sensitive Field Management System provides dynamic, configurable sanitization of sensitive data in audit logs and other outputs. It supports multiple sanitization strategies (redact, mask) with field-level configuration control.</p>
+<h2 id="features">Features</h2>
+<ul>
+<li><strong>Dynamic Configuration</strong>: Define sensitive fields via JSON file, database, or environment variables</li>
+<li><strong>Multiple Strategies</strong>: Choose between redaction (full replacement) or masking (partial visibility)</li>
+<li><strong>Merge Priority</strong>: DB overrides file config, field-level settings override global defaults</li>
+<li><strong>CRUD API</strong>: Manage sensitive field configurations via REST API</li>
+<li><strong>Automatic Caching</strong>: 5-minute TTL cache for optimal performance</li>
+<li><strong>Flexible Masking</strong>: Configure leading/trailing characters to show and masking character</li>
+</ul>
+<h2 id="architecture">Architecture</h2>
+<h3 id="components">Components</h3>
+<ol>
+<li><strong>Database Model</strong>: <code>AKMSensitiveField</code> - Stores field configurations</li>
+<li><strong>Repository</strong>: <code>SensitiveFieldRepository</code> - CRUD operations</li>
+<li><strong>Manager</strong>: <code>SensitiveFieldManager</code> - Merges config from multiple sources</li>
+<li><strong>API Routes</strong>: <code>/akm/sensitive-fields/*</code> - REST endpoints</li>
+<li><strong>Integration</strong>: <code>AuditLogger</code> uses manager for sanitization</li>
+</ol>
+<h3 id="configuration-sources-priority-order">Configuration Sources (Priority Order)</h3>
+<ol>
+<li><strong>File</strong>: <code>data/sensitive_fields.json</code> (lowest priority)</li>
+<li><strong>Database</strong>: <code>akm_sensitive_fields</code> table (medium priority)</li>
+<li><strong>Environment</strong>: Global settings in <code>.env</code> (default fallback)</li>
+<li><strong>Per-Field Override</strong>: Field-specific settings (highest priority)</li>
+</ol>
+<h2 id="configuration">Configuration</h2>
+<h3 id="environment-variables-env">Environment Variables (.env)</h3>
+<div class="codehilite"><pre><span></span><code><span class="err">#</span><span class="w"> </span><span class="k">Global</span><span class="w"> </span><span class="n">sanitization</span><span class="w"> </span><span class="n">defaults</span>
+<span class="n">SANITIZATION_STRATEGY</span><span class="o">=</span><span class="n">redact</span><span class="w">           </span><span class="err">#</span><span class="w"> </span><span class="n">redact</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">mask</span>
+<span class="n">SANITIZATION_REPLACEMENT</span><span class="o">=[</span><span class="n">REDACTED</span><span class="o">]</span><span class="w">    </span><span class="err">#</span><span class="w"> </span><span class="k">For</span><span class="w"> </span><span class="n">redact</span><span class="w"> </span><span class="n">strategy</span>
+<span class="n">SANITIZATION_MASK_SHOW_START</span><span class="o">=</span><span class="mi">3</span><span class="w">         </span><span class="err">#</span><span class="w"> </span><span class="k">Leading</span><span class="w"> </span><span class="n">chars</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="n">show</span><span class="w"> </span><span class="k">when</span><span class="w"> </span><span class="n">masking</span>
+<span class="n">SANITIZATION_MASK_SHOW_END</span><span class="o">=</span><span class="mi">2</span><span class="w">           </span><span class="err">#</span><span class="w"> </span><span class="k">Trailing</span><span class="w"> </span><span class="n">chars</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="n">show</span><span class="w"> </span><span class="k">when</span><span class="w"> </span><span class="n">masking</span>
+<span class="n">SANITIZATION_MASK_CHAR</span><span class="o">=*</span><span class="w">               </span><span class="err">#</span><span class="w"> </span><span class="n">Masking</span><span class="w"> </span><span class="k">character</span>
+</code></pre></div>
+
+<h3 id="file-configuration-datasensitive_fieldsjson">File Configuration (data/sensitive_fields.json)</h3>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;fields&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="s2">&quot;password&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;token&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;secret&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;api_key&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;authorization&quot;</span>
+<span class="w">  </span><span class="p">],</span>
+<span class="w">  </span><span class="nt">&quot;strategy&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;redact&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;replacement&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;[REDACTED]&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;mask&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;show_start&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;show_end&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;char&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;*&quot;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3 id="database-model">Database Model</h3>
+<div class="codehilite"><pre><span></span><code><span class="k">class</span> <span class="nc">AKMSensitiveField</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+    <span class="nb">id</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">field_name</span><span class="p">:</span> <span class="nb">str</span>                    <span class="c1"># Case-insensitive</span>
+    <span class="n">is_active</span><span class="p">:</span> <span class="nb">bool</span>                    <span class="c1"># Enable/disable field</span>
+    <span class="n">strategy</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>            <span class="c1"># &quot;redact&quot; | &quot;mask&quot; (overrides global)</span>
+    <span class="n">mask_show_start</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>     <span class="c1"># Leading chars (overrides global)</span>
+    <span class="n">mask_show_end</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>       <span class="c1"># Trailing chars (overrides global)</span>
+    <span class="n">mask_char</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>           <span class="c1"># Masking char (overrides global)</span>
+    <span class="n">replacement</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>         <span class="c1"># Replacement text (overrides global)</span>
+    <span class="n">created_at</span><span class="p">:</span> <span class="n">datetime</span>
+    <span class="n">updated_at</span><span class="p">:</span> <span class="n">datetime</span>
+</code></pre></div>
+
+<h2 id="api-endpoints">API Endpoints</h2>
+<h3 id="list-sensitive-fields">List Sensitive Fields</h3>
+<div class="codehilite"><pre><span></span><code>GET<span class="w"> </span>/akm/sensitive-fields?active<span class="o">=</span><span class="nb">true</span>
+</code></pre></div>
+
+<p><strong>Required Scope</strong>: <code>akm:sensitive-fields:read</code></p>
+<p><strong>Response</strong>:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;total&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;items&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;field_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;password&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;is_active&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;strategy&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;redact&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;mask_show_start&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;mask_show_end&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;mask_char&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;replacement&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;[HIDDEN]&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3 id="get-single-field">Get Single Field</h3>
+<div class="codehilite"><pre><span></span><code>GET<span class="w"> </span>/akm/sensitive-fields/<span class="o">{</span>field_id<span class="o">}</span>
+</code></pre></div>
+
+<p><strong>Required Scope</strong>: <code>akm:sensitive-fields:read</code></p>
+<h3 id="create-sensitive-field">Create Sensitive Field</h3>
+<div class="codehilite"><pre><span></span><code>POST<span class="w"> </span>/akm/sensitive-fields
+Content-Type:<span class="w"> </span>application/json
+
+<span class="o">{</span>
+<span class="w">  </span><span class="s2">&quot;field_name&quot;</span>:<span class="w"> </span><span class="s2">&quot;credit_card&quot;</span>,
+<span class="w">  </span><span class="s2">&quot;is_active&quot;</span>:<span class="w"> </span>true,
+<span class="w">  </span><span class="s2">&quot;strategy&quot;</span>:<span class="w"> </span><span class="s2">&quot;mask&quot;</span>,
+<span class="w">  </span><span class="s2">&quot;mask_show_start&quot;</span>:<span class="w"> </span><span class="m">4</span>,
+<span class="w">  </span><span class="s2">&quot;mask_show_end&quot;</span>:<span class="w"> </span><span class="m">4</span>,
+<span class="w">  </span><span class="s2">&quot;mask_char&quot;</span>:<span class="w"> </span><span class="s2">&quot;*&quot;</span>
+<span class="o">}</span>
+</code></pre></div>
+
+<p><strong>Required Scope</strong>: <code>akm:sensitive-fields:create</code></p>
+<p><strong>Response</strong>:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;field_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;credit_card&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;is_active&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;strategy&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;mask&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;mask_show_start&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;mask_show_end&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;mask_char&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;*&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;replacement&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3 id="update-sensitive-field">Update Sensitive Field</h3>
+<div class="codehilite"><pre><span></span><code>PUT<span class="w"> </span>/akm/sensitive-fields/<span class="o">{</span>field_id<span class="o">}</span>
+Content-Type:<span class="w"> </span>application/json
+
+<span class="o">{</span>
+<span class="w">  </span><span class="s2">&quot;strategy&quot;</span>:<span class="w"> </span><span class="s2">&quot;redact&quot;</span>,
+<span class="w">  </span><span class="s2">&quot;replacement&quot;</span>:<span class="w"> </span><span class="s2">&quot;[CARD_REDACTED]&quot;</span>
+<span class="o">}</span>
+</code></pre></div>
+
+<p><strong>Required Scope</strong>: <code>akm:sensitive-fields:update</code></p>
+<h3 id="delete-sensitive-field">Delete Sensitive Field</h3>
+<div class="codehilite"><pre><span></span><code>DELETE<span class="w"> </span>/akm/sensitive-fields/<span class="o">{</span>field_id<span class="o">}</span>
+</code></pre></div>
+
+<p><strong>Required Scope</strong>: <code>akm:sensitive-fields:delete</code></p>
+<h2 id="sanitization-strategies">Sanitization Strategies</h2>
+<h3 id="1-redact-full-replacement">1. Redact (Full Replacement)</h3>
+<p>Replaces entire value with a fixed string.</p>
+<p><strong>Configuration</strong>:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;field_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;password&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;strategy&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;redact&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;replacement&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;[REDACTED]&quot;</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p><strong>Example</strong>:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">Input</span><span class="err">:</span><span class="w">  </span><span class="err">{</span><span class="ss">&quot;password&quot;</span><span class="err">:</span><span class="w"> </span><span class="ss">&quot;MySecretPass123&quot;</span><span class="err">}</span>
+<span class="k">Output</span><span class="err">:</span><span class="w"> </span><span class="err">{</span><span class="ss">&quot;password&quot;</span><span class="err">:</span><span class="w"> </span><span class="ss">&quot;[REDACTED]&quot;</span><span class="err">}</span>
+</code></pre></div>
+
+<h3 id="2-mask-partial-visibility">2. Mask (Partial Visibility)</h3>
+<p>Shows leading and trailing characters, masks the middle.</p>
+<p><strong>Configuration</strong>:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;field_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;api_key&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;strategy&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;mask&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;mask_show_start&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">6</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;mask_show_end&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;mask_char&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;*&quot;</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p><strong>Example</strong>:</p>
+<div class="codehilite"><pre><span></span><code>Input:  {&quot;api_key&quot;: &quot;sk_live_abc123xyz789def456&quot;}
+Output: {&quot;api_key&quot;: &quot;sk_liv*************f456&quot;}
+</code></pre></div>
+
+<p><strong>Edge Cases</strong>:
+- If value length ≤ (show_start + show_end): entire value masked
+- Example: <code>"abc"</code> with show_start=3, show_end=2 → <code>"***"</code></p>
+<h2 id="usage-examples">Usage Examples</h2>
+<h3 id="1-add-new-sensitive-field-via-api">1. Add New Sensitive Field via API</h3>
+<div class="codehilite"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8000/akm/sensitive-fields<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: </span><span class="nv">$ADMIN_KEY</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{</span>
+<span class="s1">    &quot;field_name&quot;: &quot;ssn&quot;,</span>
+<span class="s1">    &quot;is_active&quot;: true,</span>
+<span class="s1">    &quot;strategy&quot;: &quot;mask&quot;,</span>
+<span class="s1">    &quot;mask_show_start&quot;: 0,</span>
+<span class="s1">    &quot;mask_show_end&quot;: 4,</span>
+<span class="s1">    &quot;mask_char&quot;: &quot;X&quot;</span>
+<span class="s1">  }&#39;</span>
+</code></pre></div>
+
+<h3 id="2-update-strategy-for-existing-field">2. Update Strategy for Existing Field</h3>
+<div class="codehilite"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>PUT<span class="w"> </span>http://localhost:8000/akm/sensitive-fields/5<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: </span><span class="nv">$ADMIN_KEY</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{</span>
+<span class="s1">    &quot;strategy&quot;: &quot;redact&quot;,</span>
+<span class="s1">    &quot;replacement&quot;: &quot;[SSN_HIDDEN]&quot;</span>
+<span class="s1">  }&#39;</span>
+</code></pre></div>
+
+<h3 id="3-programmatic-usage-in-python">3. Programmatic Usage in Python</h3>
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">src.sensitive_field_manager</span> <span class="kn">import</span> <span class="n">SensitiveFieldManager</span>
+
+<span class="c1"># Initialize manager</span>
+<span class="n">manager</span> <span class="o">=</span> <span class="n">SensitiveFieldManager</span><span class="p">(</span><span class="n">db_session</span><span class="p">)</span>
+
+<span class="c1"># Load configuration (file + DB merge)</span>
+<span class="k">await</span> <span class="n">manager</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+
+<span class="c1"># Check if field is sensitive</span>
+<span class="n">is_sensitive</span> <span class="o">=</span> <span class="k">await</span> <span class="n">manager</span><span class="o">.</span><span class="n">is_sensitive</span><span class="p">(</span><span class="s2">&quot;password&quot;</span><span class="p">)</span>  <span class="c1"># True</span>
+
+<span class="c1"># Get field-specific config</span>
+<span class="n">config</span> <span class="o">=</span> <span class="k">await</span> <span class="n">manager</span><span class="o">.</span><span class="n">get_field_config</span><span class="p">(</span><span class="s2">&quot;api_key&quot;</span><span class="p">)</span>
+<span class="c1"># Returns: {&quot;strategy&quot;: &quot;mask&quot;, &quot;mask_show_start&quot;: 3, ...}</span>
+
+<span class="c1"># Get global defaults</span>
+<span class="n">global_config</span> <span class="o">=</span> <span class="n">manager</span><span class="o">.</span><span class="n">get_global_strategy</span><span class="p">()</span>
+</code></pre></div>
+
+<h3 id="4-integration-with-auditlogger">4. Integration with AuditLogger</h3>
+<p>The <code>AuditLogger</code> automatically uses <code>SensitiveFieldManager</code>:</p>
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">src.audit_logger</span> <span class="kn">import</span> <span class="n">AuditLogger</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">AuditLogger</span><span class="p">(</span><span class="n">db_session</span><span class="p">)</span>
+
+<span class="c1"># Sensitive data is automatically sanitized based on configuration</span>
+<span class="k">await</span> <span class="n">logger</span><span class="o">.</span><span class="n">log_operation</span><span class="p">(</span>
+    <span class="n">operation</span><span class="o">=</span><span class="s2">&quot;update_user&quot;</span><span class="p">,</span>
+    <span class="n">resource_type</span><span class="o">=</span><span class="s2">&quot;user&quot;</span><span class="p">,</span>
+    <span class="n">action</span><span class="o">=</span><span class="s2">&quot;PUT&quot;</span><span class="p">,</span>
+    <span class="n">request_payload</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;username&quot;</span><span class="p">:</span> <span class="s2">&quot;john&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;password&quot;</span><span class="p">:</span> <span class="s2">&quot;secret123&quot;</span><span class="p">,</span>      <span class="c1"># Will be sanitized</span>
+        <span class="s2">&quot;api_key&quot;</span><span class="p">:</span> <span class="s2">&quot;sk_live_abc123&quot;</span>   <span class="c1"># Will be sanitized</span>
+    <span class="p">}</span>
+<span class="p">)</span>
+</code></pre></div>
+
+<h2 id="scopes">Scopes</h2>
+<p>The sensitive field management system requires specific scopes:</p>
+<table>
+<thead>
+<tr>
+<th>Scope</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>akm:sensitive-fields:read</code></td>
+<td>List and view sensitive field configurations</td>
+</tr>
+<tr>
+<td><code>akm:sensitive-fields:create</code></td>
+<td>Create new sensitive field configuration</td>
+</tr>
+<tr>
+<td><code>akm:sensitive-fields:update</code></td>
+<td>Update existing sensitive field configuration</td>
+</tr>
+<tr>
+<td><code>akm:sensitive-fields:delete</code></td>
+<td>Delete sensitive field configuration</td>
+</tr>
+<tr>
+<td><code>akm:sensitive-fields:*</code></td>
+<td>Full CRUD access (wildcard)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="creating-management-key">Creating Management Key</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Create API key with full sensitive fields access</span>
+curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8000/akm/keys<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: </span><span class="nv">$ADMIN_KEY</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{</span>
+<span class="s1">    &quot;project_id&quot;: 1,</span>
+<span class="s1">    &quot;name&quot;: &quot;Sensitive Fields Manager&quot;,</span>
+<span class="s1">    &quot;scope_names&quot;: [&quot;akm:sensitive-fields:*&quot;]</span>
+<span class="s1">  }&#39;</span>
+</code></pre></div>
+
+<h2 id="merge-logic">Merge Logic</h2>
+<p>Configuration sources are merged with the following priority:</p>
+<ol>
+<li><strong>File</strong> (<code>data/sensitive_fields.json</code>): Base configuration</li>
+<li><strong>Database</strong> (<code>akm_sensitive_fields</code>): Overrides file settings</li>
+<li><strong>Global Defaults</strong> (environment): Used when field-specific config is NULL</li>
+</ol>
+<p><strong>Example Merge</strong>:</p>
+<p><strong>File</strong>:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;fields&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;password&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;token&quot;</span><span class="p">],</span>
+<span class="w">  </span><span class="nt">&quot;strategy&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;redact&quot;</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p><strong>Database</strong>:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">akm_sensitive_fields</span><span class="w"> </span><span class="p">(</span><span class="n">field_name</span><span class="p">,</span><span class="w"> </span><span class="n">strategy</span><span class="p">,</span><span class="w"> </span><span class="n">mask_show_start</span><span class="p">,</span><span class="w"> </span><span class="n">mask_show_end</span><span class="p">)</span>
+<span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="s1">&#39;password&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;mask&#39;</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">);</span><span class="w">  </span><span class="c1">-- Overrides file strategy</span>
+</code></pre></div>
+
+<p><strong>Result</strong>:
+- <code>password</code>: Uses <strong>mask</strong> strategy (DB override) with show_start=2, show_end=2
+- <code>token</code>: Uses <strong>redact</strong> strategy (file default)
+- Any new field: Uses global env defaults</p>
+<h2 id="performance">Performance</h2>
+<ul>
+<li><strong>Caching</strong>: Configuration cached for 5 minutes (300 seconds)</li>
+<li><strong>Cache TTL</strong>: Configurable via <code>CACHE_TTL_SECONDS</code> constant</li>
+<li><strong>Force Reload</strong>: Call <code>manager.load(force=True)</code> to bypass cache</li>
+<li><strong>Lazy Loading</strong>: Configuration loaded on first use only</li>
+</ul>
+<h2 id="migration">Migration</h2>
+<p>Database migration creates the <code>akm_sensitive_fields</code> table:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Run migration</span>
+alembic<span class="w"> </span>upgrade<span class="w"> </span>head
+
+<span class="c1"># Verify table created</span>
+psql<span class="w"> </span>-d<span class="w"> </span>your_database<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;\d akm_sensitive_fields&quot;</span>
+</code></pre></div>
+
+<h2 id="best-practices">Best Practices</h2>
+<h3 id="1-default-strategy-selection">1. Default Strategy Selection</h3>
+<ul>
+<li><strong>Redact</strong>: For highly sensitive data (passwords, secrets, private keys)</li>
+<li><strong>Mask</strong>: For identifiable data that needs partial visibility (API keys, emails, phone numbers)</li>
+</ul>
+<h3 id="2-masking-configuration">2. Masking Configuration</h3>
+<ul>
+<li><strong>API Keys</strong>: Show prefix/suffix for identification</li>
+<li>Example: <code>show_start=6, show_end=4</code> → <code>"sk_liv*************f456"</code></li>
+<li><strong>Credit Cards</strong>: Show last 4 digits only</li>
+<li>Example: <code>show_start=0, show_end=4</code> → <code>"************1234"</code></li>
+<li><strong>Emails</strong>: Show first char and domain</li>
+<li>Example: Custom logic needed (not just masking)</li>
+</ul>
+<h3 id="3-field-naming">3. Field Naming</h3>
+<ul>
+<li>Use lowercase field names (system normalizes to lowercase)</li>
+<li>Use exact match or substring match (e.g., "password" matches "user_password", "password_hash")</li>
+</ul>
+<h3 id="4-database-vs-file">4. Database vs File</h3>
+<ul>
+<li><strong>File</strong>: Bootstrap/default configuration for all environments</li>
+<li><strong>Database</strong>: Runtime overrides, project-specific customization</li>
+<li><strong>Environment</strong>: Global defaults when no other config exists</li>
+</ul>
+<h3 id="5-security">5. Security</h3>
+<ul>
+<li>Restrict <code>akm:sensitive-fields:*</code> scope to admin users only</li>
+<li>Audit all changes to sensitive field configurations</li>
+<li>Review sanitization logs periodically to ensure effectiveness</li>
+</ul>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="field-not-being-sanitized">Field Not Being Sanitized</h3>
+<ol>
+<li>
+<p>Check if field is in configuration:
+   <code>bash
+   curl http://localhost:8000/akm/sensitive-fields -H "X-API-Key: $KEY"</code></p>
+</li>
+<li>
+<p>Verify field is active:
+   <code>bash
+   GET /akm/sensitive-fields?active=true</code></p>
+</li>
+<li>
+<p>Check cache (may need 5 minutes to refresh):
+   <code>python
+   await manager.load(force=True)  # Force reload</code></p>
+</li>
+</ol>
+<h3 id="incorrect-masking-output">Incorrect Masking Output</h3>
+<ol>
+<li>Verify masking configuration:</li>
+<li>Check <code>mask_show_start</code>, <code>mask_show_end</code>, <code>mask_char</code></li>
+<li>
+<p>Ensure values are reasonable for typical data length</p>
+</li>
+<li>
+<p>Test with sample data:
+   <code>python
+   # Value: "1234567890"
+   # show_start=2, show_end=2, mask_char="*"
+   # Result: "12******90"</code></p>
+</li>
+</ol>
+<h3 id="database-override-not-working">Database Override Not Working</h3>
+<ol>
+<li>Ensure database entry exists and is active</li>
+<li>Clear cache: Wait 5 minutes or restart service</li>
+<li>Check merge order in logs</li>
+</ol>
+<h2 id="future-enhancements">Future Enhancements</h2>
+<ul>
+<li>[ ] Custom sanitization functions (regex-based, format-preserving)</li>
+<li>[ ] Per-project sensitive field configuration</li>
+<li>[ ] Field pattern matching (regex support)</li>
+<li>[ ] Audit trail for configuration changes</li>
+<li>[ ] Bulk import/export of configurations</li>
+<li>[ ] Real-time cache invalidation</li>
+<li>[ ] Sensitive data detection (AI/ML-based)</li>
+</ul>
+<h2 id="related-documentation">Related Documentation</h2>
+<ul>
+<li><a href="./AUDIT_SYSTEM.md">Audit System</a> - Audit logging with automatic sanitization</li>
+<li><a href="./AUTHENTICATION.md">API Authentication</a> - API key and scope management</li>
+<li><a href="./ENVIRONMENT.md">Configuration</a> - Environment variable reference</li>
+</ul>
+        </div>
+
+        <div class="footer">
+            <p>Built with ❤️ using FastAPI, PostgreSQL, and SQLAlchemy</p>
+            <p style="margin-top: 10px;">© 2025 API Key Management Service by <a href="https://github.com/ideiasfactory" target="_blank">Ideias Factory</a></p>
+        </div>
+    </div>
+
+    <a href="#" class="back-to-top">↑</a>
+
+    <script>
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        // Back to top button
+        const backToTop = document.querySelector('.back-to-top');
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTop.style.display = 'flex';
+            } else {
+                backToTop.style.display = 'none';
+            }
+        });
+
+        backToTop.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    </script>
+</body>
+</html>

@@ -295,7 +295,7 @@ def convert_md_to_html(md_file: str, html_file: str, title: str):
         <div class="nav">
             <a href="/">🏠 Home</a>
             <a href="/quickstart">🚀 Quick Start</a>
-            <a href="/administration">🔐 Administration</a>
+            <a href="/public/guides/admnistration.html">🔐 Administration</a>
             <a href="/docs">📚 API Docs</a>
             <a href="/redoc">📖 ReDoc</a>
         </div>
@@ -349,53 +349,71 @@ def convert_md_to_html(md_file: str, html_file: str, title: str):
     print(f"✅ Converted {md_file} → {html_file}")
 
 if __name__ == "__main__":
-    # Convert QUICKSTART.md
-    convert_md_to_html(
-        "docs/QUICKSTART.md",
-        "public/quickstart.html",
-        "Quick Start Guide"
-    )
+    # Ensure output directories exist
+    Path("src/api/static/guides").mkdir(parents=True, exist_ok=True)
+    Path("src/api/static/admin").mkdir(parents=True, exist_ok=True)
+    Path("src/api/static/operation").mkdir(parents=True, exist_ok=True)
     
-    # Convert ADMINISTRATION.md
-    convert_md_to_html(
-        "docs/ADMINISTRATION.md",
-        "public/administration.html",
-        "Administration Guide"
-    )
+    # Convert guides/** to src/api/static/guides/
+    guides = [
+        ("docs/guides/QUICKSTART.md", "quickstart.html", "Quick Start Guide"),
+        ("docs/guides/AUTHENTICATION.md", "authentication.html", "Authentication Guide"),
+        ("docs/guides/DEVELOPER_GUIDE.md", "developer_guide.html", "Developer Guide"),
+        ("docs/guides/WEBHOOKS.md", "webhooks.html", "Webhooks Guide"),
+        ("docs/guides/CONFIGURATION_GUIDE.md", "configuration_guide.html", "Configuration Guide"),
+        ("docs/guides/ALERTS.md", "alerts.html", "Alerts Guide"),
+        ("docs/guides/SCOPES_BULK_INSERT.md", "scopes_bulk_insert.html", "Scopes Bulk Insert Guide"),
+        ("docs/guides/OPENAPI_SCOPE_GENERATION.md", "openapi_scope_generation.html", "OpenAPI Scope Generation"),
+        ("docs/guides/OPENAPI_EXAMPLES.md", "openapi_examples.html", "OpenAPI Examples"),
+        ("docs/guides/BULK_SCOPES_EXAMPLES.md", "bulk_scopes_examples.html", "Bulk Scopes Examples"),
+        ("docs/guides/SENSITIVE_FIELDS_USAGE.md", "sensitive_fields_usage.html", "Sensitive Fields Usage"),
+        ("docs/guides/public/guides/admnistration.html.md", "administration.html", "Administration Guide"),
+    ]
     
-    # Convert API_VERSIONING.md
-    convert_md_to_html(
-        "docs/API_VERSIONING.md",
-        "public/api-versioning.html",
-        "API Versioning Guide"
-    )
+    for md_file, html_file, title in guides:
+        if Path(md_file).exists():
+            convert_md_to_html(md_file, f"src/api/static/guides/{html_file}", title)
+        else:
+            print(f"⚠️  Skipped {md_file} (not found)")
     
-    # Convert AUTHENTICATION.md
-    convert_md_to_html(
-        "docs/AUTHENTICATION.md",
-        "public/authentication.html",
-        "Authentication Guide"
-    )
+    # Convert admin/** to src/api/static/admin/
+    admin_docs = [
+        ("docs/admin/AKM_SYSTEM.md", "akm_system.html", "AKM System Overview"),
+        ("docs/admin/API_KEY_MANAGEMENT.md", "api_key_management.html", "API Key Management"),
+        ("docs/admin/API_VERSIONING.md", "api_versioning.html", "API Versioning"),
+        ("docs/admin/AUDIT_SYSTEM.md", "audit_system.html", "Audit System"),
+        ("docs/admin/AUDIT_QUICK_START.md", "audit_quick_start.html", "Audit Quick Start"),
+        ("docs/admin/AUTHENTICATION_SUMMARY.md", "authentication_summary.html", "Authentication Summary"),
+        ("docs/admin/BULK_SCOPES.md", "bulk_scopes.html", "Bulk Scopes"),
+        ("docs/admin/DEPLOYMENT.md", "deployment.html", "Deployment Guide"),
+        ("docs/admin/DYNAMIC_CONFIGURATION.md", "dynamic_configuration.html", "Dynamic Configuration"),
+        ("docs/admin/SENSITIVE_FIELDS.md", "sensitive_fields.html", "Sensitive Fields"),
+        ("docs/admin/SENSITIVE_FIELDS_IMPLEMENTATION_SUMMARY.md", "sensitive_fields_implementation.html", "Sensitive Fields Implementation"),
+        ("docs/admin/TESTING.md", "testing.html", "Testing Guide"),
+    ]
     
-    # Convert API_KEY_MANAGEMENT.md
-    convert_md_to_html(
-        "docs/API_KEY_MANAGEMENT.md",
-        "public/api-key-management.html",
-        "API Key Management Guide"
-    )
+    for md_file, html_file, title in admin_docs:
+        if Path(md_file).exists():
+            convert_md_to_html(md_file, f"src/api/static/admin/{html_file}", title)
+        else:
+            print(f"⚠️  Skipped {md_file} (not found)")
     
-    # Convert DEPLOYMENT.md
-    convert_md_to_html(
-        "docs/DEPLOYMENT.md",
-        "public/deployment.html",
-        "Deployment Guide"
-    )
+    # Convert operation/** to src/api/static/operation/
+    operation_docs = [
+        ("docs/operation/ENVIRONMENT.md", "environment.html", "Environment Configuration"),
+        ("docs/operation/GITHUB_SECRETS_SETUP.md", "github_secrets_setup.html", "GitHub Secrets Setup"),
+        ("docs/operation/GIT_ACTIONS_SECRETS_BESTPRACTICES.md", "git_actions_secrets.html", "Git Actions Secrets Best Practices"),
+        ("docs/operation/LOGGING.md", "logging.html", "Logging Guide"),
+        ("docs/operation/LOGGING_INSTRUMENTATION.md", "logging_instrumentation.html", "Logging Instrumentation"),
+    ]
     
-    # Convert TESTING.md
-    convert_md_to_html(
-        "docs/TESTING.md",
-        "public/testing.html",
-        "Testing Guide"
-    )
+    for md_file, html_file, title in operation_docs:
+        if Path(md_file).exists():
+            convert_md_to_html(md_file, f"src/api/static/operation/{html_file}", title)
+        else:
+            print(f"⚠️  Skipped {md_file} (not found)")
     
-    print("✅ All conversions completed!")
+    print("\n✅ All conversions completed!")
+    print(f"   - Guides: src/api/static/guides/")
+    print(f"   - Admin: src/api/static/admin/")
+    print(f"   - Operation: src/api/static/operation/")

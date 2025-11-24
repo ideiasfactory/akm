@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configuration Guide - API Key Management Service</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --accent: #f093fb;
+            --dark: #1a1a2e;
+            --light: #f8f9fa;
+            --code-bg: #282c34;
+            --border: #e0e0e0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .nav {
+            background: var(--dark);
+            padding: 15px 40px;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .nav a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .nav a:hover {
+            background: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--dark);
+            margin: 30px 0 15px 0;
+            line-height: 1.3;
+        }
+
+        h1 { font-size: 2.5em; border-bottom: 3px solid var(--primary); padding-bottom: 10px; }
+        h2 { font-size: 2em; border-bottom: 2px solid var(--border); padding-bottom: 8px; margin-top: 40px; }
+        h3 { font-size: 1.5em; color: var(--primary); }
+        h4 { font-size: 1.3em; }
+
+        p {
+            margin: 15px 0;
+            line-height: 1.8;
+        }
+
+        a {
+            color: var(--primary);
+            text-decoration: none;
+            border-bottom: 1px dotted var(--primary);
+        }
+
+        a:hover {
+            color: var(--secondary);
+            border-bottom: 1px solid var(--secondary);
+        }
+
+        code {
+            background: #f4f4f4;
+            padding: 3px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #e83e8c;
+        }
+
+        pre {
+            background: var(--code-bg);
+            color: #abb2bf;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+            border-left: 4px solid var(--primary);
+        }
+
+        pre code {
+            background: none;
+            color: inherit;
+            padding: 0;
+            font-size: 0.95em;
+        }
+
+        blockquote {
+            border-left: 4px solid var(--primary);
+            padding: 15px 20px;
+            margin: 20px 0;
+            background: #f8f9fa;
+            font-style: italic;
+        }
+
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+
+        li {
+            margin: 8px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .success {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .info {
+            background: #d1ecf1;
+            border-left: 4px solid #17a2b8;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .footer {
+            background: var(--dark);
+            color: white;
+            padding: 30px 40px;
+            text-align: center;
+        }
+
+        .footer a {
+            color: var(--accent);
+            border-bottom: 1px dotted var(--accent);
+        }
+
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--primary);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            font-size: 24px;
+        }
+
+        .back-to-top:hover {
+            background: var(--secondary);
+            transform: translateY(-5px);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                border-radius: 0;
+            }
+
+            .header {
+                padding: 30px 20px;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .nav {
+                padding: 15px 20px;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            pre {
+                padding: 15px;
+                font-size: 0.85em;
+            }
+        }
+
+        /* Syntax highlighting for code blocks */
+        .codehilite .k { color: #c678dd; } /* keyword */
+        .codehilite .s { color: #98c379; } /* string */
+        .codehilite .n { color: #e06c75; } /* name */
+        .codehilite .c { color: #5c6370; font-style: italic; } /* comment */
+        .codehilite .m { color: #d19a66; } /* number */
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔐 Configuration Guide</h1>
+            <p>API Key Management Service</p>
+        </div>
+
+        <div class="nav">
+            <a href="/">🏠 Home</a>
+            <a href="/quickstart">🚀 Quick Start</a>
+            <a href="/public/guides/admnistration.html">🔐 Administration</a>
+            <a href="/docs">📚 API Docs</a>
+            <a href="/redoc">📖 ReDoc</a>
+        </div>
+
+        <div class="content">
+<h1 id="configuration-management-guide">Configuration Management Guide</h1>
+<p>Understanding Project Configuration vs API Key Configuration in AKM.</p>
+<h2 id="overview">Overview</h2>
+<p>AKM supports <strong>three-tier configuration hierarchy</strong> with priority override:</p>
+<div class="codehilite"><pre><span></span><code><span class="mf">1.</span><span class="w"> </span><span class="n">API</span><span class="w"> </span><span class="n">Key</span><span class="w"> </span><span class="n">Configuration</span><span class="w"> </span><span class="p">(</span><span class="n">Highest</span><span class="w"> </span><span class="n">Priority</span><span class="p">)</span><span class="w"> </span><span class="err">⬆️</span>
+<span class="mf">2.</span><span class="w"> </span><span class="n">Project</span><span class="w"> </span><span class="n">Configuration</span><span class="w"> </span><span class="p">(</span><span class="n">Middle</span><span class="w"> </span><span class="n">Priority</span><span class="p">)</span><span class="w"> </span><span class="err">⬆️</span>
+<span class="mf">3.</span><span class="w"> </span><span class="n">Global</span><span class="w"> </span><span class="kd">Def</span><span class="n">aults</span><span class="w"> </span><span class="p">(</span><span class="n">Lowest</span><span class="w"> </span><span class="n">Priority</span><span class="p">)</span>
+</code></pre></div>
+
+<h2 id="configuration-comparison">Configuration Comparison</h2>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Project Configuration</th>
+<th>API Key Configuration</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Endpoint</strong></td>
+<td><code>/projects/{id}/configuration</code></td>
+<td><code>/projects/{id}/keys/{key_id}/config</code></td>
+</tr>
+<tr>
+<td><strong>Scope</strong></td>
+<td>All keys in project</td>
+<td>Single API key</td>
+</tr>
+<tr>
+<td><strong>Priority</strong></td>
+<td>Middle</td>
+<td>Highest</td>
+</tr>
+<tr>
+<td><strong>Use Case</strong></td>
+<td>Team/environment defaults</td>
+<td>Per-client customization</td>
+</tr>
+<tr>
+<td><strong>Example</strong></td>
+<td>Staging project CORS rules</td>
+<td>VIP client higher limits</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="project-configuration">Project Configuration</h2>
+<p>Set defaults for <strong>all API keys</strong> in a project.</p>
+<h3 id="use-cases">Use Cases</h3>
+<ul>
+<li>Environment-specific settings (dev/staging/prod)</li>
+<li>Team-wide policies</li>
+<li>Project defaults for new keys</li>
+<li>Organizational standards</li>
+</ul>
+<h3 id="createupdate">Create/Update</h3>
+<div class="codehilite"><pre><span></span><code>PUT<span class="w"> </span>/akm/v1/projects/<span class="o">{</span>project_id<span class="o">}</span>/configuration
+Content-Type:<span class="w"> </span>application/json
+
+<span class="o">{</span>
+<span class="w">  </span><span class="s2">&quot;cors_origins&quot;</span>:<span class="w"> </span><span class="o">[</span>
+<span class="w">    </span><span class="s2">&quot;https://app.example.com&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;https://staging.example.com&quot;</span>
+<span class="w">  </span><span class="o">]</span>,
+<span class="w">  </span><span class="s2">&quot;default_rate_limits&quot;</span>:<span class="w"> </span><span class="o">{</span>
+<span class="w">    </span><span class="s2">&quot;requests_per_minute&quot;</span>:<span class="w"> </span><span class="m">1000</span>,
+<span class="w">    </span><span class="s2">&quot;requests_per_hour&quot;</span>:<span class="w"> </span><span class="m">50000</span>,
+<span class="w">    </span><span class="s2">&quot;requests_per_day&quot;</span>:<span class="w"> </span><span class="m">1000000</span>,
+<span class="w">    </span><span class="s2">&quot;requests_per_month&quot;</span>:<span class="w"> </span><span class="m">30000000</span>
+<span class="w">  </span><span class="o">}</span>,
+<span class="w">  </span><span class="s2">&quot;ip_allowlist&quot;</span>:<span class="w"> </span><span class="o">[</span>
+<span class="w">    </span><span class="s2">&quot;192.168.1.0/24&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;10.0.0.0/8&quot;</span>
+<span class="w">  </span><span class="o">]</span>,
+<span class="w">  </span><span class="s2">&quot;webhook_config&quot;</span>:<span class="w"> </span><span class="o">{</span>
+<span class="w">    </span><span class="s2">&quot;timeout_seconds&quot;</span>:<span class="w"> </span><span class="m">30</span>,
+<span class="w">    </span><span class="s2">&quot;max_retries&quot;</span>:<span class="w"> </span><span class="m">5</span>
+<span class="w">  </span><span class="o">}</span>,
+<span class="w">  </span><span class="s2">&quot;sensitive_fields&quot;</span>:<span class="w"> </span><span class="o">[</span><span class="s2">&quot;password&quot;</span>,<span class="w"> </span><span class="s2">&quot;ssn&quot;</span>,<span class="w"> </span><span class="s2">&quot;credit_card&quot;</span><span class="o">]</span>
+<span class="o">}</span>
+</code></pre></div>
+
+<h3 id="get-configuration">Get Configuration</h3>
+<div class="codehilite"><pre><span></span><code>GET<span class="w"> </span>/akm/v1/projects/<span class="o">{</span>project_id<span class="o">}</span>/configuration
+</code></pre></div>
+
+<h3 id="delete-configuration">Delete Configuration</h3>
+<div class="codehilite"><pre><span></span><code>DELETE<span class="w"> </span>/akm/v1/projects/<span class="o">{</span>project_id<span class="o">}</span>/configuration
+</code></pre></div>
+
+<p>Removes project configuration. Keys fall back to global defaults.</p>
+<hr />
+<h2 id="api-key-configuration">API Key Configuration</h2>
+<p>Override project defaults for <strong>specific API keys</strong>.</p>
+<h3 id="use-cases_1">Use Cases</h3>
+<ul>
+<li>VIP clients with higher limits</li>
+<li>Testing/development keys with relaxed rules</li>
+<li>Temporary access restrictions</li>
+<li>Client-specific security requirements</li>
+</ul>
+<h3 id="createupdate_1">Create/Update</h3>
+<div class="codehilite"><pre><span></span><code>PUT<span class="w"> </span>/akm/v1/projects/<span class="o">{</span>project_id<span class="o">}</span>/keys/<span class="o">{</span>key_id<span class="o">}</span>/config
+Content-Type:<span class="w"> </span>application/json
+
+<span class="o">{</span>
+<span class="w">  </span><span class="s2">&quot;rate_limits&quot;</span>:<span class="w"> </span><span class="o">{</span>
+<span class="w">    </span><span class="s2">&quot;requests_per_minute&quot;</span>:<span class="w"> </span><span class="m">5000</span>,
+<span class="w">    </span><span class="s2">&quot;requests_per_hour&quot;</span>:<span class="w"> </span><span class="m">200000</span>,
+<span class="w">    </span><span class="s2">&quot;requests_per_day&quot;</span>:<span class="w"> </span><span class="m">5000000</span>
+<span class="w">  </span><span class="o">}</span>,
+<span class="w">  </span><span class="s2">&quot;ip_restrictions&quot;</span>:<span class="w"> </span><span class="o">[</span>
+<span class="w">    </span><span class="s2">&quot;203.0.113.0/24&quot;</span>
+<span class="w">  </span><span class="o">]</span>,
+<span class="w">  </span><span class="s2">&quot;allowed_methods&quot;</span>:<span class="w"> </span><span class="o">[</span><span class="s2">&quot;GET&quot;</span>,<span class="w"> </span><span class="s2">&quot;POST&quot;</span><span class="o">]</span>,
+<span class="w">  </span><span class="s2">&quot;allowed_endpoints&quot;</span>:<span class="w"> </span><span class="o">[</span><span class="s2">&quot;/api/users&quot;</span>,<span class="w"> </span><span class="s2">&quot;/api/products&quot;</span><span class="o">]</span>,
+<span class="w">  </span><span class="s2">&quot;time_restrictions&quot;</span>:<span class="w"> </span><span class="o">{</span>
+<span class="w">    </span><span class="s2">&quot;start_time&quot;</span>:<span class="w"> </span><span class="s2">&quot;08:00&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;end_time&quot;</span>:<span class="w"> </span><span class="s2">&quot;18:00&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;timezone&quot;</span>:<span class="w"> </span><span class="s2">&quot;America/New_York&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;days_of_week&quot;</span>:<span class="w"> </span><span class="o">[</span><span class="s2">&quot;MON&quot;</span>,<span class="w"> </span><span class="s2">&quot;TUE&quot;</span>,<span class="w"> </span><span class="s2">&quot;WED&quot;</span>,<span class="w"> </span><span class="s2">&quot;THU&quot;</span>,<span class="w"> </span><span class="s2">&quot;FRI&quot;</span><span class="o">]</span>
+<span class="w">  </span><span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div>
+
+<h3 id="get-configuration_1">Get Configuration</h3>
+<div class="codehilite"><pre><span></span><code>GET<span class="w"> </span>/akm/v1/projects/<span class="o">{</span>project_id<span class="o">}</span>/keys/<span class="o">{</span>key_id<span class="o">}</span>/config
+</code></pre></div>
+
+<h3 id="get-effective-configuration">Get Effective Configuration</h3>
+<p>Get merged configuration after applying hierarchy:</p>
+<div class="codehilite"><pre><span></span><code>GET<span class="w"> </span>/akm/v1/projects/<span class="o">{</span>project_id<span class="o">}</span>/keys/<span class="o">{</span>key_id<span class="o">}</span>/config/effective
+</code></pre></div>
+
+<p>Returns final configuration with all overrides applied.</p>
+<hr />
+<h2 id="configuration-priority-example">Configuration Priority Example</h2>
+<p><strong>Scenario:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="nt">Global Default</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">rate_limit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100 req/min</span>
+
+<span class="nt">Project Configuration (ID: 1)</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">rate_limit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">500 req/min</span>
+<span class="w">  </span><span class="nt">cors</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;https://app.example.com&quot;</span><span class="p p-Indicator">]</span>
+
+<span class="nt">API Key Configuration (ID: 42)</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">rate_limit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1000 req/min</span>
+</code></pre></div>
+
+<p><strong>Result for Key 42:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="nt">rate_limit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1000 req/min</span><span class="w">    </span><span class="c1"># From key config (highest)</span>
+<span class="nt">cors</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;https://app.example.com&quot;</span><span class="p p-Indicator">]</span><span class="w">  </span><span class="c1"># From project config</span>
+</code></pre></div>
+
+<p><strong>Result for Key 43 (no key config):</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="nt">rate_limit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">500 req/min</span><span class="w">     </span><span class="c1"># From project config</span>
+<span class="nt">cors</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;https://app.example.com&quot;</span><span class="p p-Indicator">]</span><span class="w">  </span><span class="c1"># From project config</span>
+</code></pre></div>
+
+<hr />
+<h2 id="configurable-settings">Configurable Settings</h2>
+<h3 id="rate-limits">Rate Limits</h3>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;rate_limits&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;requests_per_minute&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1000</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;requests_per_hour&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">50000</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;requests_per_day&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1000000</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;requests_per_month&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">30000000</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3 id="cors-origins">CORS Origins</h3>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;cors_origins&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="s2">&quot;https://app.example.com&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;https://admin.example.com&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;*&quot;</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3 id="ip-restrictions">IP Restrictions</h3>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;ip_allowlist&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="s2">&quot;192.168.1.0/24&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;10.0.0.0/8&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;203.0.113.42&quot;</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3 id="allowed-methods">Allowed Methods</h3>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;allowed_methods&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;POST&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;PUT&quot;</span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3 id="endpoint-restrictions">Endpoint Restrictions</h3>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;allowed_endpoints&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="s2">&quot;/api/users&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;/api/products&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;/api/orders&quot;</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3 id="time-restrictions">Time Restrictions</h3>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;time_restrictions&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;start_time&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;09:00&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;end_time&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;17:00&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;timezone&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;America/New_York&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;days_of_week&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;MON&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;TUE&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;WED&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;THU&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;FRI&quot;</span><span class="p">]</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3 id="webhook-configuration">Webhook Configuration</h3>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;webhook_config&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;timeout_seconds&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;max_retries&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;retry_backoff&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;exponential&quot;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3 id="sensitive-fields">Sensitive Fields</h3>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;sensitive_fields&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="s2">&quot;password&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;credit_card&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;ssn&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;api_key&quot;</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<hr />
+<h2 id="common-scenarios">Common Scenarios</h2>
+<h3 id="scenario-1-development-project">Scenario 1: Development Project</h3>
+<div class="codehilite"><pre><span></span><code>PUT<span class="w"> </span>/akm/v1/projects/1/configuration
+<span class="o">{</span>
+<span class="w">  </span><span class="s2">&quot;cors_origins&quot;</span>:<span class="w"> </span><span class="o">[</span><span class="s2">&quot;*&quot;</span><span class="o">]</span>,
+<span class="w">  </span><span class="s2">&quot;default_rate_limits&quot;</span>:<span class="w"> </span><span class="o">{</span>
+<span class="w">    </span><span class="s2">&quot;requests_per_minute&quot;</span>:<span class="w"> </span><span class="m">10000</span>
+<span class="w">  </span><span class="o">}</span>,
+<span class="w">  </span><span class="s2">&quot;ip_allowlist&quot;</span>:<span class="w"> </span><span class="o">[]</span>
+<span class="o">}</span>
+</code></pre></div>
+
+<h3 id="scenario-2-production-project">Scenario 2: Production Project</h3>
+<div class="codehilite"><pre><span></span><code>PUT<span class="w"> </span>/akm/v1/projects/2/configuration
+<span class="o">{</span>
+<span class="w">  </span><span class="s2">&quot;cors_origins&quot;</span>:<span class="w"> </span><span class="o">[</span><span class="s2">&quot;https://app.example.com&quot;</span><span class="o">]</span>,
+<span class="w">  </span><span class="s2">&quot;default_rate_limits&quot;</span>:<span class="w"> </span><span class="o">{</span>
+<span class="w">    </span><span class="s2">&quot;requests_per_minute&quot;</span>:<span class="w"> </span><span class="m">1000</span>
+<span class="w">  </span><span class="o">}</span>,
+<span class="w">  </span><span class="s2">&quot;ip_allowlist&quot;</span>:<span class="w"> </span><span class="o">[</span><span class="s2">&quot;203.0.113.0/24&quot;</span><span class="o">]</span>
+<span class="o">}</span>
+</code></pre></div>
+
+<h3 id="scenario-3-vip-client-key">Scenario 3: VIP Client Key</h3>
+<div class="codehilite"><pre><span></span><code>PUT<span class="w"> </span>/akm/v1/projects/2/keys/42/config
+<span class="o">{</span>
+<span class="w">  </span><span class="s2">&quot;rate_limits&quot;</span>:<span class="w"> </span><span class="o">{</span>
+<span class="w">    </span><span class="s2">&quot;requests_per_minute&quot;</span>:<span class="w"> </span><span class="m">10000</span>
+<span class="w">  </span><span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div>
+
+<h3 id="scenario-4-testing-key">Scenario 4: Testing Key</h3>
+<div class="codehilite"><pre><span></span><code>PUT<span class="w"> </span>/akm/v1/projects/2/keys/99/config
+<span class="o">{</span>
+<span class="w">  </span><span class="s2">&quot;rate_limits&quot;</span>:<span class="w"> </span><span class="o">{</span>
+<span class="w">    </span><span class="s2">&quot;requests_per_minute&quot;</span>:<span class="w"> </span><span class="m">100</span>
+<span class="w">  </span><span class="o">}</span>,
+<span class="w">  </span><span class="s2">&quot;time_restrictions&quot;</span>:<span class="w"> </span><span class="o">{</span>
+<span class="w">    </span><span class="s2">&quot;start_time&quot;</span>:<span class="w"> </span><span class="s2">&quot;00:00&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;end_time&quot;</span>:<span class="w"> </span><span class="s2">&quot;23:59&quot;</span>
+<span class="w">  </span><span class="o">}</span>,
+<span class="w">  </span><span class="s2">&quot;allowed_endpoints&quot;</span>:<span class="w"> </span><span class="o">[</span><span class="s2">&quot;/api/test&quot;</span><span class="o">]</span>
+<span class="o">}</span>
+</code></pre></div>
+
+<hr />
+<h2 id="best-practices">Best Practices</h2>
+<h3 id="1-start-with-project-defaults">1. Start with Project Defaults</h3>
+<p>Set sensible defaults at project level:</p>
+<div class="codehilite"><pre><span></span><code>PUT<span class="w"> </span>/akm/v1/projects/1/configuration
+<span class="o">{</span>
+<span class="w">  </span><span class="s2">&quot;default_rate_limits&quot;</span>:<span class="w"> </span><span class="o">{</span>
+<span class="w">    </span><span class="s2">&quot;requests_per_minute&quot;</span>:<span class="w"> </span><span class="m">1000</span>
+<span class="w">  </span><span class="o">}</span>,
+<span class="w">  </span><span class="s2">&quot;cors_origins&quot;</span>:<span class="w"> </span><span class="o">[</span><span class="s2">&quot;https://app.example.com&quot;</span><span class="o">]</span>
+<span class="o">}</span>
+</code></pre></div>
+
+<h3 id="2-override-only-when-needed">2. Override Only When Needed</h3>
+<p>Use key configuration sparingly:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Only for exceptional cases</span>
+PUT<span class="w"> </span>/akm/v1/projects/1/keys/42/config
+<span class="o">{</span>
+<span class="w">  </span><span class="s2">&quot;rate_limits&quot;</span>:<span class="w"> </span><span class="o">{</span>
+<span class="w">    </span><span class="s2">&quot;requests_per_minute&quot;</span>:<span class="w"> </span><span class="m">5000</span>
+<span class="w">  </span><span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div>
+
+<h3 id="3-environment-separation">3. Environment Separation</h3>
+<p>Different projects for environments:</p>
+<ul>
+<li>Project 1: Development (relaxed rules)</li>
+<li>Project 2: Staging (moderate rules)</li>
+<li>Project 3: Production (strict rules)</li>
+</ul>
+<h3 id="4-document-overrides">4. Document Overrides</h3>
+<p>When creating key-specific config, document reason:</p>
+<div class="codehilite"><pre><span></span><code>PUT<span class="w"> </span>/akm/v1/projects/1/keys/42/config
+<span class="o">{</span>
+<span class="w">  </span><span class="s2">&quot;rate_limits&quot;</span>:<span class="w"> </span><span class="o">{</span>
+<span class="w">    </span><span class="s2">&quot;requests_per_minute&quot;</span>:<span class="w"> </span><span class="m">10000</span>
+<span class="w">  </span><span class="o">}</span>,
+<span class="w">  </span><span class="s2">&quot;_comment&quot;</span>:<span class="w"> </span><span class="s2">&quot;VIP client - paid tier&quot;</span>
+<span class="o">}</span>
+</code></pre></div>
+
+<h3 id="5-regular-audits">5. Regular Audits</h3>
+<p>Review configurations periodically:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># List all keys with custom config</span>
+GET<span class="w"> </span>/akm/v1/projects/1/keys?has_custom_config<span class="o">=</span><span class="nb">true</span>
+</code></pre></div>
+
+<hr />
+<h2 id="configuration-changes">Configuration Changes</h2>
+<h3 id="immediate-effect">Immediate Effect</h3>
+<p>Configuration changes apply <strong>immediately</strong> without restart:</p>
+<ol>
+<li>Update configuration via API</li>
+<li>Next request uses new configuration</li>
+<li>No service interruption</li>
+</ol>
+<h3 id="audit-trail">Audit Trail</h3>
+<p>All configuration changes are logged:</p>
+<div class="codehilite"><pre><span></span><code>GET<span class="w"> </span>/akm/v1/audit/logs?resource<span class="o">=</span>configuration<span class="p">&amp;</span><span class="nv">project_id</span><span class="o">=</span><span class="m">1</span>
+</code></pre></div>
+
+<hr />
+<h2 id="next-steps">Next Steps</h2>
+<ul>
+<li>📖 <a href="./DEVELOPER_GUIDE.md">Developer Guide</a></li>
+<li>🚦 <a href="./RATE_LIMITING.md">Rate Limiting</a></li>
+<li>🔔 <a href="./ALERTS.md">Alerts</a></li>
+</ul>
+<hr />
+<p><strong>Tip:</strong> Use <code>GET /config/effective</code> to debug which configuration is actually being applied.</p>
+        </div>
+
+        <div class="footer">
+            <p>Built with ❤️ using FastAPI, PostgreSQL, and SQLAlchemy</p>
+            <p style="margin-top: 10px;">© 2025 API Key Management Service by <a href="https://github.com/ideiasfactory" target="_blank">Ideias Factory</a></p>
+        </div>
+    </div>
+
+    <a href="#" class="back-to-top">↑</a>
+
+    <script>
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        // Back to top button
+        const backToTop = document.querySelector('.back-to-top');
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTop.style.display = 'flex';
+            } else {
+                backToTop.style.display = 'none';
+            }
+        });
+
+        backToTop.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    </script>
+</body>
+</html>
