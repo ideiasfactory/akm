@@ -61,7 +61,7 @@ Production-ready FastAPI application com multi-tenancy, RBAC, rate limiting, web
 - Real-time monitoring and alerting
 - Sensitive data sanitization
 
-[Documentação Completa HTML](/static/docs_index.html) | [API Guide](https://github.com/ideiasfactory/akm/blob/main/docs/)
+[Guias de implementação](https://akm.ideiasfactory.tech/public/guides/index.html)
 """,
     version=settings.api_version,
     docs_url="/docs",
