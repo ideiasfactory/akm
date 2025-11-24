@@ -84,7 +84,7 @@ Production-ready FastAPI application com multi-tenancy, RBAC, rate limiting, web
             "description": "API Key creation and management",
             "externalDocs": {
                 "description": "🔑 Authentication Guide",
-                "url": "/guides/authentication.html"
+                "url": "https://akm.ideiasfactory.tech/public/guides/authentication.html"
             }
         },
         {
@@ -92,7 +92,7 @@ Production-ready FastAPI application com multi-tenancy, RBAC, rate limiting, web
             "description": "Permission scope management",
             "externalDocs": {
                 "description": "📖 Bulk Insert Documentation",
-                "url": "/guides/scopes_bulk_insert.html"
+                "url": "https://akm.ideiasfactory.tech/public/guides/scopes_bulk_insert.html"
             }
         },
         {
@@ -100,7 +100,7 @@ Production-ready FastAPI application com multi-tenancy, RBAC, rate limiting, web
             "description": "Webhook configuration and event subscriptions",
             "externalDocs": {
                 "description": "🔔 Webhooks Documentation",
-                "url": "/guides/webhooks.html"
+                "url": "https://akm.ideiasfactory.tech/public/guides/webhooks.html"
             }
         },
         {
@@ -120,7 +120,7 @@ Production-ready FastAPI application com multi-tenancy, RBAC, rate limiting, web
             "description": "Audit trail and integrity verification (read-only)",
             "externalDocs": {
                 "description": "📊 Audit & Logging Guide",
-                "url": "/operation/logging.html"
+                "url": "https://akm.ideiasfactory.tech/public/operation/logging.html"
             }
         },
         {
@@ -128,7 +128,7 @@ Production-ready FastAPI application com multi-tenancy, RBAC, rate limiting, web
             "description": "Manage sensitive field sanitization rules",
             "externalDocs": {
                 "description": "📖 Sensitive Fields Guide",
-                "url": "/admin/sensitive_fields.html"
+                "url": "https://akm.ideiasfactory.tech/public/admin/sensitive_fields.html"
             }
         },
         {
