@@ -141,36 +141,43 @@ Production-ready FastAPI application com multi-tenancy, RBAC, rate limiting, web
 
 def custom_openapi():
     """Custom OpenAPI schema with API Key security."""
-    if app.openapi_schema:
-        return app.openapi_schema
-    
-    from fastapi.openapi.utils import get_openapi
-    
-    openapi_schema = get_openapi(
-        title=app.title,
-        version=app.version,
-        description=app.description,
-        routes=app.routes,
-        tags=app.openapi_tags
-    )
-    
-    # Adiciona externalDocs global
-    openapi_schema["externalDocs"] = {
-        "description": "Documentação Completa HTML",
-        "url": "/static/docs_index.html"
-    }
-    # Add security scheme for API Key authentication
-    openapi_schema["components"]["securitySchemes"] = {
-        "APIKeyHeader": {
-            "type": "apiKey",
-            "in": "header",
-            "name": "X-API-Key",
-            "description": "API Key for authentication. Use the management scripts to create and manage keys."
+    try:
+        if app.openapi_schema:
+            return app.openapi_schema
+        from fastapi.openapi.utils import get_openapi
+        openapi_schema = get_openapi(
+            title=app.title,
+            version=app.version,
+            description=app.description,
+            routes=app.routes,
+            tags=app.openapi_tags
+        )
+        # Adiciona externalDocs global
+        openapi_schema["externalDocs"] = {
+            "description": "Documentação Completa HTML",
+            "url": "/static/docs_index.html"
         }
-    }
-    
-    app.openapi_schema = openapi_schema
-    return app.openapi_schema
+        # Add security scheme for API Key authentication
+        openapi_schema["components"]["securitySchemes"] = {
+            "APIKeyHeader": {
+                "type": "apiKey",
+                "in": "header",
+                "name": "X-API-Key",
+                "description": "API Key for authentication. Use the management scripts to create and manage keys."
+            }
+        }
+        app.openapi_schema = openapi_schema
+        return app.openapi_schema
+    except Exception as exc:
+        import traceback
+        print("[ERROR] custom_openapi exception:", exc)
+        print(traceback.format_exc())
+        # Optionally, log to file or external service here
+        return {
+            "error": "Failed to generate OpenAPI schema.",
+            "exception": str(exc),
+            "trace": traceback.format_exc()
+        }
 
 
 app.openapi = custom_openapi
