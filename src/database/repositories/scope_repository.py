@@ -14,7 +14,19 @@ from src.database.models import AKMScope
 
 class ScopeRepository:
     """Repository for scope management operations"""
-    
+
+    async def delete_all_by_project(
+        self,
+        session: AsyncSession,
+        project_id: int
+    ) -> int:
+        """Delete all scopes for a given project (hard delete). Returns number deleted."""
+        from sqlalchemy import delete
+        stmt = delete(AKMScope).where(AKMScope.project_id == project_id)
+        result = await session.execute(stmt)
+        await session.commit()
+        return result.rowcount
+
     async def create(
         self,
         session: AsyncSession,
@@ -121,9 +133,9 @@ class ScopeRepository:
             return None
         
         if description is not None:
-            scope.description = description
+            setattr(scope, "description", description)
         if is_active is not None:
-            scope.is_active = is_active
+            setattr(scope, "is_active", is_active)
         
         await session.commit()
         await session.refresh(scope)
@@ -144,9 +156,9 @@ class ScopeRepository:
             return None
         
         if description is not None:
-            scope.description = description
+            setattr(scope, "description", description)
         if is_active is not None:
-            scope.is_active = is_active
+            setattr(scope, "is_active", is_active)
         
         await session.commit()
         await session.refresh(scope)
@@ -164,7 +176,7 @@ class ScopeRepository:
         if not scope:
             return False
         
-        scope.is_active = False
+        setattr(scope, "is_active", False)
         await session.commit()
         return True
     
@@ -179,7 +191,7 @@ class ScopeRepository:
         if not scope:
             return False
         
-        scope.is_active = False
+        setattr(scope, "is_active", False)
         await session.commit()
         return True
     

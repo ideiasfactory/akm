@@ -160,53 +160,46 @@
             }
           },
           "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
+            "description": "Create a new project.\n\nRequired fields:\n- name: Project name\n- description: Project description\n- prefix: Unique project prefix (required)",
+            "operationId": "create_project_akm_v1_projects_post",
+            "parameters": [],
+            "requestBody": {
+              "required": true,
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "name": {"type": "string", "description": "Project name"},
+                      "description": {"type": "string", "description": "Project description"},
+                      "prefix": {"type": "string", "description": "Unique project prefix (required)"}
+                    },
+                    "required": ["name", "description", "prefix"]
+                  }
                 }
               }
-            }
-          }
-        }
-      },
-      "get": {
-        "tags": [
-          "Projects"
-        ],
-        "summary": "List Projects",
-        "description": "List all projects",
-        "operationId": "list_projects_akm_v1_projects_get",
-        "parameters": [
-          {
-            "name": "active_only",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "boolean",
-              "default": true,
-              "title": "Active Only"
-            }
-          },
-          {
-            "name": "skip",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "default": 0,
-              "title": "Skip"
-            }
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "default": 100,
-              "title": "Limit"
+            },
+            "responses": {
+              "201": {
+                "description": "Successful Response",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/ProjectResponse"
+                    }
+                  }
+                }
+              },
+              "422": {
+                "description": "Validation Error",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/HTTPValidationError"
+                    }
+                  }
+                }
+              }
             }
           },
           {

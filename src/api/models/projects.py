@@ -10,6 +10,7 @@ from pydantic import BaseModel, Field
 class ProjectCreate(BaseModel):
     """Request model for creating a project"""
     name: str = Field(..., min_length=1, max_length=100, description="Project name")
+    prefix: str = Field(..., min_length=1, max_length=20, description="Unique project prefix for namespacing")
     description: Optional[str] = Field(None, description="Project description")
 
 

@@ -21,19 +21,19 @@ class ProjectRepository:
         self,
         session: AsyncSession,
         name: str,
+        prefix: str,
         description: Optional[str] = None
     ) -> AKMProject:
         """Create a new project"""
         project = AKMProject(
             name=name,
+            prefix=prefix,
             description=description,
             is_active=True
         )
-        
         session.add(project)
         await session.commit()
         await session.refresh(project)
-        
         return project
     
     async def get_by_id(

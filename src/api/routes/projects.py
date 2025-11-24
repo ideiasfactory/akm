@@ -38,6 +38,7 @@ async def create_project(
     project = await project_repository.create(
         session,
         name=project_data.name,
+        prefix=project_data.prefix,
         description=project_data.description
     )
     

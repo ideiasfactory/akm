@@ -155,16 +155,14 @@ class OpenAPIScopeGenerator:
         strategy: ScopeGenerationStrategy,
         naming_config: ScopeNamingConfig,
         category: str,
-        generate_wildcards: bool
+        generate_wildcards: bool,
+        ignore_unknown_resources: bool = True
     ) -> OpenAPIScopeGenerationResponse:
         """Generate scopes from OpenAPI spec"""
-        
         info = spec.get('info', {})
         paths = spec.get('paths', {})
-        
         warnings = []
         generated_scopes: List[GeneratedScope] = []
-        
         # Collect operations
         operations = []
         for path, path_item in paths.items():
@@ -176,41 +174,37 @@ class OpenAPIScopeGenerator:
                         'operation': operation,
                         'tags': operation.get('tags', [])
                     })
-        
         # Generate scopes based on strategy
         if strategy == ScopeGenerationStrategy.PATH_METHOD:
             generated_scopes = self._generate_path_method_scopes(
                 operations, naming_config, category
             )
-        
         elif strategy == ScopeGenerationStrategy.PATH_RESOURCE:
             generated_scopes = self._generate_path_resource_scopes(
                 operations, naming_config, category, generate_wildcards
             )
-        
         elif strategy == ScopeGenerationStrategy.TAG_BASED:
             generated_scopes = self._generate_tag_based_scopes(
                 operations, naming_config, category, generate_wildcards
             )
-        
         elif strategy == ScopeGenerationStrategy.OPERATION_ID:
             generated_scopes = self._generate_operation_id_scopes(
                 operations, naming_config, category
             )
-            
             # Check for missing operationIds
             missing_ids = [op for op in operations if not op['operation'].get('operationId')]
             if missing_ids:
                 warnings.append(
                     f"{len(missing_ids)} operations missing operationId - these will be skipped"
                 )
-        
         # Deduplicate by scope_name
         unique_scopes = {}
         for scope in generated_scopes:
-            if scope.scope_name not in unique_scopes:
-                unique_scopes[scope.scope_name] = scope
-        
+            # Filter out unknown resources if requested
+            if ignore_unknown_resources:
+                if (':unknown:' in scope.scope_name) or scope.scope_name.endswith(':unknown'):
+                    continue
+            unique_scopes[scope.scope_name] = scope
         return OpenAPIScopeGenerationResponse(
             api_title=info.get('title', 'Unknown API'),
             api_version=info.get('version', '1.0.0'),

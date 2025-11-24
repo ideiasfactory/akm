@@ -54,6 +54,10 @@ class ScopeNamingConfig(BaseModel):
 
 class OpenAPISourceRequest(BaseModel):
     """Request model for OpenAPI scope generation"""
+    project_id: int = Field(
+        ...,
+        description="Project identifier for associating scope generation"
+    )
     source_type: OpenAPISourceType = Field(
         ...,
         description="Type of source: url, file, or json"
@@ -82,10 +86,15 @@ class OpenAPISourceRequest(BaseModel):
         default=True,
         description="Generate wildcard scopes for each resource (e.g., api:users:*)"
     )
+    ignore_unknown_resources: bool = Field(
+        default=True,
+        description="Ignore importing scopes with unknown resources (e.g., brcds:unknown:read)"
+    )
     
     model_config = {
         "json_schema_extra": {
             "example": {
+                "project_id": "my_project_123",
                 "source_type": "url",
                 "source": "https://api.example.com/openapi.json",
                 "strategy": "path_resource",
@@ -95,7 +104,8 @@ class OpenAPISourceRequest(BaseModel):
                     "resource_naming": "path"
                 },
                 "category": "api",
-                "generate_wildcards": True
+                "generate_wildcards": True,
+                "ignore_unknown_resources": True
             }
         }
     }

@@ -1,24 +1,23 @@
-"""
-API routes for Scope management.
-
-Scopes are now project-scoped following RESTful hierarchy:
-- POST   /projects/{project_id}/scopes
-- GET    /projects/{project_id}/scopes
-- GET    /projects/{project_id}/scopes/{scope_id}
-- PUT    /projects/{project_id}/scopes/{scope_id}
-- DELETE /projects/{project_id}/scopes/{scope_id}
-"""
-
 from typing import List
 from pathlib import Path
 import json
-from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File
+
+from fastapi import (
+    APIRouter,
+    Depends,
+    HTTPException,
+    status,
+    UploadFile,
+    File,
+)
+
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.database.connection import get_session
+from src.database.models import AKMAPIKey
 from src.database.repositories.scope_repository import scope_repository
 from src.database.repositories.project_repository import project_repository
-from src.database.models import AKMAPIKey
+
 from src.api.auth_middleware import PermissionChecker
 from src.api.models import (
     ScopeCreate,
@@ -27,6 +26,22 @@ from src.api.models import (
     BulkScopesRequest,
     BulkScopesResponse,
 )
+from src.api.models.scopes import BulkDeleteScopesRequest
+
+"""
+API routes for Scope management.
+
+Scopes are now project-scoped following RESTful hierarchy:
+- POST /projects/{project_id}/scopes
+- GET /projects/{project_id}/scopes
+- GET /projects/{project_id}/scopes/{scope_id}
+- PUT /projects/{project_id}/scopes/{scope_id}
+- DELETE /projects/{project_id}/scopes/{scope_id}
+- DELETE /projects/{project_id}/scopes
+- POST /projects/{project_id}/scopes/bulk/json
+- POST /projects/{project_id}/scopes/bulk/file
+- GET /projects/{project_id}/scopes/export/json
+"""
 
 router = APIRouter(tags=["Scopes"])
 
@@ -58,6 +73,7 @@ async def create_scope(
     scope = await scope_repository.create(
         session,
         project_id=project_id,
+    
         scope_name=scope_data.scope_name,
         description=scope_data.description
     )
@@ -90,6 +106,12 @@ async def list_scopes(
         skip=skip,
         limit=limit
     )
+
+    if scopes is None or len(scopes) == 0:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"No scopes found for project {project_id}"
+        )
     return scopes
 
 
@@ -103,7 +125,7 @@ async def get_scope(
     """Get scope by ID"""
     scope = await scope_repository.get_by_id(session, scope_id)
     
-    if not scope or scope.project_id != project_id:
+    if scope is None or (getattr(scope, "project_id", None) is not None and getattr(scope, "project_id", None) != project_id):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Scope {scope_id} not found in project {project_id}"
@@ -123,7 +145,7 @@ async def update_scope(
     """Update scope"""
     scope = await scope_repository.get_by_id(session, scope_id)
     
-    if not scope or scope.project_id != project_id:
+    if scope is None or (getattr(scope, "project_id", None) != project_id):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Scope {scope_id} not found in project {project_id}"
@@ -147,10 +169,14 @@ async def delete_scope(
     api_key: AKMAPIKey = Depends(PermissionChecker(["akm:scopes:delete"])),
     session: AsyncSession = Depends(get_session)
 ):
-    """Delete scope (soft delete by default)"""
+    """
+    Delete scope (soft delete by default)
+        
+    """
+
     scope = await scope_repository.get_by_id(session, scope_id)
     
-    if not scope or scope.project_id != project_id:
+    if scope is None or (getattr(scope, "project_id", None) != project_id):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Scope {scope_id} not found in project {project_id}"
@@ -170,11 +196,11 @@ async def delete_scope(
     return None
 
 
-@router.post("/projects/{project_id}/scopes/bulk", response_model=BulkScopesResponse, status_code=status.HTTP_200_OK)
+@router.post("/projects/{project_id}/scopes/bulk/json", response_model=BulkScopesResponse, status_code=status.HTTP_200_OK)
 async def bulk_upsert_scopes(
     project_id: int,
     request: BulkScopesRequest,
-    api_key: AKMAPIKey = Depends(PermissionChecker(["akm:scopes:write"])),
+    api_key: AKMAPIKey = Depends(PermissionChecker(["akm:scopes:bulk:json"])),
     session: AsyncSession = Depends(get_session)
 ):
     """📦 Bulk upsert scopes from JSON data for a project
@@ -233,7 +259,7 @@ async def bulk_upsert_scopes(
 async def bulk_upsert_scopes_from_file(
     project_id: int,
     file: UploadFile = File(..., description="JSON file with scopes data"),
-    api_key: AKMAPIKey = Depends(PermissionChecker(["akm:scopes:write"])),
+    api_key: AKMAPIKey = Depends(PermissionChecker(["akm:scopes:bulk:file"])),
     session: AsyncSession = Depends(get_session)
 ):
     """📄 Bulk upsert scopes from uploaded JSON file for a project
@@ -254,7 +280,7 @@ async def bulk_upsert_scopes_from_file(
         )
     
     # Validate file extension
-    if not file.filename.endswith('.json'):
+    if not file.filename or not file.filename.endswith('.json'):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="File must be a JSON file (.json extension)"
@@ -334,8 +360,78 @@ async def export_scopes_json(
             "is_active": scope.is_active
         })
     
+    if not scope_items or len(scope_items) == 0:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"No scopes found for project {project_id}"
+        )
+    
     return BulkScopesRequest(
         version="1.0.0",
         scopes=scope_items
     )
 
+@router.delete("/projects/{project_id}/scopes", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_all_scopes(
+    project_id: int,
+    request: BulkDeleteScopesRequest,
+    api_key: AKMAPIKey = Depends(PermissionChecker(["akm:scopes:delete_all"])),
+    session: AsyncSession = Depends(get_session)
+):
+    """
+    Bulk delete all scopes for a project. Requires confirmation string.
+
+    **Confirmation Required:**
+    - The request body must include: `{ "confirm": "delete all scopes" }`
+    - If the confirmation string does not match, a 400 error is returned.
+    - If no scopes are found, a 404 error is returned.
+
+    **Error Responses:**
+    - 400: Confirmation string must be 'delete all scopes'.
+    - 404: Project or scopes not found.
+
+    **Example Request:**
+    ```json
+    {
+      "confirm": "delete all scopes",
+      "project_id": 4
+    }
+    ```
+
+    **Example Error Response:**
+    ```json
+    {
+      "status": "client_error",
+      "correlation_id": "...",
+      "data": null,
+      "error_message": "Confirmation string must be 'delete all scopes'",
+      "timestamp": "..."
+    }
+    ```
+    """
+
+    # Validate confirmation text
+    if request.confirm.strip().lower() != "delete all scopes":
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Confirmation string must be exactly 'delete all scopes'"
+        )
+
+    # Check if the project exists
+    project = await project_repository.get_by_id(session, project_id)
+    if not project:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Project {project_id} not found"
+        )
+
+    # Perform deletion
+    deleted_count = await scope_repository.delete_all_by_project(session, project_id)
+
+    if deleted_count == 0:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"No scopes found for project {project_id}"
+        )
+
+    return None

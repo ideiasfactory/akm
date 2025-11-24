@@ -87,7 +87,8 @@ async def generate_scopes_from_openapi(
             request.strategy,
             request.naming_config,
             request.category,
-            request.generate_wildcards
+            request.generate_wildcards,
+            request.ignore_unknown_resources
         )
         
         return result
@@ -106,6 +107,7 @@ async def generate_scopes_from_file(
     namespace: str = "api",
     category: str = "api",
     generate_wildcards: bool = True,
+    ignore_unknown_resources: bool = True,
     api_key: AKMAPIKey = Depends(PermissionChecker(["akm:scopes:read"]))
 ):
     """
@@ -142,7 +144,8 @@ async def generate_scopes_from_file(
             strategy,
             naming_config,
             category,
-            generate_wildcards
+            generate_wildcards,
+            ignore_unknown_resources
         )
         
         return result
@@ -163,6 +166,7 @@ async def generate_scopes_from_url(
     namespace: str = "api",
     category: str = "api",
     generate_wildcards: bool = True,
+    ignore_unknown_resources: bool = True,
     api_key: AKMAPIKey = Depends(PermissionChecker(["akm:scopes:read"]))
 ):
     """
@@ -190,7 +194,8 @@ async def generate_scopes_from_url(
             strategy,
             naming_config,
             category,
-            generate_wildcards
+            generate_wildcards,
+            ignore_unknown_resources
         )
         
         return result
@@ -229,7 +234,8 @@ async def generate_and_import_scopes(
             request.strategy,
             request.naming_config,
             request.category,
-            request.generate_wildcards
+            request.generate_wildcards,
+            request.ignore_unknown_resources
         )
         
         if not import_to_db:
@@ -254,7 +260,14 @@ async def generate_and_import_scopes(
         ]
         
         # Perform bulk upsert
-        result = await scope_repository.bulk_upsert(session, scopes_data)
+        # You need to provide the correct project_id here, for example from request or api_key
+        project_id = getattr(request, "project_id", None)
+        if project_id is None:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Missing required parameter: project_id"
+            )
+        result = await scope_repository.bulk_upsert(session=session, scopes_data=scopes_data, project_id=project_id)
         
         # Add warnings as errors if any
         if generation_result.warnings:

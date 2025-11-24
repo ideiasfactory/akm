@@ -1,11 +1,22 @@
-"""
-Pydantic models for Scope API endpoints.
-"""
 
 from datetime import datetime
 from typing import Optional
 from pydantic import BaseModel, Field
 
+AKM_SCOPES = [
+    "akm:scopes:read",
+    "akm:scopes:write",
+    "akm:scopes:delete",
+    "akm:scopes:delete_all",  # New operation for bulk delete all scopes
+]
+
+class BulkDeleteScopesRequest(BaseModel):
+    """Request model for bulk deleting all scopes in a project"""
+    confirm: str = Field(
+        ...,
+        min_length=10,
+        description="Confirmation string, must be 'delete all scopes'"
+    )
 
 class ScopeCreate(BaseModel):
     """Request model for creating a scope"""
