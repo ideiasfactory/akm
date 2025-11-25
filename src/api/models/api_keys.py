@@ -5,6 +5,7 @@ Pydantic models for API Key endpoints.
 from datetime import datetime
 from typing import Optional, List
 from pydantic import BaseModel, Field
+from dataclasses import dataclass, asdict
 
 
 class APIKeyCreate(BaseModel):
@@ -12,7 +13,7 @@ class APIKeyCreate(BaseModel):
     project_id: int = Field(..., description="Project ID")
     name: str = Field(..., min_length=1, max_length=100, description="Key name")
     description: Optional[str] = Field(None, description="Key description")
-    scopes: List[str] = Field(..., min_items=1, description="List of scope names")
+    scopes: List[str] = Field(..., description="List of scope names")
     expires_at: Optional[datetime] = Field(None, description="Expiration datetime")
 
 
@@ -61,3 +62,18 @@ class ProjectInfo(BaseModel):
 class APIKeyDetailedResponse(APIKeyResponse):
     """Detailed API key response with project info"""
     project: Optional[ProjectInfo] = None
+
+
+class APIKeyValidationResponse(BaseModel):
+    """Response model for API key validation"""
+    service: str
+    version: str
+    docs_url: str
+    message: str
+    scopes_granted: List[str]
+
+class APIKeyValidationRequest(BaseModel):
+    """Request model for validate an API key"""
+    client_api_key: str = Field(..., min_length=1, max_length=100, description="Client Key name")
+    required_scopes: List[str] = Field(..., description="List of scope names to be validated")
+

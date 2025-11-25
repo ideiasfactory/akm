@@ -3,6 +3,7 @@ name = "api-key-management"
 version = "1.0.0"
 description = "API Key Management Service"
 requires-python = ">=3.10"
+url="https://akm.ideiasfactory.tech/docs"
 
 # -------------------------------------------------------------------
 # Runtime Dependencies (only what your application needs to run)

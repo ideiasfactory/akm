@@ -93,8 +93,9 @@ class APIKeyRepository:
             return None
 
         # Update last used timestamp and increment counter
-        api_key_record.last_used_at = datetime.utcnow()
-        api_key_record.request_count += 1
+        setattr(api_key_record, "last_used_at", datetime.utcnow())
+        if hasattr(api_key_record, "request_count") and isinstance(getattr(api_key_record, "request_count", None), int):
+            setattr(api_key_record, "request_count", getattr(api_key_record, "request_count") + 1)
         
         await session.commit()
         await session.refresh(api_key_record)
@@ -288,13 +289,13 @@ class APIKeyRepository:
             return None
 
         if name is not None:
-            api_key.name = name
+            setattr(api_key, "name", name)
         if description is not None:
-            api_key.description = description
+            setattr(api_key, "description", description)
         if is_active is not None:
-            api_key.is_active = is_active
+            setattr(api_key, "is_active", is_active)
         if expires_at is not None:
-            api_key.expires_at = expires_at
+            setattr(api_key, "expires_at", expires_at)
 
         await session.commit()
         await session.refresh(api_key)
@@ -372,6 +373,9 @@ class APIKeyRepository:
         scope_names: List[str]
     ) -> bool:
         """Replace all scopes for an API key"""
+        # Import AKMAPIKeyScope if not already imported
+        from src.database.models import AKMAPIKeyScope, AKMScope, AKMAPIKey
+
         # Remove all existing scopes
         stmt = select(AKMAPIKeyScope).where(AKMAPIKeyScope.api_key_id == key_id)
         result = await session.execute(stmt)
@@ -382,11 +386,32 @@ class APIKeyRepository:
         
         # Add new scopes
         for scope_name in scope_names:
-            key_scope = AKMAPIKeyScope(
-                api_key_id=key_id,
-                scope_name=scope_name
+            # Look up scope_id by scope_name and project_id
+            key_obj = await session.get(AKMAPIKey, key_id)
+            if not key_obj:
+                raise ValueError(f"API Key {key_id} not found.")
+            project_id = key_obj.project_id
+            stmt = select(AKMScope).where(
+                AKMScope.scope_name == scope_name,
+                AKMScope.project_id == project_id
             )
-            session.add(key_scope)
+            result = await session.execute(stmt)
+            scope_obj = result.scalar_one_or_none()
+            if not scope_obj:
+                raise ValueError(f"Scope '{scope_name}' not found in project {project_id}.")
+            # Check for existing assignment to avoid duplicates
+            existing_stmt = select(AKMAPIKeyScope).where(
+                AKMAPIKeyScope.api_key_id == key_id,
+                AKMAPIKeyScope.scope_id == scope_obj.id
+            )
+            existing_result = await session.execute(existing_stmt)
+            existing_assignment = existing_result.scalar_one_or_none()
+            if not existing_assignment:
+                key_scope = AKMAPIKeyScope(
+                    api_key_id=key_id,
+                    scope_id=scope_obj.id
+                )
+                session.add(key_scope)
         
         await session.commit()
         return True
@@ -402,7 +427,7 @@ class APIKeyRepository:
         if not api_key:
             return False
 
-        api_key.is_active = False
+        setattr(api_key, "is_active", False)
         await session.commit()
 
         return True

@@ -71,8 +71,27 @@ async def get_current_api_key(
     
     # If no key-specific config, try to load project defaults
     if not effective_config:
+        project_id = getattr(api_key_record, "project_id", None)
+        if project_id is not None and hasattr(project_id, "value"):
+            project_id = project_id.value
+        elif project_id is not None and hasattr(project_id, "name"):
+            project_id = getattr(api_key_record, "project_id")
+        if project_id is None or not isinstance(project_id, int):
+            logger.error(
+                "API key missing valid project_id",
+                extra={
+                    "correlation_id": correlation_id,
+                    "api_key_id": api_key_record.id,
+                    "project_id": project_id,
+                },
+            )
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="API key is missing a valid project_id."
+            )
+
         project_config = await project_configuration_repository.get_by_project_id(
-            session, api_key_record.project_id
+            session, project_id
         )
         
         if project_config:

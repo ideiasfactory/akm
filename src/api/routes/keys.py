@@ -10,6 +10,7 @@ Keys are now project-scoped following RESTful hierarchy:
 
 Admin route for listing all keys across projects:
 - GET /keys (requires admin scope)
+- POST /keys/validate
 """
 
 from typing import List, Optional
@@ -22,6 +23,11 @@ from src.database.repositories.scope_repository import scope_repository
 from src.database.repositories.project_repository import project_repository
 from src.database.models import AKMAPIKey
 from src.api.auth_middleware import PermissionChecker
+
+import os
+from src.utils.project_info import get_project_info
+from dataclasses import asdict, dataclass
+from typing import List
 from src.api.models import (
     APIKeyCreate,
     APIKeyUpdate,
@@ -29,7 +35,9 @@ from src.api.models import (
     APIKeyResponse,
     APIKeyCreateResponse,
     APIKeyDetailedResponse,
-    ProjectInfo
+    ProjectInfo,
+    APIKeyValidationResponse,    
+    APIKeyValidationRequest
 )
 
 router = APIRouter(tags=["API Keys"])
@@ -98,6 +106,10 @@ async def create_api_key(
                 detail=f"Scope '{scope_name}' not found in project {project_id}"
             )
     
+    # By deafault add "akm:keys:read" scope to every key to allow validate key access
+    if "akm:keys:read" not in key_data.scopes:
+        key_data.scopes.append("akm:keys:read")
+    
     # Create key
     created_key, plain_key = await api_key_repository.create_key(
         session,
@@ -110,13 +122,21 @@ async def create_api_key(
     )
     
     # Reload to get relationships
-    created_key = await api_key_repository.get_by_id(session, created_key.id)
+    # Ensure created_key_id is a plain integer, not a SQLAlchemy Column
+    if hasattr(created_key.id, "value"):
+        created_key_id = int(created_key.id.value)
+    elif hasattr(created_key.id, "__int__"):
+        created_key_id = int(created_key.id.value)
+    else:
+        created_key_id = int(created_key.id.value)
+    created_key = await api_key_repository.get_by_id(session, created_key_id)
     
     key_dict = {k: v for k, v in created_key.__dict__.items() if k not in ['scopes', 'project']}
+    scopes_list = [s.scope.scope_name for s in created_key.scopes] if created_key and getattr(created_key, "scopes", None) else []
     return APIKeyCreateResponse(
         **key_dict,
-        scopes=[s.scope.scope_name for s in created_key.scopes],
-        key=plain_key
+        scopes=scopes_list,
+        key=plain_key if plain_key is not None else ""
     )
 
 
@@ -152,7 +172,7 @@ async def list_project_api_keys(
         result.append(
             APIKeyDetailedResponse(
                 **key_dict,
-                scopes=[s.scope.scope_name for s in key.scopes],
+                #scopes=[s.scope.scope_name for s in key.scopes],
                 project=ProjectInfo(**key.project.__dict__) if key.project else None
             )
         )
@@ -170,7 +190,7 @@ async def get_api_key(
     """Get API key by ID"""
     key = await api_key_repository.get_by_id(session, key_id, load_scopes=True)
     
-    if not key or key.project_id != project_id:
+    if key is None or (getattr(key, "project_id", None) != project_id):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"API key {key_id} not found in project {project_id}"
@@ -195,7 +215,7 @@ async def update_api_key(
     """Update API key metadata"""
     key = await api_key_repository.get_by_id(session, key_id)
     
-    if not key or key.project_id != project_id:
+    if not key or getattr(key, "project_id", None) != project_id:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"API key {key_id} not found in project {project_id}"
@@ -220,9 +240,10 @@ async def update_api_key(
     updated = await api_key_repository.get_by_id(session, key_id)
     
     key_dict = {k: v for k, v in updated.__dict__.items() if k not in ['scopes', 'project']}
+    scopes_list = [s.scope.scope_name for s in updated.scopes] if updated and getattr(updated, "scopes", None) else []
     return APIKeyDetailedResponse(
         **key_dict,
-        scopes=[s.scope.scope_name for s in updated.scopes]
+        scopes=scopes_list
     )
 
 
@@ -237,7 +258,7 @@ async def update_api_key_scopes(
     """Replace all scopes for an API key"""
     key = await api_key_repository.get_by_id(session, key_id)
     
-    if not key or key.project_id != project_id:
+    if key is None or getattr(key, "project_id", None) != project_id:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"API key {key_id} not found in project {project_id}"
@@ -264,9 +285,10 @@ async def update_api_key_scopes(
     updated = await api_key_repository.get_by_id(session, key_id)
     
     key_dict = {k: v for k, v in updated.__dict__.items() if k not in ['scopes', 'project']}
+    scopes_list = [s.scope.scope_name for s in updated.scopes] if updated and getattr(updated, "scopes", None) else []
     return APIKeyResponse(
         **key_dict,
-        scopes=[s.scope.scope_name for s in updated.scopes]
+        scopes=scopes_list
     )
 
 
@@ -280,7 +302,7 @@ async def delete_api_key(
     """Permanently delete an API key (cascades to scopes and config)"""
     key = await api_key_repository.get_by_id(session, key_id)
     
-    if not key or key.project_id != project_id:
+    if key is None or (getattr(key, "project_id", None) != project_id):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"API key {key_id} not found in project {project_id}"
@@ -307,7 +329,7 @@ async def revoke_api_key(
     """Revoke (deactivate) an API key without deleting it"""
     key = await api_key_repository.get_by_id(session, key_id)
     
-    if not key or key.project_id != project_id:
+    if key is None or getattr(key, "project_id", None) != project_id:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"API key {key_id} not found in project {project_id}"
@@ -325,8 +347,61 @@ async def revoke_api_key(
     updated = await api_key_repository.get_by_id(session, key_id)
     
     key_dict = {k: v for k, v in updated.__dict__.items() if k not in ['scopes', 'project']}
+    scopes_list = [s.scope.scope_name for s in updated.scopes] if updated and getattr(updated, "scopes", None) else []
     return APIKeyResponse(
         **key_dict,
-        scopes=[s.scope.scope_name for s in updated.scopes]
+        scopes=scopes_list
     )
 
+@router.post("/keys/validate", summary="Validate Key Access", response_description="Validation API Key Info", response_model=APIKeyValidationResponse)
+async def validate_key_access(
+    key_data: APIKeyValidationRequest,    
+    api_key: AKMAPIKey = Depends(PermissionChecker(["akm:keys:read"])),
+    session: AsyncSession = Depends(get_session)
+):
+        """
+        Returns public information about the API key system. No authentication required.
+
+        **Example Response:**
+        ```json
+        {
+            "service": "AKM API Key Management",
+            "version": "1.0.0",
+            "docs_url": "https://your-service.com/docs"
+        }
+        ```
+        """
+       
+
+        # Validate the provided Client API key
+        valid_key = await api_key_repository.validate_key(
+            session,
+            key_data.client_api_key
+        )
+        if not valid_key:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid or inactive Client API key"
+            )
+        
+        # Check required scopes
+        if key_data.required_scopes:
+            key_scopes = [s.scope.scope_name for s in valid_key.scopes]
+            missing_scopes = [s for s in key_data.required_scopes if s not in key_scopes]
+            if len(missing_scopes)>0:
+                raise HTTPException(
+                    status_code=status.HTTP_403_FORBIDDEN,
+                    detail=f"Client API key is missing required scopes: {', '.join(missing_scopes)}"
+                )
+
+        project_info = get_project_info()
+        version = getattr(project_info, "version", "unknown")
+        docs_url = getattr(project_info, "docs_url", "https://your-service.com/docs")
+
+        return APIKeyValidationResponse(
+            service="AKM API Key Management",
+            version=version,
+            docs_url=docs_url,
+            message="API Key is valid. Access granted.",
+            scopes_granted=[s.scope.scope_name for s in valid_key.scopes]
+        )

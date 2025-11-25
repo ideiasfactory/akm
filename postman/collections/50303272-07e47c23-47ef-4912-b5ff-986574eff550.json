@@ -1,3 +1,4 @@
+    
 {
   "info": {
     "_postman_id": "50303272-07e47c23-47ef-4912-b5ff-986574eff550",
@@ -3958,10 +3959,41 @@
                               "body": "{\n  \"detail\": [\n    {\n      \"loc\": [\n        3492,\n        \"string\"\n      ],\n      \"msg\": \"string\",\n      \"type\": \"string\"\n    },\n    {\n      \"loc\": [\n        \"string\",\n        6178\n      ],\n      \"msg\": \"string\",\n      \"type\": \"string\"\n    }\n  ]\n}"
                             }
                           ]
-                        }
+                        },
+												{
+													"name": "Validate Key Access (No Auth)",
+													"request": {
+														"method": "POST",
+														"url": {
+															"raw": "{{baseUrl}}/akm/v1/keys/validate",
+															"host": ["{{baseUrl}}"],
+															"path": ["akm", "v1", "keys", "validate"]
+														},
+														 "header": [
+                              {
+                                "key": "Accept",
+                                "value": "application/json"
+                              }
+                            ]
+													},
+													"response": [
+														{
+															"name": "200 OK",
+															"status": "200 OK",
+															"code": 200,
+															"body": "{\n  \"service\": \"AKM API Key Management\",\n  \"version\": \"1.0.0\",\n  \"docs_url\": \"https://akm.ideiasfactory.tech/quickstart\"\n, \"message\": \"API Key is valid. Access granted.\"\n}"
+														},
+														{
+															"name": "401 Not Authorized",
+															"status": "401 Not Authorized",
+															"code": 401,
+															"body": "{\n  \"service\": \"AKM API Key Management\",\n  \"version\": \"1.0.0\",\n  \"docs_url\": \"https://akm.ideiasfactory.tech/quickstart\"\n, \"message\": \"API Key is invalid. Access not allowed.\"\n}"
+														}
+													]
+												}
                       ],
                       "id": "50303272-d7dd0775-7e3c-43e0-bc90-aba0705005e0",
-                      "description": "API Keys"
+                      "description": "Validate API Keys Access"
                     },
                     {
                       "name": "scopes",
